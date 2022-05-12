@@ -1,5 +1,6 @@
 <?php
-  
+    declare(strict_types=1);
+
     namespace Nobanno;
 
     use \PDO;
@@ -68,55 +69,87 @@
             }
         }
 
-
-        private function _select(string $sql, array $whereConditions = array()) {
-            try {
-                $statement =  $this->pdo->prepare($sql) ;
-                $statement->execute($whereConditions);
-                $data = $statement->fetchAll($this->fetchStyle);
-                return $data;
-            } catch (\PDOException $e) {
-                throw new DatabaseException($e->getMessage()."SQL-" . $sql, (int) $e->getCode(), $e);
+        #region SELECT
+        
+            private function _select(string $sql, array $whereConditions = array()) {
+                try {
+                    $statement =  $this->pdo->prepare($sql) ;
+                    $statement->execute($whereConditions);
+                    $data = $statement->fetchAll($this->fetchStyle);
+                    return $data;
+                } catch (\PDOException $e) {
+                    throw new DatabaseException($e->getMessage()."SQL-" . $sql, (int) $e->getCode(), $e);
+                }
             }
-        }
 
-        /**
-         * select()
-         * 
-         * This method is deprecated.
-         */
-        public function select(string $sql, array $whereConditions = array()) {
-            trigger_error('Method "' . __METHOD__ . '()" is deprecated, use "many() or single()" instead.', E_USER_DEPRECATED); //E_USER_NOTICE
-            try {
-                $statement =  $this->pdo->prepare($sql) ;
-                $statement->execute($whereConditions);
-                $data = $statement->fetchAll($this->fetchStyle);
-                return $data;
-            } catch (\PDOException $e) {
-                throw new DatabaseException($e->getMessage()."SQL-" . $sql, (int) $e->getCode(), $e);
+            /**
+             * select()
+             * 
+             * This method is deprecated.
+             */
+            public function select(string $sql, array $whereConditions = array()) {
+                trigger_error('Method "' . __METHOD__ . '()" is deprecated, use "many() or single()" instead.', E_USER_DEPRECATED); //E_USER_NOTICE
+                try {
+                    $statement =  $this->pdo->prepare($sql) ;
+                    $statement->execute($whereConditions);
+                    $data = $statement->fetchAll($this->fetchStyle);
+                    return $data;
+                } catch (\PDOException $e) {
+                    throw new DatabaseException($e->getMessage()."SQL-" . $sql, (int) $e->getCode(), $e);
+                }
             }
-        }
 
-        public function single(string $sql, array $whereConditions = array()) {
-           try {
-                $rows = $this->_select($sql, $whereConditions);
-                return $rows[0];
-           } catch (\Throwable $th) {
-               throw $th;
-           }
-        }
+            /**
+             * single()
+             * 
+             * Returns only one row. Throws exception if there is now row.
+             * 
+             * @param string $sql The SELECT SQL statement.
+             * 
+             * @param array $placeholderValues
+             */
+            public function single(string $sql, array $placeholderValues = array()) 
+            {
+                try {
+                    $rows = $this->_select($sql, $placeholderValues);
+                    return $rows[0];
+                } catch (DatabaseException $th) {
+                    throw $th;
+                }
+                catch (\Exception $e) {
+                    throw new DatabaseException($e->getMessage()."SQL-" . $sql, (int) $e->getCode(), $e);
+                }
+            }
 
-        public function many(string $sql, array $whereConditions = array()) {
-           try {
-                return  $this->_select($sql, $whereConditions);
-           } catch (\Throwable $th) {
-               throw $th;
-           }
-        }
+            public function singleOrNull(string $sql, array $placeholderValues = array()) 
+            {
+                try {
+                    $rows = $this->_select($sql, $placeholderValues);
+                    if(count($rows)>0){
+                        return $rows[0];
+                    }
+                    else{
+                        return null;
+                    }
+                } catch (DatabaseException $th) {
+                    throw $th;
+                }
+                catch (\Exception $e) {
+                    throw new DatabaseException($e->getMessage()."SQL-" . $sql, (int) $e->getCode(), $e);
+                }
+            }
 
-        #region insert
+            public function many(string $sql, array $placeholderValues = array())
+            {
+                try {
+                    return  $this->_select($sql, $placeholderValues);
+                } catch (\Throwable $th) {
+                    throw $th;
+                }
+            }
+        #endregion
 
-
+        #region INSERT
             private function _prepareInsertSqlStatment(array $params, string $tableName) {
                 $keys = implode(",", array_keys($params));
                 $values = ":" .implode(", :", array_keys($params));
@@ -172,106 +205,105 @@
 
         #endregion
 
-
-
-
-        private function _update1(string $sql, array $data = array()) {
-            try {
-               $statement =  $this->pdo->prepare($sql) ;
-               $statement->execute($data);
-              
-               return $statement->rowCount();
-
-            } catch (\PDOException $e) {
-                throw new DatabaseException($e->getMessage() ."SQL-" . $sql, (int) $e->getCode(), $e);
-            }
-        }
-
-        /**
-         * updateAuto()
-         * 
-         * @param string $tableName Table name
-         *  
-         * @param string $whereSQL Where SQL i.e. "conditionA=:conditionA AND conditionB>:conditionB AND .....".
-         * 
-         * @param array $updateParams, Optional.
-         * 
-         * @param array $whereParams, Optional.
-         * 
-         * @return integer affected rows. Return false if fails.
-         */
-        private function _update2(string $tableName, string $whereSQL, array $updateParams = array(), array $whereParams = array()) {
-            try {
-              
-                $setSQL = "";
-                foreach ($updateParams as $column => $value){
-                    $setSQL .= "$column=:$column,";
-                    $values[$column] = $value;
-                }
-
-                foreach ($whereParams as $column => $value){
-                    $values[$column] = $value;
-                }
-
-                $setSQL = rtrim($setSQL, ",");
-                $sql = "UPDATE $tableName SET $setSQL WHERE $whereSQL";
-
-
+        #region UPDATE
+            private function _update1(string $sql, array $data = array()) {
+                try {
                 $statement =  $this->pdo->prepare($sql) ;
-                $statement->execute($values);
-              
+                $statement->execute($data);
+                
                 return $statement->rowCount();
 
-            } catch (\PDOException $e) {
-                throw new DatabaseException($e->getMessage() ."SQL-" . $sql, (int) $e->getCode(), $e);
+                } catch (\PDOException $e) {
+                    throw new DatabaseException($e->getMessage() ."SQL-" . $sql, (int) $e->getCode(), $e);
+                }
             }
-        }
 
-        public function update():int{
-            $numberOfArguments = func_num_args();
-            $arguments = func_get_args();
-            $affectedRows = 0;
-            switch ($numberOfArguments) {
-                case 2:
-                    $sql = $arguments[0];
-                    $data = $arguments[1];
-                    try {
-                        $affectedRows = $this->_update1($sql, $data);
-                    } catch (\Throwable $th) {
-                        throw $th;
+            /**
+             * _update2()
+             * 
+             * @param string $tableName Table name
+             *  
+             * @param string $whereSQL Where SQL i.e. "conditionA=:conditionA AND conditionB>:conditionB AND .....".
+             * 
+             * @param array $updateParams, Optional.
+             * 
+             * @param array $whereParams, Optional.
+             * 
+             * @return integer affected rows. Return false if fails.
+             */
+            private function _update2(string $tableName, string $whereSQL, array $updateParams = array(), array $whereParams = array()) {
+                try {
+                
+                    $setSQL = "";
+                    foreach ($updateParams as $column => $value){
+                        $setSQL .= "$column=:$column,";
+                        $values[$column] = $value;
                     }
-                    
-                    break;
-                case 4:
-                    $tableName = $arguments[0];
-                    $whereSQL = $arguments[1];
-                    $updateParams = $arguments[2];
-                    $whereParams = $arguments[3];
-                    try {
-                        $affectedRows = $this->_update2($tableName, $whereSQL, $updateParams, $whereParams);
-                    } catch (\Throwable $th) {
-                        throw $th;
+
+                    foreach ($whereParams as $column => $value){
+                        $values[$column] = $value;
                     }
-                    break;
-                default:
-                    throw new DatabaseException("Invalid parametes quantity");
-                    break;
+
+                    $setSQL = rtrim($setSQL, ",");
+                    $sql = "UPDATE $tableName SET $setSQL WHERE $whereSQL";
+
+
+                    $statement =  $this->pdo->prepare($sql) ;
+                    $statement->execute($values);
+                
+                    return $statement->rowCount();
+
+                } catch (\PDOException $e) {
+                    throw new DatabaseException($e->getMessage() ."SQL-" . $sql, (int) $e->getCode(), $e);
+                }
             }
 
-            return $affectedRows;
-        }
+            public function update():int{
+                $numberOfArguments = func_num_args();
+                $arguments = func_get_args();
+                $affectedRows = 0;
+                switch ($numberOfArguments) {
+                    case 2:
+                        $sql = $arguments[0];
+                        $data = $arguments[1];
+                        try {
+                            $affectedRows = $this->_update1($sql, $data);
+                        } catch (\Throwable $th) {
+                            throw $th;
+                        }
+                        
+                        break;
+                    case 4:
+                        $tableName = $arguments[0];
+                        $whereSQL = $arguments[1];
+                        $updateParams = $arguments[2];
+                        $whereParams = $arguments[3];
+                        try {
+                            $affectedRows = $this->_update2($tableName, $whereSQL, $updateParams, $whereParams);
+                        } catch (\Throwable $th) {
+                            throw $th;
+                        }
+                        break;
+                    default:
+                        throw new DatabaseException("Invalid parametes quantity");
+                        break;
+                }
 
-        public function delete(string $sql, array $data = array()):int {
-            try {
-               $statement =  $this->pdo->prepare($sql) ;
-               $statement->execute($data);
-              
-               return $statement->rowCount();
-               
-            } catch (\PDOException $e) {
-                throw new DatabaseException($e->getMessage() ."SQL-" . $sql, (int) $e->getCode(), $e);
+                return $affectedRows;
             }
-        }
+
+            public function delete(string $sql, array $data = array()):int {
+                try {
+                $statement =  $this->pdo->prepare($sql) ;
+                $statement->execute($data);
+                
+                return $statement->rowCount();
+                
+                } catch (\PDOException $e) {
+                    throw new DatabaseException($e->getMessage() ."SQL-" . $sql, (int) $e->getCode(), $e);
+                }
+            }
+        #endregion
 
         #region FETCH TYPE
         private function _setFetchStyle($fetchStyle = "assoc"){

@@ -20,7 +20,7 @@ project. You can then access the `Class` class. For example, `Database.php`.
 ### Composer
 
 ```
-"composer require nobanno/nobanno"
+composer require nobanno/nobanno
 ```
 
 ## Documentation
