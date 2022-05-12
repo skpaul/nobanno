@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace SugarPHP;
-use SugarPHP\Abstractions\SugarURL\AbstractPart;
-use SugarPHP\SugarURL\Fragment;
-use SugarPHP\Interfaces\SugarURL\ParserInterface;
-use SugarPHP\SugarURL\Path;
-use SugarPHP\SugarURL\Query;
-use SugarPHP\SugarURL\Parser;
+namespace Nobanno;
+use Nobanno\Abstractions\UrlClasses\AbstractPart;
+use Nobanno\UrlClasses\Fragment;
+use Nobanno\Interfaces\UrlClasses\ParserInterface;
+use Nobanno\UrlClasses\Path;
+use Nobanno\UrlClasses\Query;
+use Nobanno\UrlClasses\Parser;
 
 use function array_map;
 use function explode;

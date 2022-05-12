@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SugarPHP\SugarURL;
+namespace Nobanno\UrlClasses;
 
-use SugarPHP\Abstractions\SugarURL\AbstractPart;
+use Nobanno\Abstractions\UrlClasses\AbstractPart;
 
 use function http_build_query;
 use function parse_str;

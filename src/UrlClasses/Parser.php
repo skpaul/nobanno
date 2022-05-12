@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SugarPHP\SugarURL;
+namespace Nobanno\UrlClasses;
 
-use SugarPHP\Interfaces\SugarURL\ParserInterface;
+use Nobanno\Interfaces\UrlClasses\ParserInterface;
 
 use InvalidArgumentException;
 use function array_merge;

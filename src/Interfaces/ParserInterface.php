@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SugarPHP\Interfaces\SugarURL;
+namespace Nobanno\Interfaces\UrlClasses;
 
 interface ParserInterface
 {

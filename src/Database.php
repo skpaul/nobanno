@@ -1,6 +1,6 @@
 <?php
   
-    namespace SugarPHP;
+    namespace Nobanno;
 
     use \PDO;
     use \PDOException;

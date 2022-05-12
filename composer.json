@@ -18,7 +18,7 @@
     },
     "autoload": {
         "psr-4": {
-            "SugarPHP\\": "src/"
+            "Nobanno\\": "src/"
         }
     }
 }

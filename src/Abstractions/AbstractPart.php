@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SugarPHP\Abstractions\SugarURL;
+namespace Nobanno\Abstractions\UrlClasses;
 
 use ArrayAccess;
 

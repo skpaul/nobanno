@@ -1,5 +1,5 @@
 <?php
-    namespace SugarPHP;
+    namespace Nobanno;
     class Helpers{
         
     }

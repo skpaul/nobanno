@@ -1,7 +1,7 @@
 <?php
-    namespace SugarPHP;
+    namespace Nobanno;
 
-    use SugarPHP\Abstractions\Enum;
+    use Nobanno\Abstractions\Enum;
 
     final class DatetimeFormat extends Enum {
     

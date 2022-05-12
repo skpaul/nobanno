@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-namespace SugarPHP\SugarURL;
-use SugarPHP\Abstractions\SugarURL\AbstractPart;
+namespace Nobanno\UrlClasses;
+use Nobanno\Abstractions\UrlClasses\AbstractPart;
 
 use function array_map;
 use function explode;
