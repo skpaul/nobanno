@@ -26,7 +26,7 @@ project. You can then access the `Class` class. For example, `Database.php`.
 
 
 ```
-"composer require sugarphp/sugarphp"
+"composer require nobanno/nobanno"
 ```
 
 ## Documentation
