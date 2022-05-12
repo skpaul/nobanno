@@ -1,0 +1,74 @@
+//sass --watch preview.scss:preview.min.css --style compressed
+
+@font-face {
+    font-family: 'CertificateFont';
+    src: url('fonts/certificate.eot'); /* IE9 Compat Modes */
+    src: url('fonts/certificate.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+         url('fonts/certificate.woff2') format('woff2'), /* Super Modern Browsers */
+         url('fonts/certificate.woff') format('woff'), /* Pretty Modern Browsers */
+         url('fonts/certificate.ttf')  format('truetype'), /* Safari, Android, iOS */
+         
+  }
+
+  :root{
+      font-size: 16px;
+  }
+  .certificate{
+    font-family: 'CertificateFont', Fallback, sans-serif;
+    font-size: 2.5rem;
+    
+  }
+
+  
+a.delete-button{
+    letter-spacing: 0.01245rem;
+    font-weight: 500;
+    text-decoration: none;
+    border:1px solid red;
+    border-radius: 4px;
+    padding: 4px;
+    background: #df2f2f;
+    color: white;
+}
+
+a.delete-button:hover{
+   
+    border:1px solid red;
+    border-radius: 4px;
+    padding: 4px;
+    background: #fff;
+    color: #df2f2f;
+}
+
+  .applicant-copy-preview{
+    
+
+        h1{
+            margin-top: 0.45em
+        }
+
+        div.applicant-copy-label{
+        position: absolute;
+        left: 1px;
+        top: 10px;
+        width: 5em;
+        height: 5em;
+        border: 0.124em solid rgb(78, 78, 78);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        &>div{
+            font-size: 0.78rem;
+            text-align: center;
+        }
+    }
+    img.photo{
+        position: absolute;
+        right: 1px;
+        top: 10px;
+        width: 5em;
+        height: 5em;
+        border: 0.124em solid rgb(78, 78, 78);
+      }
+  }
+

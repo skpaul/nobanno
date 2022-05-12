@@ -1,0 +1,24 @@
+
+{
+    "name": "nobanno/nobanno",
+    "type": "library",
+    "description": "Nobanno is a set of PHP classes to build applications quickly.",
+    "keywords": ["logging","database","data validator", "json","datetime"],
+    "homepage": "https://skpaul.github.io/nobanno",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Saumitra Kumar Paul",
+            "email": "skpaul@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "SugarPHP\\": "src/"
+        }
+    }
+}

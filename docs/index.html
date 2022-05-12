@@ -1,0 +1,445 @@
+<!-- (Ctrl+Shift+P) add livereload.js to you html document. -->
+<!-- http://localhost/my-opensouce-libs/sugarphp/docs/ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SugarPHP || Developers Documentation </title>
+
+	<link href="assets/prism.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/skpaul/monogrid@0.0.1/monogrid.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/skpaul/omnicss@0.1.2/omnicss.min.css">
+
+    <style type="text/css">
+        h1, h2, h3, h4{
+            margin-bottom: 1.5rem;
+        }
+        .grid{
+            width: calc(100% - 64px) !important;
+            margin: auto;
+            gap:2rem;
+        }	 
+
+        :not(pre)>code[class*=language-], pre[class*=language-] {
+            background: #22272e;
+        }
+
+        code[class*=language-]{
+            white-space: break-spaces;
+        }
+
+        code:not(code[class*=language-]){
+            font-family: Consolas;
+            border-radius: 0.30rem;
+            border:1px solid #373e47;
+            padding: 0 1px;
+            white-space: nowrap;
+            background-color: #22272e;
+        }
+
+
+        .card{
+            margin-bottom: 5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid fr12">
+        <nav class="fr2 ta-right">
+        	<ul>
+        		<li><a href="#Require">Require</a></li>
+        		<li><a href="#Logger">Logger</a></li>
+        		<li><a href="#database">Database</a></li>
+        		<li><a href="#php-csv">CSV</a></li>
+        		<li><a href="#http-header">HttpHeader</a></li>
+        		<li><a href="#endecryptor">EnDecryptor</a></li>
+        		<li><a href="#db-session">DbSession</a></li>
+        		<li><a href="#json">JSON</a></li>
+        		<li><a href="#validable">Validable</a></li>
+        		<li><a href="#taka">Taka</a></li>
+        		<li><a href="#with">With</a></li>
+        		<li><a href="#imaging">Imaging</a></li>
+        		<li><a href="#UniqueCodeGenerator">UniqueCodeGenerator</a></li>
+        		<li><a href="#AgeCalculator">AgeCalculator</a></li>
+        		<li><a href="#helpers">Helpers</a></li>
+        		<li><a href="#Clock">Clock</a></li>
+        		<li><a href="#ExclusivePermission">ExclusivePermission</a></li>
+        		<li><a href="#SmsSender">SmsSender</a></li>
+        		<li><a href="#Heredoc">Heredoc</a></li>
+        		<li><a href="#DropDown">DropDown</a></li>
+        		<li><a href="#RadioButton">RadioButton</a></li>
+        		<li><a href="#gtag">gtag</a></li>
+        		<li><a href="#metaTags">metaTags</a></li>
+        		<li><a href="#favicon">favicon</a></li>
+        		<li><a href="#headerBrand">headerBrand</a></li>
+        		<li><a href="#applicantHeaderNav">applicantHeaderNav</a></li>
+        		<li><a href="#adminLeftNav">adminLeftNav</a></li>
+        		<li><a href="#footer">footer</a></li>
+        		<li><a href="#teletalkCSS">teletalkCSS</a></li>
+        		<li><a href="#overlayScrollbarCSS">overlayScrollbarCSS</a></li>
+        		<li><a href="#overlayScrollbarJS">overlayScrollbarJS</a></li>        		
+        	</ul>
+        </nav>
+        <main class="fr8">
+        	<div id="Require">
+        		<h2>Require</h2>
+                <p>Include this .php file in every all pages. This is a php class with static methods.</p>
+        		<pre><code class="language-php">require_once('./Required.php');	                      
+Required::Logger();  //Include logger class
+Required::Database(); //Include Database class.
+
+//The above two methods can be called in a single line using method chaining.
+Required::Logger()->Database();</code></pre>
+        	</div>
+
+            <div class="card" id="Logger">
+        		<h2>Logger()</h2>
+                <p>Create logs for all handled/unhandled errors & exceptions. 	
+                <pre><code class="language-php">//Include Logger class in the script- 
+Required::Logger();  //You should include Logger class before of all other class/s.
+
+//Create new instance-
+$logger = new Logger($errorLogFilePath);  //Default-  '/web-root-directory/error.log'
+
+//Example of logging exceptions-
+try{
+    .....
+}
+catch (\Exception $exp) {
+    $logger->createLog($exp->getMessage());
+}
+</code></pre>
+        	</div><!-- card ends -->
+
+            <div class="card" id="Clock">
+                <h2>Clock</h2>
+                <p>A datetime utility class.</p>
+                <pre><code class="language-php">//Create new instance-
+$clock = new Clock();
+
+//Get current datetime-
+$now = $clock->toDate("now"); //returns datetime object.
+
+//String to datetime conversion-
+$date1 = $clock->toDate('24-04-2022'); //Returns a php datetime object from any valid datetime string.
+$date2 = $clock->toDate('2022/04/17'); //Returns a php datetime object from any valid datetime string.
+$dateWithTime = $clock->toDate('24-04-2022 23:59:01'); //Returns a php datetime object from any valid datetime string.
+
+//Datetime to string conversion syntax-
+$string = $clock->toString($datetimeObject, DatetimeFormat::Format());
+
+//DatetimeFormat Enums -
+DatetimeFormat::MySqlDate() //"Y-m-d"
+DatetimeFormat::MySqlDatetime() //"Y-m-d H:i:s"
+DatetimeFormat::BdDate() //"d-m-Y"
+DatetimeFormat::BdTime() //"h:i A"
+DatetimeFormat::BdDatetime() //"h:i A d-m-Y"
+DatetimeFormat::Custom($format) // $format = any valid php datetime format 
+
+//Example
+$string = $clock->toString($date2, DatetimeFormat::BdDatetime());</code></pre>
+            </div>
+
+            <section class="card">
+                <h2>Database()</h2>
+                <pre><code class="language-php">Required::->Database();
+$db = new Database(DB_SERVER, DB_NAME, DB_USER, DB_PASSWORD);
+
+//Create connection
+$db->connect();
+
+$db->fetchAsAssoc(); //PDO::FETCH_ASSOC;  This is default fetch style.
+$db->fetchAsObject();  //PDO::FETCH_OBJ; 
+
+//A simple select query for all records
+$sql = "SELECT * FROM student";
+$students = $db->many($sql);
+
+$count = count($students);
+
+//A simple select query for a single record.
+$sql = "SELECT * FROM student WHERE id=1";
+$student = $db->many($sql);
+
+//A parameterized select query for a single record.
+$id = 458;
+$sql = "SELECT * FROM student WHERE id=:id";
+$student = $db->single($sql, array('id' => $id);
+
+$name = "abc";
+$sql = "SELECT `name` FROM students WHERE `name` LIKE concat('%', :name, '%') ORDER BY `name` LIMIT 10";
+$studentList = $db->many($sql, array("term"=>$name));
+
+//Check whether $studentLists has any record
+if(count($studentList) > 0){
+    $firstStudent = $studentList[0];
+}
+
+//loop
+foreach ($studentList as $student) {
+    $name = $student["name"]; //if $db->fetchAsAssoc() used.
+    $name = $student->name;    //if $db->fetchAsObject() used.
+}
+
+//temporarily switch to another fetch style and then back to previous- 
+
+$db->fetchAsAssoc();
+//do some tasks-
+$db->fetchAsObject(); //temporarily switch to PDO::FETCH_OBJ
+//do one task
+$db->backToPrevFetchStyle(); //back to prev style.
+
+//Insert--------------
+$sql = "INSERT INTO students(name, age) VALUES("Saumitra Kumar Paul", 26)";
+$studentId = $db->insert($sql);  //returns auto-incremented column value.
+
+$sql = "INSERT INTO students(name, age) VALUES(:name, :age)";
+$studentId = $db->insert($sql, array("name"=>"Saumitra Kumar Paul", "age"=>26)); 
+
+//OR, create a array (convenient if you have many data to insert)
+$newStudent["name"] = "Saumitra Kumar Paul";
+$newStudent["age"] = 26;
+
+$tableName = "students"; //database table name.
+$studentId = $db->insert($tableName, $newStudent);
+
+//Update -------------
+$newName = "xyz";
+$newAge = 19;
+$id = 4;
+$updateSql = "UPDATE students SET name=$newName, age=$newAge WHERE id=$id";  //simple SQL
+$affectedRows = $db->update($updateSql);
+
+$updateSql = "UPDATE students SET name=:name, age=$newAge WHERE id=:id"; //parameterized SQL
+
+//Pass parameter values 'directly' in update() statemnt-
+$affectedRows = $db->update($updateSql, array("name"=>$newName, "age"=>$newAge, "id"=>$id));
+
+//OR, pass parameter values as an 'array' in update() statemnt-
+$updateParams["name"] = "xyz";
+$updateParams["age"] = 19;
+$updateParams["id"] = 4;
+$affectedRows = $db->update($updateSql, $updateParams);
+
+//update() has an overload
+$affectedRows = $db->update("tableName", $whereSQL, $updatedDataArray, $whereDataArray);
+
+//let's see in details -
+$whereSQL = "id=:id";
+$whereDataArray["id"] = 197;
+
+$student["name"]= "PQR";
+$student["age"]= 24;
+
+$affectedRows = $db->update("students", $whereSQL, $student, $whereDataArray);
+
+//Delete
+$sql = "DELETE FROM students WHERE id=1";
+$affectedRows = $db->delete($sql);
+
+$sql = "DELETE FROM students WHERE id=:id";
+$affectedRows = $db->delete($sql, array("id"=>1));
+//OR
+$deleteParams["id"]=1;
+$affectedRows = $db->delete($sql, $deleteParams);
+
+//Transaction
+    $db->beginTransaction(); //Returns true on success or false on failure.
+    //do some insert/update/delete
+
+    //then commit
+    $db->commit(); //Returns true on success or false on failure.
+
+    //rollback if fails to commit.
+    rollBack()
+
+//Exception
+    $db throws 'DatabaseException' if any select(), insert(), update() or delete() fails to exectute.
+
+    try{
+       //do here your db CRUD operation.
+    }
+    catch (\DatabaseException $dbEx) {
+       $exceptionDetails = $exp->getMessage();
+    }
+                </code></pre>
+            </section>
+
+            <section class="card" id="Validable">
+                <h2>Data Validation</h2>
+<pre><code class="language-php">
+Required::DataValidator():
+
+//CREATE NEW INSTANCE
+=====================
+$validator = new DataValidator();
+
+//A QUICK EXAMPLE-
+$validator->title("Name")->post("fullName")->required()->asString(true)->maxLen(100)->validate();
+
+//AVAILABLE METHODS
+===================
+
+    //SET THE FEEDBACK TITLE (if validation fails)
+    ========================
+    title() 
+    label()
+
+    //SET THE DATA SOURCE
+    =====================
+    post("postVarName")     //If the value comes from $_POST.
+    get("getVarName")       //If the value comes from $_GET.
+    value($value)           //If the value comes from any other source.
+
+    //MANDATORY/OPTIONAL VALIDATION
+    ===============================
+    optional()   //The value is optional. This is default.
+    required()   //The value is mandatory. 
+
+    default($defaultValue)  //Sets default value if the source value is absent. 
+                            //Must use this method if required() not used.
+    
+    //SANITIZATION
+    ==============
+    removeTags()    //Removes HTML & PHP tags from a string.
+    removeSlash()   //Removes the backslash (\) from a string.
+    convert()       //Converts special characters to HTML entities.
+    sanitize()      //Do all of the aboves.
+
+    //DATATYPE VALIDATION
+    =====================
+    asString($allowSpace)       //Checks whether the value is a valid integer. $allowSpace=true/false.    
+    asInteger($allowNegative)   //Checks whether the value is a valid integer. $allowNegative=true/false.
+    asFloat($allowNegative)     //Checks whether the value is a valid float.  $allowNegative=true/false.
+    asEmail()                   //Checks whether the value is a valid emaill address.
+    asMobile()                  //Checks whether the value is a valid mobile number (Bangladesh only).
+    asDate()                    //Checks whether the value type is a valid date/datetime.
+    asBool()                    //Checks whether the value type is a valid bolean(true/false).
+
+    //DATA LENGTH VALIDATION
+    ========================
+    exactLen($length)       //Checks whether the value has exactly 50 characters length.
+    minLen($minLength)      //Checks whether the value has minimum 50 characters length.
+    maxLen($maxLength)      //Checks whether the value has maximum 50 characters length.
+
+    //MIN OR MAX VALUE VALIDATION
+    =============================
+    ->minVal($minValue)->  //Checks whether the value has minimum value of 2021.
+    ->maxVal($maxValue)->  //Checks whether the value has maximum value of 54.9.
+
+    //MISCELLANEOUS
+    ===============
+    startsWith($startString)    //Checks whether a string starts with 'ABC'.
+    endsWith($endString)        //Checks whether a string ends with 'XYZ'.
+
+    //VALIDATE  (this must be the final call for every validation method chains)
+    ==========
+    validate()  //Validates and returns the value
+                //OR, throws exeption if validation fails.
+    
+//EXAMPLES
+==========
+    All validations must be enclosed with try .. catch. 
+    It throws 'ValidationException' if any value does not pass the validation rules.
+
+    try{
+        $fullName = $validator->title("Name")
+                              ->post("fullName")
+                              ->required()
+                              ->asString(true)
+                              ->maxLen(100)
+                              ->validate();
+
+        $age = $validator->label("Age")->post("age")->required()->asInteger(false)-minVal(18)->validate(); 
+        
+        //Email is optional. If user provides it, the value will be validated. 
+        //If user does not provide it, default value will be set as NULL.
+        $email = $validator->label("Emaill")->post("email")->asEmail()->maxLen(25)->default(NULL)->validate(); 
+
+    } catch (\ValidationException $ve) {
+        $invalid = $ve->getMessage();
+        echo $invalid;  //Inform user about this invalid input.
+    }
+</code></pre>
+            </section> <!-- Data Validation ends -->
+
+            <section class="card" id="HttpHeader">
+                <h2>HttpHeader</h2>
+                <p>An static class to modify HTTP response header.</p>
+                <pre><code class="language-php">HttpHeader::redirect($url);  //Redirect to another page/url.
+HttpHeader::remove();  //Remove response header.
+HttpHeader::setJson(); //Set "Content-type: application/json; charset=utf-8".
+HttpHeader::set($httpResponseCode); //Set HTTP response code i.e. 200 or 500.
+                </code></pre>
+            </section> <!-- HttpHeader ends -->
+
+            <section class="card" id="Greetings">
+                <h2>Greetings</h2>
+               <pre><code class="language-php">Greetings::greet();  //Says Good Morning/Afternoon/Evening!</code></pre>
+             </section><!-- Greetings ends -->
+
+             <section class="card" id="EnDecryptor">
+                <h2>EnDecryptor</h2>
+                <p>Encryption/Decryption</p>
+               <pre><code class="language-php">$endecryptor = new EnDecryptor($secretKey); //Make the secret key as difficult as possible.
+$encrypted = $endecryptor->encrypt($value);  //Encrypt a value.
+$decrypted = $endecryptor->decrypt($value);  //Decrypt a value.</code></pre>
+             </section><!-- EnDecryptor ends -->
+
+             <section class="card" id="JSON">
+                <h2>JSON</h2>
+                <p>JSON Encoder.</p>
+               <pre><code class="language-php">$json = new JSON();
+
+success();   //Creates a json property "issuccess": true;
+fail();     //Creates a json property "issuccess": false;
+
+//To get the encoded output, must call create() finally-
+create();  //returns a json encoded string.
+
+//You can add any method instantly. For example-
+$json->name("John Doe")->create();  //Creates a json property "name":"John Doe"
+$json->age(25)->create();  //Creates a json property "age":25
+
+//Examples- 
+$jsonString = $json->fail()->message("Name required.")->create(); //message() created dynamically.
+$jsonString = $json->success()->message("Saved successfully")->create(); 
+$data = "Select some rows from database table using MySQL query";  //array data.
+$jsonString = $json->success()->data($data)->create(); //data() created dynamically.</code></pre>
+             </section><!-- JSON ends -->
+
+             <section class="card" id="URL">
+                <h2>Query string manipulator. Static class.</h2>
+               <pre><code class="language-php">URL::getCurrentURL();
+
+                
+               </code></pre>
+             </section><!-- URL ends -->
+        </main>
+        <nav class="fr2">
+            <ul>
+                <li><a href="#jquery">jquery</a></li>
+        		<li><a href="#hamburgerMenu">hamburgerMenu</a></li>
+        		<li><a href="#adminLeftNavJS">adminLeftNavJS</a></li>
+        		<li><a href="#sweetModalJS">sweetModalJS</a></li>
+        		<li><a href="#sweetModalCSS">sweetModalCSS</a></li>
+        		<li><a href="#moment">moment</a></li>
+        		<li><a href="#mobileValidator">mobileValidator</a></li>
+        		<li><a href="#swiftSubmit">swiftSubmit</a></li>
+        		<li><a href="#swiftChanger">swiftChanger</a></li>
+        		<li><a href="#SwiftNumeric">SwiftNumeric</a></li>
+        		<li><a href="#html2pdf">html2pdf</a></li>
+        		<li><a href="#airDatePickerJS">airDatePickerJS</a></li>
+        		<li><a href="#airDatePickerCSS">airDatePickerCSS</a></li>
+            </ul>
+        </nav>
+    </div> <!-- grid ends -->
+
+   
+
+    <script src="assets/prism.js"></script>
+    <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+</body>
+</html>

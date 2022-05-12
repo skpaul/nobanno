@@ -1,0 +1,957 @@
+<?php
+
+// This preview.php is loading data from table "final_data_to_handover_2021_09_17_for_correction" temporarily
+//Must go back to preview (Orginal).php for next session application.
+
+
+
+require_once("../../../Required.php");
+
+
+Required::SwiftLogger()
+    ->ZeroSQL(2)
+    ->SwiftDatetime()
+    ->EnDecryptor()
+    ->SwiftJSON()
+    ->Validable()
+    ->AgeCalculator()->Helpers();
+
+
+$endecryptor = new EnDecryptor();
+$db = new ZeroSQL();
+$db->Server(DATABASE_SERVER)->Password(DATABASE_PASSWORD)->Database(DATABASE_NAME)->User(DATABASE_USER_NAME);
+$db->connect();
+
+$logger = new SwiftLogger(ROOT_DIRECTORY, false);
+
+// if (!isset($_GET["u"]) || empty($_GET["u"])) {
+//     Helpers::redirect(BASE_URL . "/sorry.php", false);
+// }
+
+// $encSessionId = $_GET["u"];
+// $sessionId = $endecryptor->decrypt($encSessionId);
+// $session = new SessionBase($db, $dateTime);
+// try {
+//     $session->continue($sessionId);
+//     $sessionUserDetails = $session->getJsonObject("userDetails");
+// } catch (SessionExpiredException $exp1) {
+//     Helpers::redirect(BASE_URL . "/session-expired.php?reason=1", false);
+// } catch (SessionNotFoundException $exp2) {
+//     Helpers::redirect(BASE_URL . "/session-expired.php?reason=2", false);
+// }
+
+// applicant-id=$encApplicantId&post-id=$encPostId";
+
+if (!isset($_GET["applicant-id"]) || empty($_GET["applicant-id"])) {
+    Helpers::redirect(BASE_URL . "/sorry.php", false);
+}
+if (!isset($_GET["post-config-id"]) || empty($_GET["post-config-id"])) {
+    Helpers::redirect(BASE_URL . "/sorry.php", false);
+}
+
+$showMessage = 0;
+if (isset($_GET["sm"]) || !empty($_GET["sm"])) {
+    $showMessage = $_GET["sm"];
+}
+
+try {
+    $applicantId = $endecryptor->decrypt($_GET["applicant-id"]);
+    $postConfigId = $endecryptor->decrypt($_GET["post-config-id"]);
+} catch (\Throwable $th) {
+    Helpers::redirect(BASE_URL . "/sorry.php", false);
+}
+
+$postConfig = $db->select()->from("post_configurations")->find($postConfigId);
+$applicant = $db->select()->from("final_data_to_handover_2021_09_17_for_correction")->find($applicantId);
+$hEdu = $db->select()->from("hc_written_higher_educations")->where("userId")->equalTo($applicant->userId)->single();
+
+$datetime = new SwiftDatetime();
+$now = $datetime->now()->asYmdHis();
+
+$smsKeyword = "BAR";
+?>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Preivew Application- <?= ORGANIZATION_FULL_NAME ?></title>
+    <?php
+    Required::metaTags()->favicon()->teletalkCSS();
+    if (ENVIRONMENT == "PRODUCTION") {
+    ?>
+        <script>
+            history.pushState(null, null, document.URL);
+            window.addEventListener('popstate', function() {
+                history.pushState(null, null, document.URL);
+            });
+        </script>
+    <?php
+    }
+    ?>
+
+    <style>
+        .fixed-width label {
+            width: 67px;
+        }
+
+        .formHeader>h1 {
+            font-size: 17px;
+            text-align: center;
+        }
+
+        .formHeader h2 {
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .formHeader p {
+            font-size: 10px;
+            text-align: justify;
+            padding: 0 27px;
+        }
+
+        tbody tr td:first-child {
+            text-align: left !important;
+        }
+
+       
+
+        .qr-container{
+            flex: 1;
+        }
+
+        .signature-container{
+            flex: 1;
+            text-align: center;
+        }
+
+        img.qr{
+            width: 100px;
+        }
+
+        .signature-name{
+            font-size: 14px;
+            border-top: 1px solid dimgray;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="master-wrapper">
+        <header>
+            <?php
+            require_once(ROOT_DIRECTORY . '/inc/header.php');
+            echo prepareHeader(ORGANIZATION_FULL_NAME);
+            ?>
+        </header>
+        <main class="previewPage">
+
+            <div class="container">
+                <div class="text-center margin-bottom-25">
+
+                    <?php
+                    if ($showMessage == 1) {
+                    ?>
+                        <section class="congratulation">
+                            <h1 style="color:#32ba32;">!! Congratulations !!</h1>
+                            <p>Application submitted successfully.</p>
+                        </section>
+                    <?php
+                    }
+                    ?>
+                    <br>
+                    <br>
+                    <button type="button" class="create-pdf btn btn-dark btn-large">Download</button>
+                    <!-- <a href="applicant-info.php" style="text-decoration: none;" class="btn btn-outline-dark" role="button">Back to form</a> -->
+                </div>
+            </div>
+
+            <div id="pdfdiv" class="non-responsive printable" style="border: 1px solid; margin:0 auto; width: 660px; padding: 10px 20px;">
+
+                <!-- header -->
+                <section>
+                    <div class="header">
+                        <div class="left">
+                            <div class="brand" style="display: flex;">
+                                <div>
+                                    <img class="logo" src="<?= BASE_URL ?>/assets/images/bar-logo.png">
+                                </div>
+                                <div class="govt-org">
+                                    <div class="govt">
+                                        Government of the People's Republic of Bangladesh</div>
+                                    <div class="organization"><?= ORGANIZATION_FULL_NAME ?></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <div>
+                                Applicant's Copy
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <?php
+                $formHeader = "";
+                if ($applicant->applicantType == "Re-appear") {
+                    $formHeader = "<h1>Re-Appear Application Form for Written Examination (H.C)</h1>";
+                }
+
+                if ($applicant->applicantType == "Regular") {
+                    if ($applicant->priorityType == "Priority") {
+                        $formHeader = "<h1>Examination Form For High Court</h1>";
+                        $formHeader .= "<h2>Form-'H'(1) [Regular]<br>See Rule 65-A(1)</h2>";
+                        $formHeader .= "<p>Form of application under Article 21(1)(c) read with Rule 65-A of the Bangladesh Legal Practitioners and Bar Council Order, 1972 for permission to practise as an Advocate before the High Court Division of the Supreme Court of Bangladesh</p>";
+                    }
+
+                    if ($applicant->priorityType == "General") {
+                        $formHeader = "<h1>Form-'H' [Regular]<br>See Rule 65-A(1)</h1>";
+                        $formHeader .= "<p>Form of application under Article 21(1)(a) of the Bangladesh Legal Practitioners and Bar Council Order, 1972 for permission to practise as an Advocate before the High Court Division of the Supreme Court of Bangladesh</p>";
+                    }
+                }
+                ?>
+
+                <section class="formHeader">
+                    <?php
+                    echo $formHeader;
+                    ?>
+                </section>
+                <!-- applicant's biodata -->
+                <section>
+                    <div class="fixed-width">
+                        <div class="margin-bottom-10">
+                            <div class="grid">
+                                <div class="col-auto">
+                                    <div class="field">
+                                        <label class="border-right">User ID</label>
+                                        <div class="text"><?= $applicant->userId ?></div>
+                                    </div>
+                                </div>
+                               
+                                <div class="col-auto">
+                                    <div class="field">
+                                        <label class="border-right border-left">Reference</label>
+                                        <div class="text"><?= $postConfig->referenceNo ?></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid border-bottom">
+                                <div class="col-auto">
+                                    <div class="field">
+                                        <label class="border-right">Reg. No.</label>
+                                        <div class="text"><?= $applicant->regNo ?></div>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="field">
+                                        <label class="border-right border-left">Reg. Year</label>
+                                        <div class="text"><?= $applicant->regYear ?></div>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <!-- <div class="field">
+                                        <label class="border-right border-left"></label>
+                                        <div class="text"></div>
+                                    </div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- .special-row is used to show applicant's photo on right side. -->
+                    <div class="special-row">
+                        <div>
+                            <div class="grid no-border">
+                                <div class="col-12 flex column">
+                                    <div class="field border-bottom">
+                                        <label class="border-right fixed-width">Name</label>
+                                        <div class="text"><?= $applicant->fullName; ?></div>
+                                    </div>
+
+                                    <div class="field border-bottom">
+                                        <label class="border-right fixed-width">Father</label>
+                                        <div class="text"><?= $applicant->fatherName; ?></div>
+                                    </div>
+
+                                    <div class="field border-bottom">
+                                        <label class="border-right fixed-width">Mother</label>
+                                        <div class="text"><?= $applicant->motherName; ?></div>
+                                    </div>
+                                    <div class="flex border-bottom">
+                                        <div class="field">
+                                            <label class="border-right fixed-width">Date of Birth</label>
+                                            <div class="text" style="width: 92px;"><?= $datetime->value($applicant->dob)->asdmY() ?></div>
+                                        </div>
+                                        <div class="field">
+                                            <label class="border-right border-left">Gender</label>
+                                            <div class="text" style="width: 61px;"><?= $applicant->gender; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="flex border-bottom">
+                                        <div class="field">
+                                            <label class="border-right fixed-width">Mobile No.</label>
+                                            <div class="text"><?=$applicant->mobileNo?></div>
+                                        </div>
+                                        <div class="field">
+                                            <label class="border-right border-left">Email</label>
+                                            <div class="text"><?= $applicant->email; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="border-right fixed-width">Nationality</label>
+                                        <div class="text">Bangladeshi</div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <?php
+                                $photoPath = BASE_URL . "/applicant-images/higher-court/written-exam/photos/" . $applicant->userId . ".jpg";
+                            ?>
+                            <img src="<?= $photoPath ?>">
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="col-auto">
+                            <div class="field border-right">
+                                <label class="border-right fixed-width">Birth Certificate</label>
+                                <div class="text"><?= $applicant->birthCertNo=="NULL"?"":$applicant->birthCertNo ?></div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="field">
+                                <label class="border-right">NID</label>
+                                <div class="text"><?= $applicant->nidNo ?></div>
+                            </div>
+                        </div>
+
+                        <div class="col-auto">
+                            <div class="field border-left">
+                                <label class="border-right">Passport</label>
+                                <div class="text"><?= $applicant->passportNo=="NULL"?"":$applicant->passportNo ?></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="grid">
+                        <div class="col-auto">
+                            <div class="field">
+                                <label class="border-right fixed-width">Applicant Type</label>
+                                <div class="text"><?= $applicant->applicantType ?></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="col-auto">
+                            <div class="field">
+                                <label class="border-right fixed-width">Bar Association Name</label>
+                                <div class="text"><?= $applicant->barAssociationName ?></div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="field border-left">
+                                <label class="border-right fixed-width">Senior Advocate Name</label>
+                                <div class="text"><?= $applicant->seniorAdvocateName ?></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="col-auto">
+                            <div class="field">
+                                <label class="border-right fixed-width">Membership Date</label>
+                                <div class="text"><?= $datetime->value($applicant->dateOfMembership)->asdmY() ?></div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="field border-left">
+                                <label class="border-right">Practice Duration  (Months)</label>
+                                <div class="text"><?= $applicant->membershipDurationInMonth?></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="col-auto">
+                            <div class="field">
+                                <label class="border-right fixed-width">Pupilage Cont. Date</label>
+                                <div class="text"><?= $datetime->value($applicant->pupilageContractDate)->asdmY() ?></div>
+                            </div>
+                        </div>
+
+                        <div class="col-auto">
+                            <div class="field border-left">
+                                <label class="border-right">Pupilage Duration (Months)</label>
+                                <div class="text"><?= $applicant->pupilageDurationInMonth ?></div>
+                            </div>
+                        </div>
+
+                        <div class="col-auto">
+                            <div class="field border-left">
+                                <label class="border-right">Enrollment Date</label>
+                                <div class="text"><?= $datetime->value($applicant->enrollmentDate)->asdmY() ?></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Permanent & Present Address -->
+                    <div class="grid">
+                        <div class="col-auto">
+                            <div class="field ">
+                                <label class="border-right" style="width: 125px !important;">Present Address</label>
+                                <div class="text">
+                                    <b>Details: </b> <?php echo strtoupper($applicant->presentAddress); ?> <br>
+                                    <b>Thana: </b><?php echo strtoupper($applicant->presentThana); ?>
+                                    <b>District: </b><?php echo strtoupper($applicant->presentDist); ?>
+                                    <b>Postal Code: </b><?php echo strtoupper($applicant->presentGpo); ?>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="grid">
+
+                        <div class="col-auto">
+                            <div class="field">
+                                <label class="border-right" style="width: 125px !important;">Permanent Address</label>
+                                <div class="text">
+                                    <b>Details: </b><?php echo strtoupper($applicant->permanentAddress); ?> <br>
+                                    <b>Thana: </b><?php echo strtoupper($applicant->permanentThana); ?>
+                                    <b>District: </b><?php echo strtoupper($applicant->permanentDist); ?>
+                                    <b>Postal Code: </b><?php echo strtoupper($applicant->permanentGpo); ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Educations -->
+                    <div class="grid">
+                        <div class="col-auto">
+
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Examination/Degree</th>
+                                        <th>Year</th>
+                                        <th>Board/University/Institute</th>
+                                        <th>Division/Class/Grade/CGPA</th>
+                                        <th>Roll/ID</th>
+                                        <th>Major Subject/Group</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><?php echo $applicant->sscExamName; ?></td>
+                                        <td><?php echo $applicant->sscYear; ?></td>
+                                        <td><?php echo strtoupper($applicant->sscBoard); ?></td>
+                                        <?php
+                                        // $sscResultContent = $applicant->sscGpa . "" . $applicant->sscGrade . "" . $applicant->sscDivision.($applicant->sscScale != "" ? "/".$applicant->sscScale : "");
+                                        $sscRetult = $applicant->sscGpa . $applicant->sscGrade . $applicant->sscDivision;
+                                        $sscResultBase = $applicant->sscScale != "" ? " out of " . $applicant->sscScale : "";
+                                        $sscResultPercentage = ""; //$applicant->sscScale != "" ? " (".(($sscRetult / $applicant->sscScale) * 100)."%)" : "";
+                                        $sscResultContent = $sscRetult . $sscResultBase . $sscResultPercentage;
+                                        ?>
+                                        <td><?php echo $sscResultContent; ?></td>
+                                        <td><?php echo strtoupper($applicant->sscRollNo); ?></td>
+                                        <td><?php echo strtoupper($applicant->sscGroup); ?></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><?php echo $applicant->hscExamName; ?></td>
+                                        <td><?php echo $applicant->hscYear; ?></td>
+                                        <td><?php echo strtoupper($applicant->hscBoard); ?></td>
+                                        <?php
+                                        // $sscResultContent = $applicant->hscGpa . "" . $applicant->hscGrade . "" . $applicant->hscDivision.($applicant->hscScale != "" ? "/".$applicant->hscScale : "");
+                                        $hscRetult = $applicant->hscGpa . $applicant->hscGrade . $applicant->hscDivision;
+                                        $hscResultBase = $applicant->hscScale != "" ? " out of " . $applicant->hscScale : "";
+                                        $hscResultPercentage = ""; //$applicant->hscScale != "" ? " (".(($hscRetult / $applicant->hscScale) * 100)."%)" : "";
+                                        $hscResultContent = $hscRetult . $hscResultBase . $hscResultPercentage;
+                                        ?>
+                                        <td><?php echo $hscResultContent; ?></td>
+                                        <td><?php echo strtoupper($applicant->hscRollNo); ?></td>
+                                        <td><?php echo strtoupper($applicant->hscGroup); ?></td>
+                                    </tr>
+
+                                    <?php
+
+                                    //LL.B (Hons/Pass) -->
+                                    $examName = $hEdu->llbExam;
+                                    $llbResultType = $hEdu->llbResultType;
+                                    $result = "";
+                                    switch (strtolower($llbResultType)) {
+                                        case "appeared":
+                                            $llbExamConcludedDate = $datetime->value($hEdu->llbExamConcludedDate)->asdmY();
+                                            $passingYear  = "Appeared. Concluded date - " . $llbExamConcludedDate;
+                                            $result = "Appeared";
+                                            break;
+                                        case "division":
+                                            $passingYear = $hEdu->llbPassingYear;
+                                            $result = $hEdu->llbDivision
+                                                . "<br>Marks-" . $hEdu->llbObtainedMarks . " out of " . $hEdu->llbTotalMarks . " (" . $hEdu->llbMarksPercentage . "%)";
+                                            break;
+                                        case "class":
+                                            $passingYear = $hEdu->llbPassingYear;
+                                            $result = $hEdu->llbClass
+                                                . "<br>Marks-" . $hEdu->llbObtainedMarks . " out of " . $hEdu->llbTotalMarks . " (" . $hEdu->llbMarksPercentage . "%)";
+                                            break;
+                                        case "grading":
+                                            $passingYear = $hEdu->llbPassingYear;
+                                            $result = $hEdu->llbCgpa
+                                                . " out of " . $hEdu->llbCgpaScale . "<br>(" . $hEdu->llbMarksPercentage . "%)";
+                                            break;
+                                    }
+
+                                    $University = $hEdu->llbUni;
+                                    $llbDetails = '<tr>
+                                                            <td>' .  $examName . '</td>
+                                                            <td>' . $passingYear . '</td>
+                                                            <td>' . strtoupper($University) . '</td>
+                                                            <td>' . $result . '</td>
+                                                            <td>' . $hEdu->llbId . '</td>
+                                                            <td>' . $hEdu->llbSubject . '</td>
+                                                        </tr>';
+                                    echo $llbDetails;
+                                    //LL.B (Hons/Pass) ends.
+
+                                    //Graduation (Others)
+                                    if ($hEdu->hasOtherGrad) {
+                                        $examName = $hEdu->gradOtherExam;
+                                        $gradOtherResultType = $hEdu->gradOtherResultType;
+                                        $result = "";
+                                        switch (strtolower($gradOtherResultType)) {
+                                            case "appeared":
+                                                $gradOtherExamConcludedDate = $datetime->value($hEdu->gradOtherExamConcludedDate)->asdmY();
+                                                $passingYear  = "Appeared. Concluded date - " . $gradOtherExamConcludedDate;
+                                                $result = "Appeared";
+                                                break;
+                                            case "division":
+                                                $passingYear = $hEdu->gradOtherPassingYear;
+                                                $result = $hEdu->gradOtherDivision
+                                                    . "<br>Marks-" . $hEdu->gradOtherObtainedMarks . " out of " . $hEdu->gradOtherTotalMarks . " (" . number_format($hEdu->gradOtherMarksPercentage) . "%)";
+                                                break;
+                                            case "class":
+                                                $passingYear = $hEdu->gradOtherPassingYear;
+                                                $result = $hEdu->gradOtherClass
+                                                    . "<br>Marks-" . $hEdu->gradOtherObtainedMarks . " out of " . $hEdu->gradOtherTotalMarks . " (" . number_format($hEdu->gradOtherMarksPercentage, 2) . "%)";
+                                                break;
+                                            case "grading":
+                                                $passingYear = $hEdu->gradOtherPassingYear;
+                                                $result = $hEdu->gradOtherCgpa
+                                                    . " out of " . $hEdu->gradOtherCgpaScale . "<br>(" . number_format($hEdu->gradOtherMarksPercentage) . "%)";
+                                                break;
+                                        }
+
+                                        $University = $hEdu->gradOtherUni;
+                                        $gradOtherDetails = '<tr>
+                                                                    <td>' .  $examName . '</td>
+                                                                    <td>' . $passingYear . '</td>
+                                                                    <td>' . strtoupper($University) . '</td>
+                                                                    <td>' . $result . '</td>
+                                                                    <td>' . $hEdu->gradOtherId . '</td>
+                                                                    <td>' . $hEdu->gradOtherSubject . '</td>
+                                                                </tr>';
+                                        echo $gradOtherDetails;
+                                    }
+                                    //Graduation (Others) ends
+
+                                    //Masters
+                                    if ($hEdu->hasMasters) {
+                                        $examName = $hEdu->mastersExam;
+                                        $mastersResultType = $hEdu->mastersResultType;
+                                        $result = "";
+                                        switch (strtolower($mastersResultType)) {
+                                            case "appeared":
+                                                $mastersExamConcludedDate = $datetime->value($hEdu->mastersExamConcludedDate)->asdmY();
+                                                $passingYear  = "Appeared. Concluded date - " . $mastersExamConcludedDate;
+                                                $result = "Appeared";
+                                                break;
+                                            case "division":
+                                                $passingYear = $hEdu->mastersPassingYear;
+                                                $result = $hEdu->mastersDivision
+                                                    . "<br>Marks-" . $hEdu->mastersObtainedMarks . " out of " . $hEdu->mastersTotalMarks . " (" . $hEdu->mastersMarksPercentage . "%)";
+                                                break;
+                                            case "class":
+                                                $passingYear = $hEdu->mastersPassingYear;
+                                                $result = $hEdu->mastersClass
+                                                    . "<br>Marks-" . $hEdu->mastersObtainedMarks . " out of " . $hEdu->mastersTotalMarks . " (" . $hEdu->mastersMarksPercentage . "%)";
+                                                break;
+                                            case "grading":
+                                                $passingYear = $hEdu->mastersPassingYear;
+                                                $result = $hEdu->mastersCgpa . " out of " . $hEdu->mastersCgpaScale . "<br>(" . $hEdu->mastersMarksPercentage . "%)";
+                                                break;
+                                        }
+
+                                        $University = $hEdu->mastersUni;
+                                        $mastersDetails = '<tr>
+                                                                    <td>' .  $examName . '</td>
+                                                                    <td>' . $passingYear . '</td>
+                                                                    <td>' . strtoupper($University) . '</td>
+                                                                    <td>' . $result . '</td>
+                                                                    <td>' . $hEdu->mastersId . '</td>
+                                                                    <td>' . $hEdu->mastersSubject . '</td>
+                                                                </tr>';
+                                        echo $mastersDetails;
+                                    }
+                                    //Masters ends
+                                    ?>
+
+                                </tbody>
+                            </table>
+                            <!-- ===================================== -->
+                        </div>
+                    </div>
+
+                    <!-- Bar-at-law starts -->
+                    <?php
+                        if($hEdu->hasBarAtLaw){
+                    ?>
+                        <div class="grid">
+                            <div class="col-auto">
+                                <div class="field">
+                                    <label class="border-right">Bar-at-law</label>
+                                    <div class="text"><?=$hEdu->barAtLawName.", " .$hEdu->barAtLawYear ?></div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php
+                        }
+                    ?>
+                    <!-- Bar-at-law ends -->
+
+                    <?php
+                    $paymentDetails = "";
+                    if ($applicant->hasPaidPreviously) {
+                        $paymentDetails = "Tk. " . $applicant->prevPaidFeeAmount . " paid at " . $applicant->bankName . " (" . $applicant->branchName . "). Draft/Slip No. " .
+                            $applicant->draftOrSlipNo;
+                    } else {
+                        $paymentDetails = "No";
+                    }
+                    ?>
+
+                    <div class="grid">
+                        <div class="col-auto">
+                            <div class="field">
+                                <label class="border-right fixed-width">Prev. Payment</label>
+                                <div class="text"><?= $paymentDetails ?></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="col-auto">
+                            <div class="field border-right">
+                                <label class="border-right fixed-width">Applied On</label>
+                                <div class="text"><?=$datetime->input($applicant->appliedDatetime)->asFormat("h:i A, d-m-Y") ?></div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="field">
+                                <label class="border-right fixed-width">Printed On</label>
+                                <div class="text"><?=$datetime->now()->asFormat("h:i A, d-m-Y") ?></div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="col-auto">
+                            <div class="field border-bottom">
+                                <label class="border-right fixed-width">Declaration</label>
+                                <div class="text">
+                                    I declare that the information provided in this form is correct, true and complete to the best of my knowledge and belief. If any information is found false, incorrect and incomplete or if any ineligibility is detected before or after the examination, any action can be taken against me by the Bar Council.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+                    <div class="signature" style="justify-content: unset;">
+                        <div class="qr-container">
+                            <?php
+                                $qrPath = BASE_URL . "/applicant-images/higher-court/written-exam/qr-codes/" . $applicant->userId . ".png";
+                            ?>
+                            <img class="qr" src="<?=$qrPath?>">
+                        </div>
+                        <div class="signature-container">
+                            <?php
+                                $photoPath = BASE_URL . "/applicant-images/higher-court/written-exam/signatures/" . $applicant->userId . ".jpg";
+                            ?>
+                            <img class="signature" src="<?=$photoPath?>">
+                            <span class="signature-name"><?=$applicant->fullName?></span>
+                        </div>
+                    </div>
+                </section>
+
+                <?php
+                    if ($applicant->hasPaidPreviously == 0 && $applicant->fee==0) {
+                ?>
+                    <div class="smsContent">
+                        <hr style="margin-bottom: 5px; border: 1px dashed #bfbaba;">
+                        <p>
+                            <strong><?= $applicant->userId ?></strong> is your User ID, Please keep this number to pay the application fee Tk. <?= $applicant->feeRequiredByTeletalk ?> within <strong><?= $postConfig->lastDateOfTeletalkFeePayment ?></strong> from any Teletalk prepaid mobile phone by SMS.
+                        </p>
+                        <p>
+                            1st SMS Format: <?= $smsKeyword ?><?= htmlspecialchars("<space>UserID") ?> and send SMS to 16222
+                            [Example : <?= $smsKeyword ?> <?= $applicant->userId ?>]. 1st-SMS Reply: Returns a PIN (8 Digits) like 23423495
+                        </p>
+                        <p>
+                            2nd SMS Format: <?= $smsKeyword ?><?= htmlspecialchars("<space>YES<space>PIN") ?> and send SMS to 16222
+                            [Example : <?= $smsKeyword ?> YES 23423495]. 2nd SMS Reply: Returns a USER ID & PASSWORD
+                        </p>
+                    </div>
+                <?php
+                    }
+                ?>
+
+                <section>
+                    <footer>
+                        <div class="copyright">
+                            ©<?php echo date("Y"); ?>, <?= ORGANIZATION_FULL_NAME ?>, All Rights Reserved.
+                        </div>
+
+                        <div class="powered-by">
+                            Powered By:
+                            <a href="http://www.teletalk.com.bd/" target="_blank">
+                                <img class="logo" alt="teletalk Logo" title="Powered By: Teletalk" src="<?= BASE_URL ?>/assets/images/teletalk-logo.png">
+                            </a>
+                        </div>
+                    </footer>
+                </section>
+            </div>
+
+            <?php
+                if ($applicant->hasPaidPreviously == 0 && $applicant->fee == 0) {
+            ?>
+                  <div class="wrapper">
+                    <section class="paymentInstruction">
+                        <h2>Payment Instruction</h2>
+                        <p>
+                        <ul>
+                            <li>Application fee is <span>Tk. <?= $applicant->feeRequiredByTeletalk ?></span></li>
+                            <li>Application fee payment deadline <span><?= $postConfig->lastDateOfTeletalkFeePayment ?></span>.</li>
+                            <li>SMS must be sent from any <span>Teletalk prepaid number</span>.</li>
+                            <li>SMS must be in valid format. Please note the following instructions - </li>
+                        </ul>
+                        </p>
+                        <article class="firstSms">
+                            <div class="smsInstruction">
+                                <div class="right">
+                                    <div class="top">
+                                        <div class="title">
+                                            <div class="text">1st SMS</div>
+                                            <div class="img">
+                                                <img src="sms.png" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="step">
+                                            <p>write a new sms</p>
+                                            <p><?= $smsKeyword . htmlspecialchars("<space>UserId") ?></p>
+                                        </div>
+                                        <div class="arrow">
+                                            <div>
+                                                <img src="arrow.png" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="step">
+                                            <p>
+                                                send to 16222
+                                            </p>
+                                        </div>
+                                        <div class="arrow">
+                                            <div>
+                                                <img src="arrow.png" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="step">
+                                            <p>
+                                                You will get a reply SMS with a PIN
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="bottom">
+                                        <div class="title">1st SMS </br> example</div>
+                                        <div class="step">
+                                            <div class="mobileScreen">
+                                                <div class="outer">
+                                                    <div class="inner">
+                                                        <?= $smsKeyword . " " . $applicant->userId ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="arrow">
+                                            <div>
+                                                <!-- <img src="arrow.png" alt=""> -->
+                                            </div>
+                                        </div>
+                                        <div class="step">
+                                            <div class="mobileScreen">
+                                                <div class="outer">
+                                                    <div class="inner number">
+                                                        16222
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="arrow">
+                                            <div>
+                                                <!-- <img src="arrow.png" alt=""> -->
+                                            </div>
+
+                                        </div>
+                                        <div class="step">
+                                            <div class="mobileScreen">
+                                                <div class="outer">
+                                                    <div class="inner number">
+                                                        11223456
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="2ndSms">
+                            <div class="smsInstruction">
+                                <div class="right">
+                                    <div class="top">
+                                        <div class="title">
+                                            <div class="text">2nd SMS</div>
+                                            <div class="img">
+                                                <img src="sms.png" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="step">
+                                            <p>write a new sms- </p>
+                                            <!-- <p>NGI30spaceYESspacePIN</p> -->
+                                            <p><?= $smsKeyword . htmlspecialchars("<space>YES<space>PIN") ?></p>
+                                        </div>
+                                        <div class="arrow">
+                                            <div>
+                                                <img src="arrow.png" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="step">
+                                            <p>
+                                                send to 16222
+                                            </p>
+                                        </div>
+                                        <div class="arrow">
+                                            <div>
+                                                <img src="arrow.png" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="step">
+                                            <p>
+                                                You will get a reply SMS with new User ID and Password
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="bottom">
+                                        <div class="title">2nd SMS </br> example</div>
+                                        <div class="step">
+                                            <div class="mobileScreen">
+                                                <div class="outer">
+                                                    <div class="inner">
+                                                        <?= $smsKeyword ?> YES 11223456
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="arrow">
+                                            <div>
+                                                <!-- <img src="arrow.png" alt=""> -->
+                                            </div>
+                                        </div>
+                                        <div class="step">
+                                            <div class="mobileScreen">
+                                                <div class="outer">
+                                                    <div class="inner number">
+                                                        16222
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="arrow">
+                                            <div>
+                                                <!-- <img src="arrow.png" alt=""> -->
+                                            </div>
+
+                                        </div>
+                                        <div class="step">
+                                            <div class="mobileScreen">
+                                                <div class="outer">
+                                                    <div class="inner number">
+                                                        User Id: GJHGJHG
+                                                        Password: 464797
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </section>
+                </div> <!-- wrapper ends -->
+            <?php
+                }
+            ?>
+        </main>
+        <footer>
+            <?php
+                Required::footer();
+            ?>
+        </footer>
+    </div>
+
+    <?php
+    Required::jquery()->hamburgerMenu()->html2pdf();
+    ?>
+    <script>
+        history.pushState(null, document.title, location.href);
+        window.addEventListener('popstate', function(event) {
+            history.pushState(null, document.title, location.href);
+        });
+
+        $(function() {
+            $(".create-pdf").click(function() {
+                var element = document.getElementById('pdfdiv');
+                var opt = {
+                    margin: 0.5,
+                    filename: 'Applicant Copy - <?= $applicant->userId ?>.pdf',
+                    image: {
+                        type: 'jpeg',
+                        quality: 0.98
+                    },
+                    html2canvas: {
+                        scale: 2
+                    },
+                    jsPDF: {
+                        unit: 'in',
+                        format: 'A4',
+                        orientation: 'portrait'
+                    }
+                };
+
+                html2pdf(element, opt);
+            });
+        })
+    </script>
+</body>
+
+</html>
