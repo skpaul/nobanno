@@ -1,40 +1,38 @@
 <?php
+// namespace Nobanno;
 
 $localHost =  "{$_SERVER['HTTP_HOST']}";//{$_SERVER['REQUEST_URI']}";
 
 require_once("CONSTANTS.php");
 
+
 class Required{
 
-    public static $path = '/vendor/winbip/lib/src';
+    public static $path = '/vendor/nobanno/nobanno/src';
 
     #region Library
 
         public static function Logger(){
-            require_once(ROOT_DIRECTORY . self::$path . "/logger/Logger.php");
+            require_once(ROOT_DIRECTORY . self::$path . "/Logger.php");
             return new static;
         }
 
         public static function Database(){
-            require_once(ROOT_DIRECTORY . self::$path . "/database/Database.php");
+            require_once(ROOT_DIRECTORY . self::$path . "/Database.php");
             return new static;
         }
 
         public static function CSV(){
-            if(isset($version) && !empty($version))
-                require_once(ROOT_DIRECTORY ."/lib/csv/CSV-v$version.php");
-            else
-                require_once(ROOT_DIRECTORY ."/lib/csv/CSV.php"); //Current default version
-            
-                return new static;
+            require_once(ROOT_DIRECTORY . self::$path . "/CSV.php");
+            return new static;
         }
 
         public static function HttpHeader(){
             require_once(ROOT_DIRECTORY . self::$path . "/http-header/HttpHeader.php");
             return new static;
         }
-        public static function EnDecryptor(){
-            require_once(ROOT_DIRECTORY . self::$path . "/encryption-decryption/EnDecryptor.php");
+        public static function Cryptographer(){
+            require_once(ROOT_DIRECTORY . self::$path . "/Cryptographer.php");
             return new static;
         }
 
@@ -45,17 +43,17 @@ class Required{
         }
 
         public static function JSON(){
-            require_once(ROOT_DIRECTORY . self::$path . "/json/JSON.php");
+            require_once(ROOT_DIRECTORY . self::$path . "/JSON.php");
             return new static;
         }
 
         public static function Validable(){
-            require_once(ROOT_DIRECTORY . self::$path . "/validable/Validable.php"); 
+            require_once(ROOT_DIRECTORY . self::$path . "/Validable.php"); 
             return new static;
         }
 
         public static function Taka(){
-            require_once(ROOT_DIRECTORY ."/lib/taka/Taka.php");
+            require_once(ROOT_DIRECTORY . self::$path . "/Taka.php"); 
             return new static;
         }
 
@@ -87,7 +85,7 @@ class Required{
 
 
         public static function Clock(){
-            require_once(ROOT_DIRECTORY . self::$path . "/clock/Clock.php");
+            require_once(ROOT_DIRECTORY . self::$path . "/Clock.php");
             return new static;
         }
 
@@ -163,9 +161,12 @@ class Required{
         return new static;
     }
 
-    public static function css(){
-        echo '<link href="https://cdn.jsdelivr.net/gh/winbip/winbip-css@1.0.0/main.min.css" rel="stylesheet">';
-        echo '<link href="https://cdn.jsdelivr.net/gh/winbip/winbip-css@1.0.0/theme.min.css" rel="stylesheet">';
+    public static function omnicss(){
+        echo '<link href="https://cdn.jsdelivr.net/gh/skpaul/omnicss/omnicss.min.css" rel="stylesheet">';
+        return new static;
+    }
+    public static function monogrid(){
+        echo '<link href="https://cdn.jsdelivr.net/gh/skpaul/monogrid@0.0.1/monogrid.min.css">';
         return new static;
     }
     public static function lightTheme(){

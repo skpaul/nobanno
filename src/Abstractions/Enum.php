@@ -1,5 +1,5 @@
 <?php
-    namespace Nobanno\Abstractions;
+    // namespace Nobanno\Abstractions;
 
     //This is a base class for all enum.
     abstract class Enum {

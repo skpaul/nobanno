@@ -1,18 +1,19 @@
 <?php
+  
 
     #region Import libraries
         require_once("Required.php");
 
-        Required::Logger()
+
+        Required::Logger()->Cryptographer()
             ->Database()
-            ->EnDecryptor()
             ->JSON()
             ->Clock()->headerBrand()->applicantHeaderNav()->footer();
     #endregion
 
 	#region Library instance declaration & initialization
         $logger = new Logger(ROOT_DIRECTORY);
-        $endecryptor = new EnDecryptor();
+        $endecryptor = new Cryptographer(SECRET_KEY);
         $clock = new Clock();
         $db = new Database(DB_SERVER, DB_NAME, DB_USER, DB_PASSWORD);
     #endregion
@@ -41,7 +42,7 @@
     <head>
         <title><?=$pageTitle?> - <?= ORGANIZATION_FULL_NAME ?></title>
         <?php
-            Required::gtag()->html5shiv()->metaTags()->favicon()->css()->sweetModalCSS()->bootstrapGrid();
+            Required::gtag()->html5shiv()->metaTags()->favicon()->omnicss()->sweetModalCSS();
         ?>
 
         <style>
