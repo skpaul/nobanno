@@ -161,22 +161,22 @@ $db->fetchAsObject();  //PDO::FETCH_OBJ;
 
 //A simple select query for all records
 $sql = "SELECT * FROM student";
-$students = $db->many($sql);
+$students = $db->selectMany($sql);
 
 $count = count($students);
 
 //A simple select query for a single record.
 $sql = "SELECT * FROM student WHERE id=1";
-$student = $db->many($sql);
+$student = $db->selectSingle($sql);
 
 //A parameterized select query for a single record.
 $id = 458;
 $sql = "SELECT * FROM student WHERE id=:id";
-$student = $db->single($sql, array('id' => $id);
+$student = $db->selectSingle($sql, array('id' => $id);
 
 $name = "abc";
 $sql = "SELECT `name` FROM students WHERE `name` LIKE concat('%', :name, '%') ORDER BY `name` LIMIT 10";
-$studentList = $db->many($sql, array("term"=>$name));
+$studentList = $db->selectMany($sql, array("term"=>$name));
 
 //Check whether $studentLists has any record
 if(count($studentList) > 0){
