@@ -1,43 +1,7 @@
 <?php
-    namespace Nobanno;
+namespace Nobanno;
+use Nobanno\ClockClasses\DatetimeFormat;
 
-    use Nobanno\Abstractions\Enum;
-
-    final class DatetimeFormat extends Enum {
-    
-        static public function MySqlDate() {
-            return new self('Y-m-d');
-        }
-
-        static public function MySqlDatetime() {
-            return new self("Y-m-d H:i:s");
-        }
-
-
-        /**
-         * BdDate()
-         * 
-         * Format as 'd-m-Y'
-         */
-        static public function BdDate() {
-            return new self("d-m-Y");
-        }
-        static public function BdTime() {
-            return new self("h:i A");
-        }
-        static public function BdDatetime() {
-            return new self("h:i A d-m-Y");
-        }
-        static public function Custom($format) {
-            return new self($format);
-        }
-
-        // const MySqlDate =  'Y-m-d';
-        // const MySqlDatetime = 'Y-m-d H:i:s';
-        // const BdDate = 'd-m-Y';
-        // const BdTime =  'h:i A';
-        // const BdDatetime = 'h:i A d-m-Y';
-    }
 
     class Clock{
         public function __construct(string $datetimeZone = "Asia/Dhaka") {
@@ -68,9 +32,9 @@
          * 
          * @param DatetimeFormat $format
          * 
-         * @return string
+         * 
          */
-        public function toString(mixed $value, DatetimeFormat $format):string
+        public function toString(mixed $value, \DatetimeFormat $format)
         {
             if ($value instanceof \DateTime){
                 return $value->format($format);
