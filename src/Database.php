@@ -117,18 +117,20 @@
                 $keys = implode(",", array_keys($params));
                 $values = ":" .implode(", :", array_keys($params));
                 $sql = "INSERT INTO $tableName($keys) VALUES($values)";
-                try {
-                    return $this->_insert($sql, $params);
-                } catch (\Throwable $th) {
-                    throw $th;
-                }
+                return $sql;
+                // try {
+                //     return $this->_insert($sql, $params);
+                // } catch (\Throwable $th) {
+                //     throw $th;
+                // }
             }
 
             private function _insert(string $sql, array $data = array()):int {
                 try {
                     $statement =  $this->pdo->prepare($sql) ;
                     $statement->execute($data);
-                    return $this->pdo->lastInsertId();
+                    $lastId =  $this->pdo->lastInsertId();
+                    return (int)$lastId;
                 } catch (\PDOException $e) {
                     throw new DatabaseException($e->getMessage() ."SQL-" . $sql, (int) $e->getCode(), $e);
                 }
@@ -158,7 +160,8 @@
                 else{
                     //$param is now a tableName.
                     try {
-                        $result = $this->_prepareInsertSqlStatment($data, $param);
+                        $sql = $this->_prepareInsertSqlStatment($data, $param);
+                        $result = $this->_insert($sql, $data);
                     } catch (\Throwable $th) {
                         throw $th;
                     }

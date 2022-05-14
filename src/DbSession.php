@@ -46,27 +46,10 @@
          * @return this
          */
         public function start(string $owner){
-            $this->db->fetchAsAssoc();
-            $sql = "SELECT id, `data`, `datetime` 
-                    FROM `$this->table`
-                    WHERE `owner`=:owner";
-
-            $sessions = $this->db->select($sql, array("owner"=>$owner));
-            $this->db->backToPrevFetchStyle();
-
             $now = (new DateTime('now', new DateTimeZone("Asia/Dhaka")))->format('Y-m-d H:i:s'); 
-            
-            if(count($sessions) == 0){
-                $sql = "INSERT INTO `$this->table`(`owner`, `datetime`) 
-                VALUES(:sessionOwner, :currentDatetime)";
-                $this->sessionId = $this->db->insert($sql, array("sessionOwner"=>$owner, "currentDatetime"=>$now));
-            }
-            else{
-                $session = $sessions[0];
-                $this->sessionId = $session["id"];
-                $sql = "UPDATE `$this->table` SET `datetime`=:currentdatetime WHERE id=:id";
-                $this->db->update($sql, array("currentdatetime"=>$now, "id"=>$this->sessionId));
-            }
+            $sql = "INSERT INTO `$this->table`(`owner`, `datetime`) 
+            VALUES(:sessionOwner, :currentDatetime)";
+            $this->sessionId = $this->db->insert($sql, array("sessionOwner"=>$owner, "currentDatetime"=>$now));
 
             $now = (new DateTime('now', new DateTimeZone("Asia/Dhaka")))->sub(new DateInterval('P2D'));  //go back to 2 days ago.
             $now = $now->format('Y-m-d H:i:s');
@@ -93,8 +76,7 @@
          * 
          * @return this
          * 
-         * @throws SessionNotFoundException if sessionId not found.
-         * @throws SessionExpiredException if session expires.
+         * @throws SessionException
          */
         public function continue(int $sessionId){
             //call this function on every subsequent page except login page
