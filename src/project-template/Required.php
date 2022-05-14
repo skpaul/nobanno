@@ -148,7 +148,7 @@ class Required{
             return new static;
         }
 
-        public static function footer($version = null){
+        public static function Footer($version = null){
             require_once(ROOT_DIRECTORY . '/inc/Footer.php'); //used in applicants panel
             return new static;
                

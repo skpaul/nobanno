@@ -15,7 +15,7 @@ class ApplicantHeaderNav{
         $baseUrl =  $params["baseUrl"]; 
         $html = <<<HTML
                 <div class="main-top-nav-container">
-                    <div class="container-fluid">
+                    <div class="container">
                         <nav id="mainTopNav" class="main-top-nav">
                             <a href="$baseUrl/index.php"><span class="m-icons">home</span>Home</a>    
                             <a href="$baseUrl/app/applicant-copy/applicant-copy-redownload.php"><span class="m-icons">article</span>Applicant Copy</a>

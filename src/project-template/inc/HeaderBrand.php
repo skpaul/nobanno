@@ -29,7 +29,7 @@ class HeaderBrand{
         $orgName = ORGANIZATION_FULL_NAME;
         $html = <<<HTML
             <div class="brand-container">
-                <div class="container-fluid ">
+                <div class="container">
                     <div class="brand">
                         <img class="logo" src="$baseUrl/assets/images/bar-logo.png" alt="Bangladesh Govt. Logo">
                         <div style="flex:1; margin-left: 0.4rem;">
