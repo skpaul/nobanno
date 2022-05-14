@@ -6,11 +6,11 @@
      */
 
      
-    class ValidableException extends Exception
+    class ValidationException extends Exception
     {
     }
 
-    class Validable{
+    class DataValidator{
 
         #region private variables
         
@@ -41,7 +41,7 @@
              * 
              * It's value can be either "digits" or "characters".
              * 
-             * This variable is required to compose a meaningful message while throwing ValidableException.
+             * This variable is required to compose a meaningful message while throwing ValidationException.
              */
             private $character_or_digit = "";
 
@@ -338,16 +338,16 @@
              * 
              * @return $this
              * 
-             * @throws ValidableException
+             * @throws ValidationException
              */
             public function required(){
                 $this->required = true;
                 if(!isset($this->valueToValidate)){
-                    throw new ValidableException("{$this->label} {$this->requiredLang}");
+                    throw new ValidationException("{$this->label} {$this->requiredLang}");
                 }
                 else{
                     if(empty($this->valueToValidate)){
-                        throw new ValidableException("{$this->label} {$this->requiredLang}");
+                        throw new ValidationException("{$this->label} {$this->requiredLang}");
                     }
                 }
                 return $this;
@@ -363,13 +363,13 @@
              * 
              * @return this $this
              * 
-             * @throws ValidableException
+             * @throws ValidationException
              */
             public function englishOnly(){
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
                     if (!preg_match('/[^A-Za-z0-9]/', strval($this->valueToValidate)))  {
                         //string contains only letters from the English alphabet
-                        throw new ValidableException("{$this->label} must be in english.");
+                        throw new ValidationException("{$this->label} must be in english.");
                     }
                 }
                 
@@ -385,12 +385,12 @@
              * 
              * @return this $this
              * 
-             * @throws ValidableException
+             * @throws ValidationException
              */
             public function asAscii(){
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
                     if(!is_numeric($this->valueToValidate)){
-                        throw new ValidableException("{$this->label} must be numeric.");
+                        throw new ValidationException("{$this->label} must be numeric.");
                     }
                 }
                 
@@ -406,7 +406,7 @@
              * 
              * @return this $this
              * 
-             * @throws ValidableException
+             * @throws ValidationException
              */
             public function asAlphabetic($allowSpace){
                 $this->character_or_digit = "characters"; //"অক্ষর";
@@ -417,13 +417,13 @@
                     }
                     else{
                         if($this->_hasWhitespace($this->valueToValidate)){
-                            throw new ValidableException("{$this->label} required");
+                            throw new ValidationException("{$this->label} required");
                         }
                         $temp = $this->valueToValidate;
                     }
 
                     if(!ctype_alpha($temp)){
-                        throw new ValidableException("{$this->label} incorrect. It must be alphabatic (A-Z, a-z).");
+                        throw new ValidationException("{$this->label} incorrect. It must be alphabatic (A-Z, a-z).");
                     }
                 }
                 return $this;
@@ -436,13 +436,13 @@
              * 
              * @return this $this
              * 
-             * @throws ValidableException
+             * @throws ValidationException
              */
             public function asNumeric(){
                 $this->character_or_digit = "digits"; //"সংখ্যা";
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
                     if(!is_numeric($this->valueToValidate)){
-                        throw new ValidableException("{$this->label} must be numeric.");
+                        throw new ValidationException("{$this->label} must be numeric.");
                     }
                 }
                 
@@ -457,7 +457,7 @@
              * 
              * @param boolean $allowSpace
              * @return this $this
-             * @throws ValidableException
+             * @throws ValidationException
              */
             public function asAlphaNumeric($allowSpace){
                 $this->character_or_digit = "characters"; //"অক্ষর";
@@ -471,7 +471,7 @@
                     }
 
                     if(!ctype_alnum($temp)){
-                        throw new ValidableException("{$this->label} a-z/A-Z এবং/অথবা 0-9 হতে হবে।");
+                        throw new ValidationException("{$this->label} a-z/A-Z এবং/অথবা 0-9 হতে হবে।");
                     }
                 }
                 
@@ -487,14 +487,14 @@
              * 
              * @return this $this
              * 
-             * @throws ValidableException
+             * @throws ValidationException
              */
             public function asString($allowSpace){
                 $this->character_or_digit = "characters"; //"অক্ষর";
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
                     if(!$allowSpace){
                         if($this->_hasWhitespace($this->valueToValidate)){
-                            throw new ValidableException("{$this->label} invalid. Blank space is not allowed.");
+                            throw new ValidationException("{$this->label} invalid. Blank space is not allowed.");
                         }
                     }
                 }
@@ -527,7 +527,7 @@
              * 
              * @return this $this
              * 
-             * @throws ValidableException
+             * @throws ValidationException
              */
             public function asInteger($allowNegative){
                 $this->character_or_digit = "digits"; //"সংখ্যা";
@@ -540,19 +540,19 @@
                         if (!$allowNegative) {
                             $valueToValidate = intval($valueToValidate);
                             if ($valueToValidate < 0) {
-                                throw new ValidableException("{$this->label} {$this->invalidLang}");
+                                throw new ValidationException("{$this->label} {$this->invalidLang}");
                             }
                         }
                     }
                     else{
-                        throw new ValidableException("{$this->label} {$this->invalidLang}");
+                        throw new ValidationException("{$this->label} {$this->invalidLang}");
                     }
 
                     $this->valueToValidate = $valueToValidate;
                 }
                 else{
                     if($this->required ){
-                        throw new ValidableException("{$this->label} {$this->invalidLang}");
+                        throw new ValidationException("{$this->label} {$this->invalidLang}");
                     }
                 }
                 
@@ -569,7 +569,7 @@
              * 
              * @return $this
              * 
-             * @throws ValidableException
+             * @throws ValidationException
              */
             public function asFloat($allowNegative){
                 //check whether has a decimal point.
@@ -585,12 +585,12 @@
                         if (!$allowNegative) {
                             $valueToValidate = floatval($valueToValidate);
                             if ($valueToValidate < 0) {
-                                throw new ValidableException("{$this->label} {$this->invalidLang}.");
+                                throw new ValidationException("{$this->label} {$this->invalidLang}.");
                             }
                         }
                     }
                     else{
-                        throw new ValidableException("{$this->label} {$this->invalidLang}");
+                        throw new ValidationException("{$this->label} {$this->invalidLang}");
                     }
                 }
                 else{
@@ -599,12 +599,12 @@
                         if (!$allowNegative) {
                             $valueToValidate = intval($valueToValidate);
                             if ($valueToValidate < 0) {
-                                throw new ValidableException("{$this->label} {$this->invalidLang}");
+                                throw new ValidationException("{$this->label} {$this->invalidLang}");
                             }
                         }
                     }
                     else{
-                        throw new ValidableException("{$this->label} {$this->invalidLang}");
+                        throw new ValidationException("{$this->label} {$this->invalidLang}");
                     }
                 }
 
@@ -643,13 +643,13 @@
              * 
              * @return this $this
              * 
-             * @throws ValidableException
+             * @throws ValidationException
              */
             public function asEmail(){
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
                     // $label = $this->label;
                     if (!filter_var($this->valueToValidate, FILTER_VALIDATE_EMAIL)) {
-                        throw new ValidableException("{$this->label} {$this->invalidLang}");
+                        throw new ValidationException("{$this->label} {$this->invalidLang}");
                     }
                 }
                 return $this;
@@ -664,21 +664,21 @@
              * 
              * @return this $this
              * 
-             * @throws ValidableException.
+             * @throws ValidationException.
              */
             public function asMobile(){
                 $MobileNumber = $this->valueToValidate;
             
                 if(empty($MobileNumber)){
-                    throw new ValidableException("{$this->label} {$this->invalidLang}");
+                    throw new ValidationException("{$this->label} {$this->invalidLang}");
                 }
             
                 if(!is_numeric($MobileNumber)){
-                    throw new ValidableException("{$this->label} {$this->invalidLang}");
+                    throw new ValidationException("{$this->label} {$this->invalidLang}");
                 }
             
                 if(strlen($MobileNumber)<10){
-                    throw new ValidableException("{$this->label} {$this->invalidLang}");
+                    throw new ValidationException("{$this->label} {$this->invalidLang}");
                 }
             
                 $OperatorCodes = array( "013", "014", "015", "016", "017", "018", "019" );
@@ -686,14 +686,14 @@
                 if($this->_starts_with($MobileNumber,"1")){
                     //if the number is 1711781878, it's length must be 10 digits        
                     if(strlen($MobileNumber) != 10){
-                        throw new ValidableException("{$this->label} {$this->invalidLang}");
+                        throw new ValidationException("{$this->label} {$this->invalidLang}");
                     }
             
                     $firstTwoDigits = substr($MobileNumber, 0, 2); //returns 17, 18 etc,
                     $operatorCode = "0" . $firstTwoDigits; //Making first two digits a valid operator code with adding 0.
             
                     if (!in_array($operatorCode, $OperatorCodes)) {
-                        throw new ValidableException("{$this->label} {$this->invalidLang}");
+                        throw new ValidationException("{$this->label} {$this->invalidLang}");
                     }
             
                     $finalNumberString = "880" . $MobileNumber;
@@ -705,13 +705,13 @@
                 if($this->_starts_with($MobileNumber,"01")){
                     //if the number is 01711781878, it's length must be 11 digits        
                     if(strlen($MobileNumber) != 11){
-                        throw new ValidableException("{$this->label} {$this->invalidLang}");
+                        throw new ValidationException("{$this->label} {$this->invalidLang}");
                     }
             
                     $operatorCode = substr($MobileNumber, 0, 3); //returns 017, 018 etc,
                     
                     if (!in_array($operatorCode, $OperatorCodes)) {
-                        throw new ValidableException("{$this->label} {$this->invalidLang}");
+                        throw new ValidationException("{$this->label} {$this->invalidLang}");
                     }
             
                     $finalNumberString = "88" . $MobileNumber;
@@ -722,7 +722,7 @@
                 if($this->_starts_with($MobileNumber,"8801")){
                     //if the number is 8801711781878, it's length must be 13 digits    
                     if(strlen($MobileNumber) != 13){
-                        throw new ValidableException("{$this->label} {$this->invalidLang}");
+                        throw new ValidationException("{$this->label} {$this->invalidLang}");
                     }
             
                     $operatorCode = substr($MobileNumber, 2, 3); //returns 017, 018 etc,
@@ -737,7 +737,7 @@
                     return $this;
                 }
             
-                throw new ValidableException("{$this->label} {$this->invalidLang}");
+                throw new ValidationException("{$this->label} {$this->invalidLang}");
             }
 
             /**
@@ -747,7 +747,7 @@
              * Convert the value as datetime object.
              * 
              * @param string $datetimeZone Default is "Asia/Dhaka".
-             * @throws ValidableException if the value is invalid.
+             * @throws ValidationException if the value is invalid.
              * 
              * @return this $this
              */
@@ -756,12 +756,12 @@
                     $pattern =   '~^(((0[1-9]|[12]\\d|3[01])\\-(0[13578]|1[02])\\-((19|[2-9]\\d)\\d{2}))|((0[1-9]|[12]\\d|30)\\-(0[13456789]|1[012])\\-((19|[2-9]\\d)\\d{2}))|((0[1-9]|1\\d|2[0-8])\\-02\\-((19|[2-9]\\d)\\d{2}))|(29\\/02\\-((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))))$~';
 
                     $isValidFormat =  preg_match($pattern, strval($this->valueToValidate)); // Outputs 1 if date is in valid format i.e. "30-03-2022";
-                    if(!$isValidFormat) throw new ValidableException("{$this->label} {$this->invalidLang}");
+                    if(!$isValidFormat) throw new ValidationException("{$this->label} {$this->invalidLang}");
 
                     try {
                         $this->valueToValidate = new Datetime(strval($this->valueToValidate), new DatetimeZone($datetimeZone));
                     } catch (Exception $exp) {
-                        throw new ValidableException("{$this->label} {$this->invalidLang}");
+                        throw new ValidationException("{$this->label} {$this->invalidLang}");
                     }
                 }
                 return $this;
@@ -774,7 +774,7 @@
              * Convert the value as boolean.
              * 
              * @param string $datetimeZone Default is "Asia/Dhaka".
-             * @throws ValidableException Exception if the value is invalid.
+             * @throws ValidationException Exception if the value is invalid.
              * 
              * @return this $this
              */
@@ -783,7 +783,7 @@
                 if(strlen(strval($valueToValidate)) > 0){
                     $valueToValidate = filter_var($valueToValidate, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
                     if ($valueToValidate === NULL) {
-                        throw new ValidableException("{$this->label} {$this->invalidLang}");
+                        throw new ValidationException("{$this->label} {$this->invalidLang}");
                     }
                     $this->valueToValidate = $valueToValidate;
                 }
@@ -832,7 +832,7 @@
              * 
              * @return this $this
              * 
-             * @throws ValidableException
+             * @throws ValidationException
              */
             public function exactLen($length){
                 if(!empty($this->valueToValidate)){
@@ -840,7 +840,7 @@
                     $label = $this->label;
                     if($_length != $length){
                         $msg = "$label {$this->invalidLang} $length $this->character_or_digit {$this->requiredLang} $_length $this->character_or_digit {$this->foundLang}";
-                        throw new ValidableException($msg);
+                        throw new ValidationException($msg);
                     }
                 }
             
@@ -856,7 +856,7 @@
              * 
              * @return this $this
              * 
-             * @throws ValidableException
+             * @throws ValidationException
              */
             public function minLen($length){
                 if(!empty($this->valueToValidate)){
@@ -864,7 +864,7 @@
                     $label = $this->label;
                     if($_length < $length){
                         $msg = "{$label} {$this->invalidLang}. Minimum {$length} {$this->character_or_digit} required. Found $_length $this->character_or_digit.";
-                        throw new ValidableException($msg);
+                        throw new ValidationException($msg);
                     }
                 }
                 return $this;
@@ -879,7 +879,7 @@
              * 
              * @return this $this
              * 
-             * @throws ValidableException
+             * @throws ValidationException
              */
             public function maxLen($length){
                 if(!empty($this->valueToValidate)){
@@ -887,7 +887,7 @@
                     $label = $this->label;
                     if($_length > $length){
                         $msg = "{$label} invalid. Maximum {$length} $this->character_or_digit allowed. Found $_length $this->character_or_digit.";
-                        throw new ValidableException($msg);
+                        throw new ValidationException($msg);
                     }
                 }
                 return $this;
@@ -906,7 +906,7 @@
              * 
              * @return this $this
              * 
-             * @throws ValidableException
+             * @throws ValidationException
              */
             public function minVal($minimumValue){   
                 $valueToValidate = $this->valueToValidate;
@@ -920,7 +920,7 @@
                     $label = $this->label;
                     if($valueToValidate < $minimumValue){
                         $msg = "$label অবশ্যই $minimumValue এর সমান অথবা বেশি হতে হবে।";
-                        throw new ValidableException($msg);
+                        throw new ValidationException($msg);
                     }
                 }
             
@@ -936,7 +936,7 @@
              * 
              * @param int $minimumValue
              * @return this $this
-             * @throws ValidableException
+             * @throws ValidationException
              */
             public function maxVal($maximumValue){ 
                 $valueToValidate = $this->valueToValidate;
@@ -950,7 +950,7 @@
                     if($valueToValidate > $maximumValue){
                         // $msg = "$label অবশ্যই $maximumValue এর সমান অথবা কম হতে হবে।";
                         $msg = "$label maximum value allowed $maximumValue.";
-                        throw new ValidableException($msg);
+                        throw new ValidationException($msg);
                     }
                 }
                 return $this;
@@ -962,7 +962,7 @@
             $label = $this->label;
             if(!$this->_starts_with($string,$startString)){
                 $msg = "$label শুরু হবে $startString দিয়ে।";
-                throw new ValidableException($msg);
+                throw new ValidationException($msg);
             }
             return $this;
         } 
@@ -979,7 +979,7 @@
             $string = $this->valueToValidate;
             if(!$this->_ends_with($string, $endString)){
                 $msg = "$this->label শেষ হবে $endString দিয়ে।";
-                throw new ValidableException($msg);
+                throw new ValidationException($msg);
             }
             return $this;
         } 

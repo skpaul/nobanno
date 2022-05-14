@@ -53,7 +53,7 @@
             }
 
             
-            ini_set('error_log', $this->logFilePath);
+            ini_set('error.log', $this->logFilePath);
 
             set_error_handler( function($errno, $errstr, $errfile, $errline){
                 if (!(error_reporting() & $errno)) {
@@ -126,7 +126,7 @@
             $currentdatetime = new DateTime("now", new DateTimeZone('Asia/Dhaka'));
             $FormattedDateTime = $currentdatetime->format('d-m-Y h:i:s A');  //date('Y-m-d H:i:s');
             
-            $final_log = strval($errNo) . ". Error Description-". $errDetails . "\n";
+            $final_log = strval($errNo) . ":: Description-". $errDetails . "\n";
             $final_log .= "File:$fileName, Line:$lineNumber, Datetime:$FormattedDateTime  " . "\n";
             $final_log .= "------------------------------------------------------------------------------------\n";
             file_put_contents($this->logFilePath, $final_log, FILE_APPEND | LOCK_EX );

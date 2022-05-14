@@ -28,7 +28,7 @@ class Required{
         }
 
         public static function HttpHeader(){
-            require_once(ROOT_DIRECTORY . self::$path . "/http-header/HttpHeader.php");
+            require_once(ROOT_DIRECTORY . self::$path . "/HttpHeader.php");
             return new static;
         }
         public static function Cryptographer(){
@@ -37,9 +37,8 @@ class Required{
         }
 
         public static function DbSession(){
-            require_once(ROOT_DIRECTORY . self::$path . "/session/DbSession.php"); 
-            return new static;
-            
+            require_once(ROOT_DIRECTORY . self::$path . "/DbSession.php"); 
+            return new static;   
         }
 
         public static function JSON(){
@@ -47,8 +46,8 @@ class Required{
             return new static;
         }
 
-        public static function Validable(){
-            require_once(ROOT_DIRECTORY . self::$path . "/Validable.php"); 
+        public static function DataValidator(){
+            require_once(ROOT_DIRECTORY . self::$path . "/DataValidator.php"); 
             return new static;
         }
 
@@ -150,7 +149,7 @@ class Required{
         }
 
         public static function footer($version = null){
-            require_once(ROOT_DIRECTORY . '/inc/Footer.class.php'); //used in applicants panel
+            require_once(ROOT_DIRECTORY . '/inc/Footer.php'); //used in applicants panel
             return new static;
                
         }
