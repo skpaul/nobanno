@@ -93,7 +93,7 @@
             }
         }
 
-        public function single(string $sql, array $whereConditions = array()) {
+        public function selectSingle(string $sql, array $whereConditions = array()) {
            try {
                 $rows = $this->_select($sql, $whereConditions);
                 return $rows[0];
@@ -102,7 +102,7 @@
            }
         }
 
-        public function many(string $sql, array $whereConditions = array()) {
+        public function selectMany(string $sql, array $whereConditions = array()) {
            try {
                 return  $this->_select($sql, $whereConditions);
            } catch (\Throwable $th) {

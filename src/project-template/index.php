@@ -27,12 +27,12 @@
                 FROM `post_configurations` 
                 WHERE isActive = 1 AND court='Lower Court' AND applicationType = 'Enrolment' 
                 ORDER BY configId ASC";
-    $postConfigs = $db->selectMany($sql);
+    $postConfigs = $db->select($sql);
 
     $sql = "SELECT * FROM `notice_boards` 
             WHERE isActive = 1 AND court='Lower Court' AND applicationType = 'Enrolment' 
             ORDER BY noticeId DESC";
-    $notices = $db->selectMany($sql);
+    $notices = $db->select($sql);
 
     $pageTitle = "Home";
 ?>

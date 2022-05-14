@@ -1,8 +1,6 @@
-
 <?php 
-    namespace Nobanno;
 
-    class EnDecryptor
+    class EnDecryptorDeprecated
     {
         private string $secretKey = "";
         //Constructor.

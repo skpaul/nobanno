@@ -1,6 +1,4 @@
 <?php
-    // namespace Nobanno\Abstractions;
-
     //This is a base class for all enum.
     abstract class Enum {
         protected $val;
@@ -14,21 +12,21 @@
         }
 
         public function __set($arg1, $arg2) {
-            throw new \Exception("enum does not have property");
+            throw new Exception("enum does not have property");
         }
 
         public function __get($arg1) {
-            throw new \Exception("enum does not have property");
+            throw new Exception("enum does not have property");
         }
 
         // not really needed
         public function __call($arg1, $arg2) {
-            throw new \Exception("enum does not have method");
+            throw new Exception("enum does not have method");
         }
 
         // not really needed
         static public function __callStatic($arg1, $arg2) {
-            throw new \Exception("enum does not have static method");
+            throw new Exception("enum does not have static method");
         }
     }
 ?>

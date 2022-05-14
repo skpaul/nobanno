@@ -150,7 +150,7 @@ class Required{
         }
 
         public static function footer($version = null){
-            require_once(ROOT_DIRECTORY . '/inc/Footer.php'); //used in applicants panel
+            require_once(ROOT_DIRECTORY . '/inc/Footer.class.php'); //used in applicants panel
             return new static;
                
         }

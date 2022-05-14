@@ -1,5 +1,4 @@
 <?php
-    namespace Nobanno;
     class JSON{
         public function __construct() {
             $this->data=new \stdClass();
