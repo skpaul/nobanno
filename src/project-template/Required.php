@@ -98,7 +98,7 @@ class Required{
             return new static;
         }
 
-        public static function Greetings($version = null){
+        public static function Greetings(){
             require_once(ROOT_DIRECTORY . self::$path . "/Greetings.php");
             return new static;
         }
@@ -107,17 +107,17 @@ class Required{
          * The Heredoc.php file can't be included this way.
          * It must be called directly from the file.
         */
-        public static function Heredoc($version = null){
+        public static function Heredoc(){
             require_once(ROOT_DIRECTORY ."/lib/heredoc/Heredoc.php");
             return new static;
         }
 
-        public static function DropDown($version = null){
+        public static function DropDown(){
             require_once(ROOT_DIRECTORY ."/lib/dropdown/dropdown.php");
             return new static;
         }
 
-        public static function RadioButton($version = null){
+        public static function RadioButton(){
             require_once(ROOT_DIRECTORY ."/lib/radiobutton/radiobutton.php");
             return new static;
         }
@@ -220,11 +220,10 @@ class Required{
             echo '<link href="https://cdn.jsdelivr.net/gh/skpaul/omnicss/omnicss.min.css" rel="stylesheet">';
             return new static;
         }
-        public static function monogrid(){
-            echo '<link href="https://cdn.jsdelivr.net/gh/skpaul/monogrid@0.0.1/monogrid.min.css">';
+        public static function griddle(){
+            echo ' <link href="https://cdn.jsdelivr.net/gh/skpaul/griddle@0.0.2/griddle.min.css"  rel="stylesheet">';
             return new static;
         }
-
 
         public static function bootstrapGrid($version = null){
             echo ' <link href="'.BASE_URL.'/assets/css/bootstrap-grid-v5.1.3..css" rel="stylesheet">';
