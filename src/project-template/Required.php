@@ -8,9 +8,8 @@ require_once("CONSTANTS.php");
 
 class Required{
 
-    public static $path = '/vendor/nobanno/nobanno/src';
-
-    #region Library
+    #region Include Remote Libs
+        public static $path = '/vendor/nobanno/nobanno/src';
 
         public static function Logger(){
             require_once(ROOT_DIRECTORY . self::$path . "/Logger.php");
@@ -40,6 +39,7 @@ class Required{
             require_once(ROOT_DIRECTORY . self::$path . "/DbSession.php"); 
             return new static;   
         }
+
 
         public static function JSON(){
             require_once(ROOT_DIRECTORY . self::$path . "/JSON.php");
@@ -98,7 +98,12 @@ class Required{
             return new static;
         }
 
-            /**
+        public static function Greetings($version = null){
+            require_once(ROOT_DIRECTORY . self::$path . "/Greetings.php");
+            return new static;
+        }
+
+        /**
          * The Heredoc.php file can't be included this way.
          * It must be called directly from the file.
         */
@@ -116,7 +121,9 @@ class Required{
             require_once(ROOT_DIRECTORY ."/lib/radiobutton/radiobutton.php");
             return new static;
         }
+
     #endregion
+
 
     #region Partial pages
         public static function gtag($version = null){
@@ -153,30 +160,80 @@ class Required{
             return new static;
                
         }
+
+    
     #endregion
 
-    public static function html5shiv(){
-        echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" integrity="sha512-UDJtJXfzfsiPPgnI5S1000FPLBHMhvzAMX15I+qG2E2OAzC9P1JzUwJOfnypXiOH7MRPaqzhPbBGDNNj7zBfoA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
-        return new static;
-    }
+    #region JavaScript
+        public static function jquery($version = null){
+            echo '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>';
+            return new static;
+        }
 
-    public static function omnicss(){
-        echo '<link href="https://cdn.jsdelivr.net/gh/skpaul/omnicss/omnicss.min.css" rel="stylesheet">';
-        return new static;
-    }
-    public static function monogrid(){
-        echo '<link href="https://cdn.jsdelivr.net/gh/skpaul/monogrid@0.0.1/monogrid.min.css">';
-        return new static;
-    }
-    public static function lightTheme(){
-        echo '<link href="https://cdn.jsdelivr.net/gh/winbip/winbip-css@1.0.0/theme-light.css" rel="stylesheet">';
-        return new static;
-    }
+        public static function hamburgerMenu(){
+            echo '<script src="https://cdn.jsdelivr.net/gh/skpaul/hamburger-menu@v1.0.0/hamburger-menu.js"></script>';
+            
+            return new static;
+        }
 
-    public static function bootstrapGrid($version = null){
-        echo ' <link href="'.BASE_URL.'/assets/css/bootstrap-grid-v5.1.3..css" rel="stylesheet">';
-        return new static;
-    }
+        public static function html5shiv(){
+            echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" integrity="sha512-UDJtJXfzfsiPPgnI5S1000FPLBHMhvzAMX15I+qG2E2OAzC9P1JzUwJOfnypXiOH7MRPaqzhPbBGDNNj7zBfoA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
+            return new static;
+        }
+
+        //moment is required for swift-submit.js
+        public static function moment(){
+            echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>';
+            return new static;
+        }
+
+        public static function html2pdf(){
+            echo '<script src="'.BASE_URL.'/assets/js/plugins/html2pdf/html2pdf.bundle.min.js"></script>';
+            return new static;
+        }
+
+        public static function leftNavJS(){
+            echo '<script src="https://cdn.jsdelivr.net/gh/skpaul/left-nav@1.0.0/left-nav.js"></script>';            
+            return new static;
+        }
+
+        /**
+         * swiftForm()
+         * 
+         * Prerequisites - mobileNumberParser() and moment();
+         */
+        public static function swiftSubmit(){
+            echo '<script src="https://cdn.jsdelivr.net/gh/skpaul/swift-submit@2.0.0/swift-submit.min.js"></script>';
+            return new static;
+        }
+
+
+        public static function multiStepForm(){
+            echo '<script src="https://cdn.jsdelivr.net/gh/skpaul/multi-step-form@1.0.1/multi-step-form.min.js"></script>';
+            return new static;
+        }
+
+    #endregion
+
+    #region CSS
+        public static function omnicss(){
+            echo '<link href="https://cdn.jsdelivr.net/gh/skpaul/omnicss/omnicss.min.css" rel="stylesheet">';
+            return new static;
+        }
+        public static function monogrid(){
+            echo '<link href="https://cdn.jsdelivr.net/gh/skpaul/monogrid@0.0.1/monogrid.min.css">';
+            return new static;
+        }
+
+
+        public static function bootstrapGrid($version = null){
+            echo ' <link href="'.BASE_URL.'/assets/css/bootstrap-grid-v5.1.3..css" rel="stylesheet">';
+            return new static;
+        }
+    #endregion
+
+
+
 
     #region OverlayScrollbar Plugin
         public static function overlayScrollbarCSS($version = null){
@@ -205,39 +262,8 @@ class Required{
             return new static;
         }
 
-
     #endregion
 
-    #region JQuery and JavaScript
-        public static function jquery($version = null){
-            echo '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>';
-            return new static;
-        }
-
-        public static function hamburgerMenu(){
-            echo '<script src="https://cdn.jsdelivr.net/gh/skpaul/hamburger-menu@v1.0.0/hamburger-menu.js"></script>';
-            
-            return new static;
-        }
-
-        /**
-         * @deprecated
-         *
-         * @return string 
-         */
-        public static function adminLeftNavJS(){
-            trigger_error('Method "' . __METHOD__ . '()" is deprecated, use "leftNavJS()" instead.', E_USER_DEPRECATED); //E_USER_NOTICE
-
-            echo '<script src="https://cdn.jsdelivr.net/gh/skpaul/left-nav@1.0.0/left-nav.js"></script>';            
-            return new static;
-        }
-    
-        public static function leftNavJS(){
-            echo '<script src="https://cdn.jsdelivr.net/gh/skpaul/left-nav@1.0.0/left-nav.js"></script>';            
-            return new static;
-        }
-
-     #endregion
 
     public static function sweetModalJS(){
         echo '<script src="'.BASE_URL.'/assets/js/plugins/jquery.sweet-modal-1.3.3/jquery.sweet-modal.min.js"></script>';
@@ -249,48 +275,10 @@ class Required{
         return new static;
     }
 
-    //mobileNumberParser is required for swift-submit.js
-    // public static function mobileNumberParser(){
-    //     echo '<script src="'.BASE_URL.'/assets/js/mobile_number_parser.js"></script>';
-    //     return new static;
-    // }
-    
-
-    //moment is required for swift-submit.js
-    public static function moment(){
-        echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>';
-        return new static;
-    }
-
+   
     //requried for swiftSubmit and swiftChanger
     public static function mobileValidator(){
         echo '<script src="'.BASE_URL.'/assets/js/plugins/mobile-number-validator/mobile-number-validator.js"></script>';
-        return new static;
-    }
-
-    /**
-     * swiftForm()
-     * 
-     * Prerequisites - mobileNumberParser() and moment();
-     */
-    public static function swiftSubmit(){
-        echo '<script src="https://cdn.jsdelivr.net/gh/skpaul/swift-submit@2.0.0/swift-submit.min.js"></script>';
-        return new static;
-    }
-
-    /**
-     * @deprecated
-     *
-     * @return string 
-     */
-    public static function swiftChanger(){
-        trigger_error('Method "' . __METHOD__ . '()" is deprecated, use "multiStepForm()" instead.', E_USER_DEPRECATED); //E_USER_NOTICE
-        echo '<script src="https://cdn.jsdelivr.net/gh/skpaul/multi-step-form@1.0.1/multi-step-form.min.js"></script>';
-        return new static;
-    }
-
-    public static function multiStepForm(){
-        echo '<script src="https://cdn.jsdelivr.net/gh/skpaul/multi-step-form@1.0.1/multi-step-form.min.js"></script>';
         return new static;
     }
 
@@ -299,11 +287,20 @@ class Required{
         return new static;
     }
 
-    
-    public static function html2pdf(){
-        echo '<script src="'.BASE_URL.'/assets/js/plugins/html2pdf/html2pdf.bundle.min.js"></script>';
+    /**
+     * airDatePicker()
+     * 
+     * Includes necessary css and js.
+     */
+    public static function airDatePicker(){
+        echo '<link href="'.BASE_URL.'/assets/js/plugins/air-datepicker/css/datepicker.min.css" rel="stylesheet">';
+
+        echo '<script src="'.BASE_URL.'/assets/js/plugins/air-datepicker/js/datepicker.min.js"></script>';
+        // <!-- Include English language -->
+        echo '<script src="'.BASE_URL.'/assets/js/plugins/air-datepicker/js/i18n/datepicker.en.js"></script>';
         return new static;
     }
+
 
     public static function airDatePickerJS(){
         echo '<script src="'.BASE_URL.'/assets/js/plugins/air-datepicker/js/datepicker.min.js"></script>';
@@ -316,8 +313,6 @@ class Required{
         echo '<link href="'.BASE_URL.'/assets/js/plugins/air-datepicker/css/datepicker.min.css" rel="stylesheet">';
         return new static;
     }
-    
-  
 }
 
 ?>

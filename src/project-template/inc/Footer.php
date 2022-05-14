@@ -8,7 +8,7 @@ class Footer{
      * 
      * Arguments- 1) str Base URL 2) bool showHamburger
      */
-    public static function prepare(array $params):string
+    public static function prepare(array $params=array()):string
     {
         
         $html = <<<HTML
