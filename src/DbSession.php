@@ -59,7 +59,7 @@
             if(count($sessions) == 0){
                 $sql = "INSERT INTO `$this->table`(`owner`, `datetime`) 
                 VALUES(:sessionOwner, :currentDatetime)";
-                $this->sessionId = $this->db->_insert($sql, array("sessionOwner"=>$owner, "currentDatetime"=>$now));
+                $this->sessionId = $this->db->insert($sql, array("sessionOwner"=>$owner, "currentDatetime"=>$now));
             }
             else{
                 $session = $sessions[0];
@@ -89,7 +89,7 @@
          * Continues a session that was created prevously.
          * Call this method in every subsequent pages.
          * 
-         * @param string $sessionId
+         * @param int $sessionId
          * 
          * @return this
          * 
