@@ -45,7 +45,7 @@
          * 
          * @return this
          */
-        public function start(string $owner){
+        public function startNew(string $owner){
             $now = (new DateTime('now', new DateTimeZone("Asia/Dhaka")))->format('Y-m-d H:i:s'); 
             $sql = "INSERT INTO `$this->table`(`owner`, `datetime`) 
             VALUES(:sessionOwner, :currentDatetime)";
