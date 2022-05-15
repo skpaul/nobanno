@@ -196,7 +196,7 @@
         }
 
         /**
-         * updateAuto()
+         * _update2()
          * 
          * @param string $tableName Table name
          *  
@@ -235,6 +235,21 @@
             }
         }
 
+        /**
+         * update()
+         * 
+         * This method has 2 options for parameters.
+         * 
+         * Option 1: update($sql, $data). $sql = Raw SQL statement with/without placeholders. $data = array()/optional.
+         * 
+         * Option 2: update($tableName, $updateDataArray, $whereSQL, $whereDataArray). 
+         *          $tableName = "table name", 
+         *          $updateDataArray = array() data to update, 
+         *          $whereSQL= "SQL WHERE clause without 'WHERE' keyword and with/without placeholders", 
+         *          $whereDataArray = array() data for where clause.
+         * 
+         * @return integer affected rows. Return false if fails.
+         */
         public function update():int{
             $numberOfArguments = func_num_args();
             $arguments = func_get_args();
@@ -252,11 +267,11 @@
                     break;
                 case 4:
                     $tableName = $arguments[0];
-                    $whereSQL = $arguments[1];
-                    $updateParams = $arguments[2];
-                    $whereParams = $arguments[3];
+                    $updateDataArray = $arguments[1]; //array()
+                    $whereSQL = $arguments[2]; //"personId=:$persionId [AND ...]"  
+                    $whereDataArray = $arguments[3]; //array()
                     try {
-                        $affectedRows = $this->_update2($tableName, $whereSQL, $updateParams, $whereParams);
+                        $affectedRows = $this->_update2($tableName, $whereSQL, $updateDataArray, $whereDataArray);
                     } catch (\Throwable $th) {
                         throw $th;
                     }
