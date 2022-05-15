@@ -93,18 +93,27 @@
             }
         }
 
-        public function selectSingle(string $sql, array $whereConditions = array()) {
+        public function selectSingle(string $sql, array $placeholderValues = array()) {
            try {
-                $rows = $this->_select($sql, $whereConditions);
+                $rows = $this->_select($sql, $placeholderValues);
                 return $rows[0];
            } catch (\Throwable $th) {
                throw $th;
            }
         }
 
-        public function selectMany(string $sql, array $whereConditions = array()) {
+        public function selectSingleOrNull(string $sql, array $placeholderValues = array()) {
            try {
-                return  $this->_select($sql, $whereConditions);
+                $rows = $this->_select($sql, $placeholderValues);
+                return count($rows)>0 ? $rows[0] : null;
+           } catch (\Throwable $th) {
+               throw $th;
+           }
+        }
+
+        public function selectMany(string $sql, array $placeholderValues = array()) {
+           try {
+                return  $this->_select($sql, $placeholderValues);
            } catch (\Throwable $th) {
                throw $th;
            }
