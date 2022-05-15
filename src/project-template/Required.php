@@ -57,12 +57,12 @@ class Required{
         }
 
         public static function With($version = null){
-            require_once(ROOT_DIRECTORY ."/lib/with/With.php");
+            require_once(ROOT_DIRECTORY ."/With.php");
             return new static;
         }
 
         public static function Imaging($version = null){
-            require_once(ROOT_DIRECTORY . self::$path . "/image/Imaging.php");
+            require_once(ROOT_DIRECTORY . self::$path . "/Imaging.php");
             return new static;
         }
 
