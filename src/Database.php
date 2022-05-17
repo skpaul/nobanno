@@ -41,7 +41,7 @@
                 $this->pdo = new PDO($this->dsn, $this->user, $this->pass, $this->options);
                 // return $this;
              } catch (\PDOException $e) {
-                throw new DatabaseException($e->getMessage(), (int) $e->getCode(), $e);
+                throw new DatabaseException("Connection refused. ". $e->getMessage(), (int) $e->getCode(), $e);
              }
         }
        
