@@ -85,7 +85,7 @@
                     FROM `$this->table` 
                     WHERE id = :id";
 
-            $sessions = $this->db->select($sql, array("id"=>$sessionId));
+            $sessions = $this->db->selectMany($sql, array("id"=>$sessionId));
             if(count($sessions) == 0){
                 throw new SessionException("Session not found.");
             }
@@ -128,7 +128,16 @@
             $this->data->$key = $value; 
             $this->_update(); return $this;
         }
-        public function getData(string $key){return $this->data->$key; $this->_updateLastActivityDatetime(); return $this;}
+        
+        public function getData(string $key){
+            $this->_updateLastActivityDatetime(); 
+            if(isset($this->data->$key)){
+                return $this->data->$key; 
+            }else{
+                return null;
+            }
+        }
+
         public function removeData(string $key){unset($this->data->{$key}); $this->_update(); return $this;} 
         
         private function _updateLastActivityDatetime(){
