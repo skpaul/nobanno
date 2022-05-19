@@ -78,5 +78,13 @@
                 return $dt->format($format);
             }
         }
+        
+        public function addDay(DateTime $datetime, int $daysToAdd){
+            return  $datetime->add(new DateInterval("P" . $daysToAdd . "D"));
+        }
+
+        public function subDay(DateTime $datetime, int $daysToSubtract){
+            return  $datetime->sub(new DateInterval("P" . $daysToSubtract . "D"));
+        }
     }
 ?>
