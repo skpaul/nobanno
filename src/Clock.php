@@ -78,12 +78,32 @@
                 return $dt->format($format);
             }
         }
-        
-        public function addDay(DateTime $datetime, int $daysToAdd){
+
+        /**
+         * addDays()
+         * 
+         * Add days to a datetime object.
+         * 
+         * @param DateTime $datetime The datetime value to modify.
+         * @param int $daysToAdd The quantity of days to add, for example '7'
+         * 
+         * @return DateTime The modified datetime.
+        */
+        public function addDays(DateTime $datetime, int $daysToAdd){
             return  $datetime->add(new DateInterval("P" . $daysToAdd . "D"));
         }
 
-        public function subDay(DateTime $datetime, int $daysToSubtract){
+        /**
+         * deductDays()
+         * 
+         * Deduct days from a datetime object.
+         * 
+         * @param DateTime $datetime The datetime value to modify.
+         * @param int $daysToSubtract The quantity of days to subtract, for example '7'
+         * 
+         * @return DateTime The modified datetime.
+        */
+        public function deductDays(DateTime $datetime, int $daysToSubtract){
             return  $datetime->sub(new DateInterval("P" . $daysToSubtract . "D"));
         }
     }
