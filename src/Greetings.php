@@ -1,5 +1,5 @@
 <?php
-    namespace Nobanno;
+    // namespace Nobanno;
     class Greetings{
         public static function greet():string{
             $hour = (new \DateTime("now", new \DateTimeZone("Asia/Dhaka")))->format('H');
