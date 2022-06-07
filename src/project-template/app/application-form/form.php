@@ -5,10 +5,10 @@
         require_once("../../Required.php");
         Required::Logger()
             ->Database()->DbSession()
-            ->Validable()
+            ->DataValidator()
             ->Cryptographer()
             ->JSON()->HttpHeader()
-            ->ExclusivePermission()->Clock()->headerBrand()->applicantHeaderNav()->footer()->Helpers();
+            ->ExclusivePermission()->Clock()->headerBrand()->applicantHeaderNav()->Footer()->Helpers();
     #endregion
 
     #region Variable declaration & initialization
@@ -17,7 +17,7 @@
         $json = new JSON();
         $db = new Database(DB_SERVER, DB_NAME, DB_USER, DB_PASSWORD);
         $clock = new Clock();
-        $validable = new Validable();
+        $validable = new DataValidator();
         $hasExclusivePermission = ExclusivePermission::hasPermission();
         $pageTitle = "Application Form";
         $proceedAnyWayQueryString = "";
@@ -69,12 +69,14 @@
             $now = $clock->toDate("now");
             $applicationStartDatetime = $clock->toDate($postConfig->applicationStartDatetime);
             $applicationEndDatetime = $clock->toDate($postConfig->applicationEndDatetime);
-            if ($now < $applicationStartDatetime) {
-                $time = $clock->toString($postConfig->applicationStartDatetime, DatetimeFormat::BdDatetime());
-                HttpHeader::redirect(BASE_URL . "/sorry.php?msg=Application will start from $time.");
-            }
-            if ($now > $applicationEndDatetime) {
-                HttpHeader::redirect(BASE_URL . "/sorry.php?msg=Application is not available.");
+            if($now < $applicationStartDatetime){
+                $msg = "Application will start from " . $clock->toString($postConfig->applicationStartDatetime, DatetimeFormat::BdDatetime());
+                HttpHeader::redirect(BASE_URL . "/sorry.php?msg=$msg.");
+            } 
+            
+            if($now > $applicationEndDatetime) { 
+                $msg = "Application ended on " . $clock->toString($postConfig->applicationEndDatetime, DatetimeFormat::BdDatetime());
+                HttpHeader::redirect(BASE_URL . "/sorry.php?msg=$msg.");
             }
         }
     #endregion

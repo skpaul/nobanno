@@ -217,11 +217,12 @@ class Required{
 
     #region CSS
         public static function omnicss(){
-            echo '<link href="https://cdn.jsdelivr.net/gh/skpaul/omnicss/omnicss.min.css" rel="stylesheet">';
+            //Documentation: https://skpaul.github.io/omnicss/
+            echo '<link href="https://cdn.jsdelivr.net/gh/skpaul/omnicss@0.1.3/omnicss.min.css" rel="stylesheet">';
             return new static;
         }
         public static function griddle(){
-            echo ' <link href="https://cdn.jsdelivr.net/gh/skpaul/griddle@0.0.2/griddle.min.css"  rel="stylesheet">';
+            echo ' <link href="https://cdn.jsdelivr.net/gh/skpaul/griddle@0.0.3/griddle.min.css"  rel="stylesheet">';
             return new static;
         }
 
@@ -265,12 +266,12 @@ class Required{
 
 
     public static function sweetModalJS(){
-        echo '<script src="'.BASE_URL.'/assets/js/plugins/jquery.sweet-modal-1.3.3/jquery.sweet-modal.min.js"></script>';
+        echo '<script src="'.BASE_URL.'/assets/plugins/jquery.sweet-modal-1.3.3/jquery.sweet-modal.min.js"></script>';
         return new static;
     }
 
     public static function sweetModalCSS(){
-        echo '<link rel="stylesheet" href="'.BASE_URL.'/assets/js/plugins/jquery.sweet-modal-1.3.3/jquery.sweet-modal.min.css">';
+        echo '<link rel="stylesheet" href="'.BASE_URL.'/assets/plugins/jquery.sweet-modal-1.3.3/jquery.sweet-modal.min.css">';
         return new static;
     }
 
@@ -292,24 +293,24 @@ class Required{
      * Includes necessary css and js.
      */
     public static function airDatePicker(){
-        echo '<link href="'.BASE_URL.'/assets/js/plugins/air-datepicker/css/datepicker.min.css" rel="stylesheet">';
+        echo '<link href="'.BASE_URL.'/assets/plugins/air-datepicker/css/datepicker.min.css" rel="stylesheet">';
 
-        echo '<script src="'.BASE_URL.'/assets/js/plugins/air-datepicker/js/datepicker.min.js"></script>';
+        echo '<script src="'.BASE_URL.'/assets/plugins/air-datepicker/js/datepicker.min.js"></script>';
         // <!-- Include English language -->
-        echo '<script src="'.BASE_URL.'/assets/js/plugins/air-datepicker/js/i18n/datepicker.en.js"></script>';
+        echo '<script src="'.BASE_URL.'/assets/plugins/air-datepicker/js/i18n/datepicker.en.js"></script>';
         return new static;
     }
 
 
     public static function airDatePickerJS(){
-        echo '<script src="'.BASE_URL.'/assets/js/plugins/air-datepicker/js/datepicker.min.js"></script>';
+        echo '<script src="'.BASE_URL.'/assets/plugins/air-datepicker/js/datepicker.min.js"></script>';
         // <!-- Include English language -->
-        echo '<script src="'.BASE_URL.'/assets/js/plugins/air-datepicker/js/i18n/datepicker.en.js"></script>';
+        echo '<script src="'.BASE_URL.'/assets/plugins/air-datepicker/js/i18n/datepicker.en.js"></script>';
         return new static;
     }
 
     public static function airDatePickerCSS(){
-        echo '<link href="'.BASE_URL.'/assets/js/plugins/air-datepicker/css/datepicker.min.css" rel="stylesheet">';
+        echo '<link href="'.BASE_URL.'/assets/plugins/air-datepicker/css/datepicker.min.css" rel="stylesheet">';
         return new static;
     }
 }
