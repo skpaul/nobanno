@@ -41,7 +41,7 @@
                 $this->pdo = new PDO($this->dsn, $this->user, $this->pass, $this->options);
                 // return $this;
              } catch (\PDOException $e) {
-                throw new DatabaseException("Connection refused. ". $e->getMessage(), (int) $e->getCode(), $e);
+                throw new DatabaseException($e->getMessage(), (int) $e->getCode(), $e);
              }
         }
        
@@ -89,7 +89,23 @@
                 $data = $statement->fetchAll($this->fetchStyle);
                 return $data;
             } catch (\PDOException $e) {
-                throw new DatabaseException($e->getMessage()."SQL-" . $sql, (int) $e->getCode(), $e);
+                $backTraces = debug_backtrace();
+                $backTraceLog = "";
+                foreach ($backTraces as $trace) {
+                    $path = $trace["file"]; $lineNo = $trace["line"];
+                    $fileName =  basename($path);  
+                    $backTraceLog .= "File- $fileName, Line- $lineNo <br>";
+                }
+                throw new DatabaseException($e->getMessage()."SQL-$sql, Backtrace-$backTraceLog", (int) $e->getCode(), $e);
+            } catch(\Exception $exp){
+                $backTraces = debug_backtrace();
+                $backTraceLog = "";
+                foreach ($backTraces as $trace) {
+                    $path = $trace["file"]; $lineNo = $trace["line"];
+                    $fileName =  basename($path);  
+                    $backTraceLog .= "File- $fileName, Line- $lineNo <br>";
+                }
+                throw new DatabaseException($exp->getMessage(). " SQL-$sql, Backtrace-$backTraceLog" , (int) $exp->getCode(), $exp);
             }
         }
 
