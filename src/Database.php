@@ -82,7 +82,15 @@
          * This method is deprecated.
          */
         public function select(string $sql, array $whereConditions = array()) {
-            trigger_error('Method "' . __METHOD__ . '()" is deprecated, use "many() or single()" instead.', E_USER_DEPRECATED); //E_USER_NOTICE
+            $backTraces = debug_backtrace();
+            $backTraceLog = "";
+            foreach ($backTraces as $trace) {
+                $path = $trace["file"]; $lineNo = $trace["line"];
+                $fileName =  basename($path);  
+                $backTraceLog .= "File- $fileName, Line- $lineNo.";
+            }
+
+            trigger_error('Method "' . __METHOD__ . '()" is deprecated, use "many() or single()" instead. Backtrace-'. $backTraceLog, E_USER_DEPRECATED); //E_USER_NOTICE
             try {
                 $statement =  $this->pdo->prepare($sql) ;
                 $statement->execute($whereConditions);

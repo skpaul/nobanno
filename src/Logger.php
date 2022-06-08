@@ -75,6 +75,9 @@
                 */
 
                 switch ($errno) {
+                    case E_USER_DEPRECATED:
+                        $this->_createErrorLog("E_USER_DEPRECATED", $errstr, $errfile, $errline);
+                        break;
                     case E_ERROR:
                         $this->_createErrorLog("E_ERROR", $errstr, $errfile, $errline);
                         break;
@@ -96,6 +99,7 @@
                     case E_COMPILE_ERROR:
                         $this->_createErrorLog("E_COMPILE_ERROR", $errstr, $errfile, $errline);
                         break;
+                    
                     case E_ALL:
                         $this->_createErrorLog("E_ALL", $errstr, $errfile, $errline);
                         break;
