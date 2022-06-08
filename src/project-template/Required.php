@@ -9,97 +9,97 @@ require_once("CONSTANTS.php");
 class Required{
 
     #region Include Remote Libs
-        public static $path = '/vendor/nobanno/nobanno/src';
+        public static $nobanno = '/vendor/nobanno/nobanno/src';
 
         public static function Logger(){
-            require_once(ROOT_DIRECTORY . self::$path . "/Logger.php");
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/Logger.php");
             return new static;
         }
 
         public static function Database(){
-            require_once(ROOT_DIRECTORY . self::$path . "/Database.php");
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/Database.php");
             return new static;
         }
 
         public static function CSV(){
-            require_once(ROOT_DIRECTORY . self::$path . "/CSV.php");
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/CSV.php");
             return new static;
         }
 
         public static function HttpHeader(){
-            require_once(ROOT_DIRECTORY . self::$path . "/HttpHeader.php");
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/HttpHeader.php");
             return new static;
         }
         public static function Cryptographer(){
-            require_once(ROOT_DIRECTORY . self::$path . "/Cryptographer.php");
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/Cryptographer.php");
             return new static;
         }
 
         public static function DbSession(){
-            require_once(ROOT_DIRECTORY . self::$path . "/DbSession.php"); 
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/DbSession.php"); 
             return new static;   
         }
 
 
         public static function JSON(){
-            require_once(ROOT_DIRECTORY . self::$path . "/JSON.php");
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/JSON.php");
             return new static;
         }
 
         public static function DataValidator(){
-            require_once(ROOT_DIRECTORY . self::$path . "/DataValidator.php"); 
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/DataValidator.php"); 
             return new static;
         }
 
         public static function Taka(){
-            require_once(ROOT_DIRECTORY . self::$path . "/Taka.php"); 
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/Taka.php"); 
             return new static;
         }
 
-        public static function With($version = null){
+        public static function With(){
             require_once(ROOT_DIRECTORY ."/With.php");
             return new static;
         }
 
-        public static function Imaging($version = null){
-            require_once(ROOT_DIRECTORY . self::$path . "/Imaging.php");
+        public static function Imaging(){
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/Imaging.php");
             return new static;
         }
 
-        public static function UniqueCodeGenerator($version = null){
-            require_once(ROOT_DIRECTORY . self::$path . "/unique-code-generator/UniqueCodeGenerator.php");
+        public static function UniqueCodeGenerator(){
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/unique-code-generator/UniqueCodeGenerator.php");
             return new static;
         }
 
         public static function AgeCalculator(){
-            require_once(ROOT_DIRECTORY . self::$path . "/age-calculator/AgeCalculator.php"); //default version is now 2.
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/age-calculator/AgeCalculator.php"); //default version is now 2.
                
             return new static;
         }
 
         public static function Helpers(){
-            require_once(ROOT_DIRECTORY . self::$path . "/helpers/Helpers.php");
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/helpers/Helpers.php");
             return new static;
         }
 
 
         public static function Clock(){
-            require_once(ROOT_DIRECTORY . self::$path . "/Clock.php");
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/Clock.php");
             return new static;
         }
 
         public static function ExclusivePermission(){
-            require_once(ROOT_DIRECTORY . self::$path . "/exclusive-permission/ExclusivePermission.php");
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/exclusive-permission/ExclusivePermission.php");
             return new static;
         }
         public static function SmsSender(){
             // D:\xampp\htdocs\bar-council\lower-court\enrolment\lib\sms-sender\SmsSender.php
-            require_once(ROOT_DIRECTORY . self::$path . "/sms-sender/SmsSender.php");
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/sms-sender/SmsSender.php");
             return new static;
         }
 
         public static function Greetings(){
-            require_once(ROOT_DIRECTORY . self::$path . "/Greetings.php");
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/Greetings.php");
             return new static;
         }
 

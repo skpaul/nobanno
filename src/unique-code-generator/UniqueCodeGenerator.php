@@ -29,7 +29,7 @@
 
             $code = $prefix.$code;
             $sql = "SELECT $column FROM $table WHERE $column=:code";
-            $data = $this->db->select($sql, array("code"=>$code));
+            $data = $this->db->selectMany($sql, array("code"=>$code));
             if(count($data) > 0)
                 $this->generate($length, $column,$table);
             // if($isFound != null){
