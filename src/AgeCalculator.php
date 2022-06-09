@@ -14,7 +14,7 @@ class AgeCalculator{
      * 
      * @param DateTime $from 
      * @param DateTime $to 
-     * @return Class Age
+     * @return DateInterval $interval
      */
     public static function calculate($from, $to, $addOneDay = true){
         try {
@@ -27,7 +27,7 @@ class AgeCalculator{
             }
 
             $interval = $from->diff($to);
-            // $age = new Age($interval->y, $interval->m,$interval->d,$interval->days);
+            
             return $interval;
         } catch (\Throwable $th) {
             throw $th;
