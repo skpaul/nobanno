@@ -16,7 +16,7 @@ class AgeCalculator{
      * @param DateTime $to 
      * @return DateInterval $interval
      */
-    public static function calculate($from, $to, $addOneDay = true){
+    public static function calculate($from, $to, $addOneDay = true):DateInterval{
         try {
             if($addOneDay){
                 $to->add(new DateInterval('P1D')); //PHP 5 >= 5.3.0, PHP 7, PHP 8
