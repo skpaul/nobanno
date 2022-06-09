@@ -188,7 +188,7 @@ class Required{
         }
 
         public static function html2pdf(){
-            echo '<script src="'.BASE_URL.'/assets/js/plugins/html2pdf/html2pdf.bundle.min.js"></script>';
+            echo '<script src="'.BASE_URL.'/assets/plugins/html2pdf/html2pdf.bundle.min.js"></script>';
             return new static;
         }
 
