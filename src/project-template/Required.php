@@ -72,7 +72,7 @@ class Required{
         }
 
         public static function AgeCalculator(){
-            require_once(ROOT_DIRECTORY . self::$nobanno . "/age-calculator/AgeCalculator.php"); //default version is now 2.
+            require_once(ROOT_DIRECTORY . self::$nobanno . "/AgeCalculator.php"); //default version is now 2.
                
             return new static;
         }
