@@ -120,6 +120,18 @@
         public function selectSingle(string $sql, array $placeholderValues = array()) {
            try {
                 $rows = $this->_select($sql, $placeholderValues);
+                $count = count($rows);
+                if($count != 1) {                    
+                    $backTraces = debug_backtrace();
+                    $backTraceLog = "";
+                    foreach ($backTraces as $trace) {
+                        $path = $trace["file"]; $lineNo = $trace["line"];
+                        $fileName =  basename($path);  
+                        $backTraceLog .= "File- $fileName, Line- $lineNo <br>";
+                    }
+                    throw new DatabaseException("selectSingle() found $count records instead of single. SQL-$sql, Backtrace-$backTraceLog");
+                }
+
                 return $rows[0];
            } catch (\Throwable $th) {
                throw $th;
