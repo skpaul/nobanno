@@ -23,7 +23,9 @@ class AgeCalculator{
             }
 
             if($from > $to){
-                throw new Exception("From date (date 1) must be earlier than to date (date 2).");
+                $fromDate = $from->format("d-m-Y");
+                $toDate = $to->format("d-m-Y");
+                throw new Exception("$fromDate must be earlier than $toDate.");
             }
 
             $interval = $from->diff($to);
