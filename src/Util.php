@@ -1,7 +1,7 @@
 <?php
 //https://brandonwamboldt.github.io/utilphp/#urls
 
-// namespace utilphp;
+namespace utilphp;
 
 /**
  * util.php
