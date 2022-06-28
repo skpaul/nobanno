@@ -72,7 +72,15 @@
                 $data = $statement->fetchAll($this->fetchStyle);
                 return $data;
             } catch (\PDOException $e) {
-                throw new DatabaseException($e->getMessage()."SQL-" . $sql, (int) $e->getCode(), $e);
+                $backTraces = debug_backtrace();
+                $backTraceLog = "";
+                foreach ($backTraces as $trace) {
+                    $path = $trace["file"]; $lineNo = $trace["line"];
+                    $fileName =  basename($path);  
+                    $backTraceLog .= "File- $fileName, Line- $lineNo <br>";
+                }
+                throw new DatabaseException($e->getMessage()."SQL-$sql, Backtrace-$backTraceLog", (int) $e->getCode(), $e);
+                // throw new DatabaseException($e->getMessage()."SQL-" . $sql, (int) $e->getCode(), $e);
             }
         }
 
@@ -134,7 +142,16 @@
 
                 return $rows[0];
            } catch (\Throwable $th) {
-               throw $th;
+                $backTraces = debug_backtrace();
+                $backTraceLog = "";
+                foreach ($backTraces as $trace) {
+                    $path = $trace["file"]; $lineNo = $trace["line"];
+                    $fileName =  basename($path);  
+                    $backTraceLog .= "File- $fileName, Line- $lineNo <br>";
+                }
+                throw new DatabaseException($th->getMessage()."SQL-$sql, Backtrace-$backTraceLog", (int) $th->getCode(), $th);
+
+            //    throw $th;
            }
         }
 
@@ -143,7 +160,15 @@
                 $rows = $this->_select($sql, $placeholderValues);
                 return count($rows)>0 ? $rows[0] : null;
            } catch (\Throwable $th) {
-               throw $th;
+                $backTraces = debug_backtrace();
+                $backTraceLog = "";
+                foreach ($backTraces as $trace) {
+                    $path = $trace["file"]; $lineNo = $trace["line"];
+                    $fileName =  basename($path);  
+                    $backTraceLog .= "File- $fileName, Line- $lineNo <br>";
+                }
+                throw new DatabaseException($th->getMessage()."SQL-$sql, Backtrace-$backTraceLog", (int) $th->getCode(), $th);
+            //    throw $th;
            }
         }
 
@@ -151,7 +176,15 @@
            try {
                 return  $this->_select($sql, $placeholderValues);
            } catch (\Throwable $th) {
-               throw $th;
+                $backTraces = debug_backtrace();
+                $backTraceLog = "";
+                foreach ($backTraces as $trace) {
+                    $path = $trace["file"]; $lineNo = $trace["line"];
+                    $fileName =  basename($path);  
+                    $backTraceLog .= "File- $fileName, Line- $lineNo <br>";
+                }
+                throw new DatabaseException($th->getMessage()."SQL-$sql, Backtrace-$backTraceLog", (int) $th->getCode(), $th);
+            //    throw $th;
            }
         }
 
@@ -177,7 +210,15 @@
                     $lastId =  $this->pdo->lastInsertId();
                     return (int)$lastId;
                 } catch (\PDOException $e) {
-                    throw new DatabaseException($e->getMessage() ."SQL-" . $sql, (int) $e->getCode(), $e);
+                    $backTraces = debug_backtrace();
+                    $backTraceLog = "";
+                    foreach ($backTraces as $trace) {
+                        $path = $trace["file"]; $lineNo = $trace["line"];
+                        $fileName =  basename($path);  
+                        $backTraceLog .= "File- $fileName, Line- $lineNo <br>";
+                    }
+                    throw new DatabaseException($e->getMessage()."SQL-$sql, Backtrace-$backTraceLog", (int) $e->getCode(), $e);
+                    // throw new DatabaseException($e->getMessage() ."SQL-" . $sql, (int) $e->getCode(), $e);
                 }
             }
 
@@ -199,6 +240,7 @@
                     try {
                         $result = $this->_insert($param, $data);
                     } catch (\Throwable $th) {
+                        //No need to place backtrace here. Already handled in _insert()
                         throw $th;
                     }
                 }
@@ -208,6 +250,7 @@
                         $sql = $this->_prepareInsertSqlStatment($data, $param);
                         $result = $this->_insert($sql, $data);
                     } catch (\Throwable $th) {
+                         //No need to place backtrace here. Already handled in _insert()
                         throw $th;
                     }
                 }
@@ -227,7 +270,15 @@
                return $statement->rowCount();
 
             } catch (\PDOException $e) {
-                throw new DatabaseException($e->getMessage() ."SQL-" . $sql, (int) $e->getCode(), $e);
+                $backTraces = debug_backtrace();
+                $backTraceLog = "";
+                foreach ($backTraces as $trace) {
+                    $path = $trace["file"]; $lineNo = $trace["line"];
+                    $fileName =  basename($path);  
+                    $backTraceLog .= "File- $fileName, Line- $lineNo <br>";
+                }
+                throw new DatabaseException($e->getMessage()."SQL-$sql, Backtrace-$backTraceLog", (int) $e->getCode(), $e);
+                // throw new DatabaseException($e->getMessage() ."SQL-" . $sql, (int) $e->getCode(), $e);
             }
         }
 
@@ -260,14 +311,21 @@
                 $setSQL = rtrim($setSQL, ",");
                 $sql = "UPDATE $tableName SET $setSQL WHERE $whereSQL";
 
-
                 $statement =  $this->pdo->prepare($sql) ;
                 $statement->execute($values);
               
                 return $statement->rowCount();
 
             } catch (\PDOException $e) {
-                throw new DatabaseException($e->getMessage() ."SQL-" . $sql, (int) $e->getCode(), $e);
+                $backTraces = debug_backtrace();
+                $backTraceLog = "";
+                foreach ($backTraces as $trace) {
+                    $path = $trace["file"]; $lineNo = $trace["line"];
+                    $fileName =  basename($path);  
+                    $backTraceLog .= "File- $fileName, Line- $lineNo <br>";
+                }
+                throw new DatabaseException($e->getMessage()."SQL-$sql, Backtrace-$backTraceLog", (int) $e->getCode(), $e);
+                // throw new DatabaseException($e->getMessage() ."SQL-" . $sql, (int) $e->getCode(), $e);
             }
         }
 
@@ -297,6 +355,7 @@
                     try {
                         $affectedRows = $this->_update1($sql, $data);
                     } catch (\Throwable $th) {
+                        //No need to write backtrace here. It is already used in _update1().
                         throw $th;
                     }
                     
@@ -309,6 +368,7 @@
                     try {
                         $affectedRows = $this->_update2($tableName, $whereSQL, $updateDataArray, $whereDataArray);
                     } catch (\Throwable $th) {
+                        //No need to write backtrace here. It is already used in _update2().
                         throw $th;
                     }
                     break;
