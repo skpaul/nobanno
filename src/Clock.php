@@ -79,45 +79,73 @@
             }
         }
 
-        /**
-         * addDays()
-         * 
-         * Add days to a datetime object.
-         * 
-         * @param int $daysToAdd The quantity of days to add, for example '7'
-         * @param mixed $datetime The datetime value to modify.
-         * 
-         * @return DateTime The modified datetime.
-        */
-        public function addDays(int $daysToAdd, mixed $datetime ){
+        #region Day manipulation
+            /**
+             * addDays()
+             * 
+             * Add days to a datetime object.
+             * 
+             * @param int $daysToAdd The quantity of days to add, for example '7'
+             * @param mixed $datetime The datetime value to modify.
+             * 
+             * @return DateTime The modified datetime.
+            */
+            public function addDays(int $daysToAdd, mixed $datetime ){
 
-            if ($datetime instanceof DateTime){
-                $dt = $datetime;
+                if ($datetime instanceof DateTime){
+                    $dt = $datetime;
+                }
+                else{
+                    $dt = new DateTime($datetime, $this->datetimeZone);
+                }
+                return  $dt->add(new DateInterval("P" . $daysToAdd . "D"));
             }
-            else{
-                $dt = new DateTime($datetime, $this->datetimeZone);
-            }
-            return  $dt->add(new DateInterval("P" . $daysToAdd . "D"));
-        }
 
-        /**
-         * deductDays()
-         * 
-         * Deduct days from a datetime object.
-         * 
-         * @param mixed $datetime The datetime value to modify.
-         * @param int $daysToSubtract The quantity of days to subtract, for example '7'
-         * 
-         * @return DateTime The modified datetime.
-        */
-        public function deductDays(mixed $datetime, int $daysToSubtract){
-            if ($datetime instanceof DateTime){
-                $dt = $datetime;
+            /**
+             * deductDays()
+             * 
+             * Deduct days from a datetime object.
+             * 
+             * @param mixed $datetime The datetime value to modify.
+             * @param int $daysToSubtract The quantity of days to subtract, for example '7'
+             * 
+             * @return DateTime The modified datetime.
+            */
+            public function deductDays(mixed $datetime, int $daysToSubtract){
+                if ($datetime instanceof DateTime){
+                    $dt = $datetime;
+                }
+                else{
+                    $dt = new DateTime($datetime, $this->datetimeZone);
+                }
+                return  $dt->sub(new DateInterval("P" . $daysToSubtract . "D"));
             }
-            else{
-                $dt = new DateTime($datetime, $this->datetimeZone);
+        #endregion
+
+        #region Year manipulation
+            public function addYears(int $yearsToAdd, mixed $datetime ){
+
+                if ($datetime instanceof DateTime){
+                    $dt = $datetime;
+                }
+                else{
+                    $dt = new DateTime($datetime, $this->datetimeZone);
+                }
+                return  $dt->add(new DateInterval("P" . $yearsToAdd . "Y"));
             }
-            return  $dt->sub(new DateInterval("P" . $daysToSubtract . "D"));
-        }
+
+            public function deductYears(int $yearsToSubtract, mixed $datetime ){
+
+                if ($datetime instanceof DateTime){
+                    $dt = $datetime;
+                }
+                else{
+                    $dt = new DateTime($datetime, $this->datetimeZone);
+                }
+                return  $dt->sub(new DateInterval("P" . $yearsToSubtract . "Y"));
+            }
+
+        #endregion
+
     }
 ?>
