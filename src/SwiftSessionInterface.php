@@ -1,6 +1,6 @@
 <?php
     interface SwiftSessionInterface {
-        public function startNew(string $owner);
+        public function startNew();
         public function continue(int $sessionId);
         public function getSessionId();
         public function setData(string $key, mixed $value);

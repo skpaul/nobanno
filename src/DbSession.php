@@ -41,15 +41,12 @@
          * Creates a new session.
          * Call this method only once in a site after a successfull user validation i.e. in login page.
          * 
-         * @param string $sessionName user's ID or email or loginName.
-         * 
          * @return this
          */
-        public function startNew(string $owner){
+        public function startNew(){
             $now = (new DateTime('now', new DateTimeZone("Asia/Dhaka")))->format('Y-m-d H:i:s'); 
-            $sql = "INSERT INTO `$this->table`(`owner`, `datetime`) 
-            VALUES(:sessionOwner, :currentDatetime)";
-            $this->sessionId = $this->db->insert($sql, array("sessionOwner"=>$owner, "currentDatetime"=>$now));
+            $sql = "INSERT INTO `$this->table`(`datetime`) VALUES(:currentDatetime)";
+            $this->sessionId = $this->db->insert($sql, array("currentDatetime"=>$now));
 
             $now = (new DateTime('now', new DateTimeZone("Asia/Dhaka")))->sub(new DateInterval('P2D'));  //go back to 2 days ago.
             $now = $now->format('Y-m-d H:i:s');
@@ -85,12 +82,11 @@
                     FROM `$this->table` 
                     WHERE id = :id";
 
-            $sessions = $this->db->selectMany($sql, array("id"=>$sessionId));
-            if(count($sessions) == 0){
+            $session = $this->db->selectSingleOrNull($sql, array("id"=>$sessionId));
+            if($session == null){
                 throw new SessionException("Session not found.");
             }
 
-            $session = $sessions[0];
             $this->data = json_decode($session["data"]);
 
             $now = (new DateTime('now', new DateTimeZone("Asia/Dhaka")))->format('Y-m-d H:i:s'); 

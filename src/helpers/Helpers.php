@@ -34,7 +34,6 @@
                 } 
             }else {
                 foreach ($array as $item) {
-                    
                     $options .= '<option value="'.$item->value.'">'.$item->text.'</option>';
                 } 
             }

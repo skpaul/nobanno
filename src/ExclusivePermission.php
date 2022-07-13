@@ -4,13 +4,13 @@
     //Only for testing purpose.
     class ExclusivePermission { 
 
-        public static $propName = "pro";
-        public static $propValue = "1978$2019";
+        // public static $propName = "pro";
+        // public static $propValue = "1978$2019";
 
-        public static function hasPermission(){
+        public static function hasPermission(string $key, string $value):bool{
             $proceedAnyWay = false;
-            if(isset($_GET[self::$propName]) && !empty($_GET[self::$propName])){
-                if($_GET[self::$propName] === self::$propValue){
+            if(isset($_GET[$key]) && !empty($_GET[$value])){
+                if($_GET[$key] === $value){
                     $proceedAnyWay = true;
                 }
             }
