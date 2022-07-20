@@ -392,6 +392,22 @@
             }
         }
 
+
+        #region exec()
+            /*
+                //exec() allows to execute multiple insert, update & delete sql
+                $sql = "
+                DELETE FROM car; 
+                INSERT INTO car(name, type) VALUES ('car1', 'coupe'); 
+                INSERT INTO car(name, type) VALUES ('car2', 'coupe');
+                ";
+            */
+
+            public function exec(string $sql){
+                $this->pdo->exec($sql);
+            }
+        #endregion
+
         #region FETCH TYPE
         private function _setFetchStyle($fetchStyle = "assoc"){
             $count = count($this->prevFetchStyle);
