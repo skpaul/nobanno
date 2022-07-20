@@ -147,5 +147,30 @@
 
         #endregion
 
+        #region Minute manipulation
+            public function addMinutes(int $minutesToAdd, mixed $datetime ){
+
+                if ($datetime instanceof DateTime){
+                    $dt = $datetime;
+                }
+                else{
+                    $dt = new DateTime($datetime, $this->datetimeZone);
+                }
+                return  $dt->add(new DateInterval("P" . $minutesToAdd . "M")); //Also- $dateTime->modify("+{$minutesToAdd} minutes");
+            }
+
+            public function deductMinutes(int $minutesToSubtract, mixed $datetime ){
+
+                if ($datetime instanceof DateTime){
+                    $dt = $datetime;
+                }
+                else{
+                    $dt = new DateTime($datetime, $this->datetimeZone);
+                }
+                return  $dt->sub(new DateInterval("P" . $minutesToSubtract . "M")); //Also- $dateTime->modify("-{$minutesToAdd} minutes");
+            }
+
+        #endregion
+    
     }
 ?>
