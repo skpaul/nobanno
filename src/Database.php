@@ -50,6 +50,11 @@
             $this->pdo = null;
         }
 
+        public function getPDO(){
+            return $this->pdo;
+        }
+
+
         //Get primary key columna name
         // $sql = 'show columns from tableName where `Key` = "PRI";';
         public function getFields(string $table) {
@@ -392,22 +397,6 @@
             }
         }
 
-
-        #region exec()
-            /*
-                //exec() allows to execute multiple insert, update & delete sql
-                $sql = "
-                DELETE FROM car; 
-                INSERT INTO car(name, type) VALUES ('car1', 'coupe'); 
-                INSERT INTO car(name, type) VALUES ('car2', 'coupe');
-                ";
-            */
-
-            public function exec(string $sql){
-                $this->pdo->exec($sql);
-            }
-        #endregion
-
         #region FETCH TYPE
         private function _setFetchStyle($fetchStyle = "assoc"){
             $count = count($this->prevFetchStyle);
@@ -517,10 +506,10 @@
             return $this;
         }
         
-        // public function fetchAsClass(){
-        //     $this->_setFetchStyle('class');
-        //     return $this;
-        // }
+        public function fetchAsClass(){
+            $this->_setFetchStyle('class');
+            return $this;
+        }
 
         public function fetchAsObject(){
             $this->_setFetchStyle('object');
