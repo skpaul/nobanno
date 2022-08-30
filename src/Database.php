@@ -386,6 +386,16 @@
         }
 
         public function delete(string $sql, array $data = array()):int {
+            $backTraces = debug_backtrace();
+            $backTraceLog = "";
+            foreach ($backTraces as $trace) {
+                $path = $trace["file"]; $lineNo = $trace["line"];
+                $fileName =  basename($path);  
+                $backTraceLog .= "File- $fileName, Line- $lineNo.";
+            }
+
+            trigger_error('Method "' . __METHOD__ . '()" is deprecated, use "remove()" instead. Backtrace-'. $backTraceLog, E_USER_DEPRECATED); //E_USER_NOTICE
+
             try {
                $statement =  $this->pdo->prepare($sql) ;
                $statement->execute($data);
@@ -397,6 +407,43 @@
             }
         }
 
+
+
+        public function remove(string $tableName, array $deleteParameters){
+            if(!isset($deleteParameters) || empty($deleteParameters)){
+                throw new Exception("Delete parameters required.");
+            }
+          
+            $whereSql = "";
+            foreach ($deleteParameters as $column => $value){
+                $whereSql .= "$column=:$column AND ";
+            }
+
+            $whereSql = rtrim($whereSql, ' AND ');
+
+            $sql = "DELETE FROM {$tableName} WHERE {$whereSql}";
+           
+            $statement =  $this->pdo->prepare($sql) ;
+            $statement->execute($deleteParameters);
+           
+            return $statement->rowCount();
+        }
+
+          #region exec()
+            /*
+                //exec() allows to execute multiple insert, update & delete sql
+                $sql = "
+                DELETE FROM car; 
+                INSERT INTO car(name, type) VALUES ('car1', 'coupe'); 
+                INSERT INTO car(name, type) VALUES ('car2', 'coupe');
+                ";
+            */
+
+            public function exec(string $sql){
+                $this->pdo->exec($sql);
+            }
+        #endregion
+        
         #region FETCH TYPE
         private function _setFetchStyle($fetchStyle = "assoc"){
             $count = count($this->prevFetchStyle);
