@@ -9,7 +9,7 @@
 
         public static function hasPermission(string $key, string $value):bool{
             $proceedAnyWay = false;
-            if(isset($_GET[$key]) && !empty($_GET[$key])){
+            if(isset($_GET[$key]) && !empty($_GET[$value])){
                 if($_GET[$key] === $value){
                     $proceedAnyWay = true;
                 }

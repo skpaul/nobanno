@@ -51,7 +51,8 @@
             $now = (new DateTime('now', new DateTimeZone("Asia/Dhaka")))->sub(new DateInterval('P2D'));  //go back to 2 days ago.
             $now = $now->format('Y-m-d H:i:s');
             $sql = "DELETE FROM `$this->table` WHERE `datetime` < :prevData "; 
-            $this->db->delete($sql, array(":prevData"=>$now)); //delete 2 days older data from session table.
+            // $this->db->delete($sql, array(":prevData"=>$now)); //delete 2 days older data from session table.
+            $this->db->delete($this->table, array("prevData"=>$now)); //delete 2 days older data from session table.
 
             return $this;
         }

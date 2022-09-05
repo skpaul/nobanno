@@ -2,7 +2,7 @@
 
 //LAST MODIFIED: 2020-08-23 07:08 PM.
 
-//The prefix "Swift" is used to avoid conflict with other namespaces.
+
 class AgeCalculator{
 
     /**
@@ -38,7 +38,7 @@ class AgeCalculator{
 
     
     //This is bangla method. Works nicely.
-    public static function calculateAge($dob_year, $dob_month, $dob_day, $date_limit){
+    private static function calculateAge($dob_year, $dob_month, $dob_day, $date_limit){
         
         $date_limit_x	= date('Y-m-d', strtotime($date_limit. "+0 days"));
         $cir_year	= substr($date_limit_x, 0,4);

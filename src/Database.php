@@ -409,22 +409,22 @@
 
 
 
-        public function remove(string $tableName, array $deleteParameters){
-            if(!isset($deleteParameters) || empty($deleteParameters)){
-                throw new Exception("Delete parameters required.");
+        public function remove(string $tableName, array $conditions){
+            if(!isset($conditions) || empty($conditions)){
+                throw new Exception("Delete conditions required.");
             }
           
-            $whereSql = "";
-            foreach ($deleteParameters as $column => $value){
-                $whereSql .= "$column=:$column AND ";
+            $where = "";
+            foreach ($conditions as $column => $value){
+                $where .= "$column=:$column AND ";
             }
 
-            $whereSql = rtrim($whereSql, ' AND ');
+            $where = rtrim($where, ' AND ');
 
-            $sql = "DELETE FROM {$tableName} WHERE {$whereSql}";
+            $sql = "DELETE FROM {$tableName} WHERE {$where}";
            
             $statement =  $this->pdo->prepare($sql) ;
-            $statement->execute($deleteParameters);
+            $statement->execute($conditions);
            
             return $statement->rowCount();
         }
