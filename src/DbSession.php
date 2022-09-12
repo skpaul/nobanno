@@ -161,9 +161,9 @@
         public function close(){
             //delete from sessions table
             $sql = "DELETE FROM `$this->table` WHERE id=:id";
-            $affectedRows =  $this->db->delete($sql, array("id"=>$this->sessionId));
+            $this->db->remove($this->table, array("id"=>$this->sessionId)); 
             unset($this->sessionId);
-            return $affectedRows;
+            return true;
         }
 
     } //<--class
