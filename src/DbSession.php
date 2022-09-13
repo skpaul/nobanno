@@ -17,6 +17,13 @@
         private $data = NULL;
         
         /**
+         * The PDO connection.
+         *
+         * @var \PDO
+         */
+        private $pdo;
+
+        /**
          * constructor()
          * 
          * @param Database $zeroSql Instance of ZeroSQL.
@@ -26,8 +33,8 @@
          *          
          * 
          */
-        public function __construct(Database $db, string $tableName, int $defaultDuration = 10800) {
-            $this->db = $db;
+        public function __construct(\PDO $pdo, string $tableName, int $defaultDuration = 10800) {
+            $this->pdo = $pdo;
             $this->table = $tableName;
             $this->defaultSessionTimeoutValue = $defaultDuration;
             $this->data= new stdClass();
@@ -44,17 +51,17 @@
          * @return this
          */
         public function startNew(){
-            $now = (new DateTime('now', new DateTimeZone("Asia/Dhaka")))->format('Y-m-d H:i:s'); 
-            $sql = "INSERT INTO `$this->table`(`datetime`) VALUES(:currentDatetime)";
-            $this->sessionId = $this->db->insert($sql, array("currentDatetime"=>$now));
+            $now = new DateTime('now', new DateTimeZone("Asia/Dhaka"));
+            $twoDaysAgo = $now->sub(new DateInterval('P2D'));  //go back to 2 days ago.
+            $sql = "
+                    DELETE FROM `$this->table` WHERE `datetime` < '{$twoDaysAgo->format("Y-m-d H:i:s")}'; 
+                    INSERT INTO `$this->table`(`datetime`) VALUES('{$now->format("Y-m-d H:i:s")}'); 
+                   ";
+            
+            $this->pdo->exec($sql);
+            $this->sessionId =  $this->pdo->lastInsertId();
 
-            $now = (new DateTime('now', new DateTimeZone("Asia/Dhaka")))->sub(new DateInterval('P2D'));  //go back to 2 days ago.
-            $now = $now->format('Y-m-d H:i:s');
-            $sql = "DELETE FROM `$this->table` WHERE `datetime` < :datetime "; 
-            // $this->db->delete($sql, array(":prevData"=>$now)); //delete 2 days older data from session table.
-            $this->db->remove($this->table, array("datetime"=>$now)); //delete 2 days older data from session table.
-
-            return $this;
+            return true;
         }
 
        /**
@@ -76,39 +83,34 @@
          * 
          * @throws SessionException
          */
-        public function continue(int $sessionId){
-            //call this function on every subsequent page except login page
-            $this->db->fetchAsAssoc();
-            $sql = "SELECT *  
-                    FROM `$this->table` 
-                    WHERE id = :id";
+        public function continue(int $sessionId):bool{
+            //call continue() function on every subsequent page except login page
+           
+            $sql = "SELECT * FROM `$this->table` WHERE id = :id";
+            $statement = $this->pdo->prepare($sql);
+            $statement->setFetchMode(PDO::FETCH_ASSOC);
+            $statement->execute(array("id"=>$sessionId));
+            $session = $statement->fetch();
 
-            $session = $this->db->selectSingleOrNull($sql, array("id"=>$sessionId));
-            if($session == null){
-                throw new SessionException("Session not found.");
-            }
+            if($session === false) throw new SessionException("Session not found.");
 
             $this->data = json_decode($session["data"]);
 
             $now = (new DateTime('now', new DateTimeZone("Asia/Dhaka")))->format('Y-m-d H:i:s'); 
             $now = strtotime($now);
-
-            // $lastActivity = $this->swiftDatetime->input($sessionBase->sessionDatetime)->asYmdHis();
-            $lastActivity = $session['datetime'];
-            $lastActivity = strtotime($lastActivity);
-           
+            $lastActivity = strtotime($session['datetime']);
             $diff = $now - $lastActivity;
             if($diff > $this->defaultSessionTimeoutValue){
-                //delete from session_base table
-                $this->_deleteAllSessionData($sessionId);
+                //delete from table
+                $statement = $this->pdo->prepare("DELETE FROM `$this->table` WHERE id = :id");
+                $statement->execute(array("id"=>$sessionId));
                 throw new SessionException("Session expired.");
             }
          
             //all are okay. finally sets.
             $this->sessionId = $sessionId;
             $this->_updateLastActivityDatetime();
-            $this->db->backToPrevFetchStyle();
-            return $this;
+            return true;
         }
 
         public function __call($key, $values=NULL){
@@ -126,6 +128,11 @@
             $this->_update(); return $this;
         }
         
+        /**
+         * getData()
+         * 
+         * @return null if $key not found. 
+         */
         public function getData(string $key){
             $this->_updateLastActivityDatetime(); 
             if(isset($this->data->$key)){
@@ -135,19 +142,25 @@
             }
         }
 
-        public function removeData(string $key){unset($this->data->{$key}); $this->_update(); return $this;} 
+        public function removeData(string $key):bool{
+            unset($this->data->{$key}); 
+            $this->_update(); 
+            return true;
+        } 
         
         private function _updateLastActivityDatetime(){
             $now = (new DateTime('now', new DateTimeZone("Asia/Dhaka")))->format('Y-m-d H:i:s'); 
-            $sql = "UPDATE `$this->table` SET `datetime`= :currentDatetime WHERE id= :id";
-            $this->db->update($sql, array('currentDatetime'=>$now, "id"=>$this->sessionId));
+            $sql = "UPDATE `$this->table` SET `datetime`= '$now' WHERE id= :id";
+            $statement = $this->pdo->prepare($sql);
+            $statement->execute(array("id"=>$this->sessionId));
         }
 
         private function _update(){
             $data = json_encode($this->data);
             $now = (new DateTime('now', new DateTimeZone("Asia/Dhaka")))->format('Y-m-d H:i:s'); 
-            $sql = "UPDATE `$this->table` SET `data`=:sessionData, `datetime`= :currentDatetime WHERE id= :id";
-            $this->db->update($sql, array('sessionData'=>$data, 'currentDatetime'=>$now, "id"=>$this->sessionId));
+            $sql = "UPDATE `$this->table` SET `data`=:sessionData, `datetime`= '$now' WHERE id= :id";
+            $statement = $this->pdo->prepare($sql);
+            $statement->execute(array('sessionData'=>$data, "id"=>$this->sessionId));
         }
 
         //delete all data from sessions
@@ -158,10 +171,11 @@
          * 
          * Also, unset the sessionId variable.
          */
-        public function close(){
+        public function close():bool{
             //delete from sessions table
             $sql = "DELETE FROM `$this->table` WHERE id=:id";
-            $this->db->remove($this->table, array("id"=>$this->sessionId)); 
+            $statement = $this->pdo->prepare($sql);
+            $statement->execute(array("id"=>$this->sessionId));
             unset($this->sessionId);
             return true;
         }
