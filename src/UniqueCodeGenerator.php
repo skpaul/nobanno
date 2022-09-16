@@ -11,12 +11,12 @@
             $this->db = $zeroSql;
         }
 
-        public function generate($length, $column, $table, $prefix = ""){
-             //from opu
+        public function generate($length, $column, $table, $prefix = ""){            
+            $charCodes = [65,66,67,68,69,70,71,72,74,75,77,78,80,81,82,83,84,85,86,87,88,89,90];
             $code ='';
             for ($i=1; $i <= $length; $i++){ 
-                $random_number = rand(65,90); 
-                $code .= chr($random_number);
+                $random_number = rand(0,22); 
+                $code .= chr($charCodes[$random_number]);
             }
 
             /*
@@ -27,14 +27,17 @@
                 $code3 = bin2hex($bytes); create code with 12 digits/characters
             */
 
+            $pdo = $this->db->getPDO();
             $code = $prefix.$code;
-            $sql = "SELECT $column FROM $table WHERE $column=:code";
-            $data = $this->db->selectMany($sql, array("code"=>$code));
-            if(count($data) > 0)
+            $sql = "SELECT COUNT($column) AS Qty FROM $table WHERE $column='$code'";
+
+            $statement =  $pdo->prepare($sql) ;
+            $statement->setFetchMode(PDO::FETCH_ASSOC); 
+            $statement->execute();
+            $count = ($statement->fetch())["Qty"];
+           
+            if($count > 0)
                 $this->generate($length, $column,$table);
-            // if($isFound != null){
-            //     $this->generate($length, $column,$table);
-            // }
 
             return $code;
         }
