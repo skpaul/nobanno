@@ -1,14 +1,11 @@
 <?php
 
     class UniqueCodeGenerator{
-        /** @var ZeroSQL */
+       
         protected $db;
         
-        /**
-         * @param string $alphabet
-         */
-        public function __construct($zeroSql) {
-            $this->db = $zeroSql;
+        public function __construct($ExPDO) {
+            $this->db = $ExPDO;
         }
 
         public function generate($length, $column, $table, $prefix = ""){            
@@ -26,15 +23,11 @@
                 $bytes = random_bytes(6); 
                 $code3 = bin2hex($bytes); create code with 12 digits/characters
             */
-
-            $pdo = $this->db->getPDO();
+            
             $code = $prefix.$code;
             $sql = "SELECT COUNT($column) AS Qty FROM $table WHERE $column='$code'";
-
-            $statement =  $pdo->prepare($sql) ;
-            $statement->setFetchMode(PDO::FETCH_ASSOC); 
-            $statement->execute();
-            $count = ($statement->fetch())["Qty"];
+            $result =  $this->db->fetchAssoc($sql);
+            $count = $result["Qty"];
            
             if($count > 0)
                 $this->generate($length, $column,$table);
