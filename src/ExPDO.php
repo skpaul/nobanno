@@ -42,24 +42,23 @@
              * @param string $sql  SQL statement. parameterized/non-parameterized.
              * @param mixed $param  null/object/array. 
              * 
-             * @return int  lastInsertId.
              */
-            public function insert(string $sql, mixed $param = null):int{
+            public function insert(string $sql, mixed $param = null){
                 try {
                     $statement = new PDOStatement;
-
                     if ($param)
                     {
                         if(is_object($param)) $param = get_object_vars($param);
-                        $statement = $this->prepare($sql) ;
+                        $statement = $this->prepare($sql);
                         $statement->execute($param);
+                        
                         return $this->lastInsertId();               
                     }
                     else{
                         $statement = $this->query($sql);
                         return $this->lastInsertId();
                     }
-                } catch (\PDOException $e) {
+                } catch (\Throwable $e) {
                     $backTraceLog = $this->debugBacktrace();
                     throw new PDOException("PDOException: ". $e->getMessage().". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
                 }
@@ -106,11 +105,10 @@
              * @param string $sql  SQL statement. parameterized/non-parameterized.
              * @param mixed $param  null/object/array. 
              * 
-             * @return array  Selected single row.
              * 
              * @throws PDOException.
              */
-            public function fetchAssoc(string $sql, mixed $args = null):array{
+            public function fetchAssoc(string $sql, mixed $args = null){
                 try {
                     if ($args)
                     {
@@ -126,7 +124,7 @@
                         $statement->setFetchMode(PDO::FETCH_ASSOC);
                         return $statement->fetch();
                     }
-                } catch (\PDOException $e) {
+                } catch (\Throwable $e) {
                     $backTraceLog = $this->debugBacktrace();
                     throw new PDOException("PDOException: ". $e->getMessage().". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
                 }
@@ -160,7 +158,7 @@
                         $statement->setFetchMode(PDO::FETCH_ASSOC);
                         return $statement->fetchAll();
                     }
-                } catch (\PDOException $e) {
+                } catch (\Throwable $e) {
                     $backTraceLog = $this->debugBacktrace();
                     throw new PDOException("PDOException: ". $e->getMessage().". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
                 }
@@ -195,7 +193,7 @@
                         $statement->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $className); 
                         return $statement->fetch();
                     }
-                } catch (\PDOException $e) {
+                } catch (\Throwable $e) {
                     $backTraceLog = $this->debugBacktrace();
                     throw new PDOException("PDOException: ". $e->getMessage().". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
                 }
@@ -230,7 +228,7 @@
                         $statement->setFetchMode(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $className); 
                         return $statement->fetchAll();
                     }
-                } catch (\PDOException $e) {
+                } catch (\Throwable $e) {
                     $backTraceLog = $this->debugBacktrace();
                     throw new PDOException("PDOException: ". $e->getMessage().". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
                 }
@@ -296,7 +294,7 @@
                         $statement = $this->query($sql);
                         return $statement->rowCount();               
                     }
-                } catch (\PDOException $e) {
+                } catch (\Throwable $e) {
                     $backTraceLog = $this->debugBacktrace();
                     throw new PDOException("PDOException: ". $e->getMessage().". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
                 }
@@ -378,7 +376,7 @@
                         $statement = $this->query($sql);
                         return $statement->rowCount();               
                     }
-                } catch (\PDOException $e) {
+                } catch (\Throwable $e) {
                     $backTraceLog = $this->debugBacktrace();
                     throw new PDOException("PDOException: ". $e->getMessage().". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
                 }
