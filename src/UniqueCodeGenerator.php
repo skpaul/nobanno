@@ -8,11 +8,24 @@
             $this->db = $ExPDO;
         }
 
+        /*
+        // 48	0	
+        // 49	1	
+        50	2
+        51	3	
+        52	4	
+        53	5
+        54	6
+        55	7	
+        56	8
+        57	9
+        */
+
         public function generate($length, $column, $table, $prefix = ""){            
-            $charCodes = [65,66,67,68,69,70,71,72,74,75,77,78,80,81,82,83,84,85,86,88,89,90];
+            $charCodes = [50,51,52,53,54,55,56,57,65,66,67,68,69,70,71,72,74,75,77,78,80,81,82,83,84,85,86,88,89,90];
             $code ='';
             for ($i=1; $i <= $length; $i++){ 
-                $random_number = rand(0,21); 
+                $random_number = rand(0,29); 
                 $code .= chr($charCodes[$random_number]);
             }
 
