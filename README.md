@@ -1,5 +1,5 @@
 # Nobanno
-Nobanno is a set of PHP classes to build applications quickly.
+Nobanno is a set of PHP classes to build PHP applications quickly.
 
 ## Release Information
 
