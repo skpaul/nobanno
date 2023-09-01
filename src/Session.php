@@ -1,14 +1,22 @@
 
 <?php 
+    /*
+        Last modified - 01-09-2023
+    */
 
     /*
-        Last modified - 01-02-2022
+        CREATE TABLE `sessions`(
+            `id` int NOT NULL AUTO_INCREMENT,
+            `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+            `datetime` datetime NULL DEFAULT NULL,
+            PRIMARY KEY (`id`) USING BTREE
+        )
     */
     
     require_once('SwiftSessionInterface.php');
     require_once('SessionException.php');
 
-    class DbSession implements SwiftSessionInterface {
+    class Session implements SwiftSessionInterface {
       
         private $sessionId = "";
         private $db = null;
@@ -178,6 +186,47 @@
             $statement->execute(array("id"=>$this->sessionId));
             unset($this->sessionId);
             return true;
+        }
+
+        public function validate(string $url, \Cryptographer $crypto, \ExPDO $db){
+            /*
+                USAGE SAMPLE
+                ------------
+                $session = new DbSession($db, SESSION_TABLE);
+                $session->validate(BASE_URL . "/session-expired.php", $crypto, $db);
+                $encSessionId = trim($_GET["session"]);
+                $eiin = $session->getData("eiin");
+            */
+            if(!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest'){
+                $ajax = false;  //this is NOT an ajax call
+            }    
+            else{
+                $ajax = true;  //this is an ajax call
+                $data= new \stdClass();
+                $data->issuccess = false; $data->redirecturl = $url;
+                $json = json_encode($data, JSON_FORCE_OBJECT);
+                header("Content-type: application/json; charset=utf-8");
+            }             
+
+            try {
+                if(!isset($_GET["session"]) || empty($_GET["session"])){
+                    if($ajax) die($json);
+                    else die(header("location:$url",true, 302));
+                }
+
+                $encSessionId = trim($_GET["session"]);
+                $sessionId = $crypto->decrypt($encSessionId);
+                if (!$sessionId) {
+                    if($ajax) die($json);
+                    else die(header("location:$url",true, 302));
+                }
+
+                $this->continue((int)$sessionId);
+
+            } catch (\SessionException $th) {
+                if($ajax) die($json);
+                else die(header("location:$url",true, 302));
+            }
         }
 
     } //<--class
