@@ -275,19 +275,19 @@
              * 
              * 
              * @param string $sql  SQL statement. parameterized/non-parameterized.
-             * @param mixed $param  null/object/array. 
+             * @param mixed $data  null/object/array. 
              * 
              * @return int  Number of rows affected.
              * 
              * @throws PDOException.             
              */
-            public function update($sql, $param = null):int{
+            public function update($sql, $data = null):int{
                 try {
-                    if ($param)
+                    if ($data)
                     {
-                        if(is_object($param)) $param = get_object_vars($param);
+                        if(is_object($data)) $data = get_object_vars($data);
                         $statement = $this->prepare($sql) ;
-                        $statement->execute($param);
+                        $statement->execute($data);
                         return $statement->rowCount();               
                     }
                     else{

@@ -188,7 +188,7 @@
             return true;
         }
 
-        public function validate(string $url, \Cryptographer $crypto, \ExPDO $db){
+        public function validate(string $url, \Cryptographer $crypto){
             /*
                 USAGE SAMPLE
                 ------------
