@@ -165,6 +165,74 @@
             }
 
             /**
+             * fetchObject()
+             * 
+             * Select single row from table using FETCH_OBJ.
+             * 
+             * 
+             * @param string $sql  SQL statement. parameterized/non-parameterized.
+             * @param mixed $param  null/object/array. 
+             * 
+             * 
+             * @throws PDOException.
+             */
+            public function fetchObject(string $sql, mixed $args = null){
+                try {
+                    if ($args)
+                    {
+                        if(is_object($args)) $args = get_object_vars($args);
+
+                        $statement = $this->prepare($sql) ;
+                        $statement->setFetchMode(PDO::FETCH_OBJ); 
+                        $statement->execute($args);
+                        return $statement->fetch();
+                    }
+                    else{
+                        $statement = $this->query($sql);
+                        $statement->setFetchMode(PDO::FETCH_OBJ);
+                        return $statement->fetch();
+                    }
+                } catch (\Throwable $e) {
+                    $backTraceLog = $this->debugBacktrace();
+                    throw new PDOException("PDOException: ". $e->getMessage().". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+                }
+            }
+
+            /**
+             * fetchObjects()
+             * 
+             * Select multiple rows from table using FETCH_OBJ.
+             * 
+             * 
+             * @param string $sql  SQL statement. parameterized/non-parameterized.
+             * @param mixed $param  null/object/array. 
+             * 
+             * @return array  Array of selected multiple rows.
+             * 
+             * @throws PDOException.
+             */
+            public function fetchObjects(string $sql, mixed $args = null):array{
+                try {
+                    if ($args)
+                    {
+                        if(is_object($args)) $args = get_object_vars($args);
+                        $statement = $this->prepare($sql) ;
+                        $statement->setFetchMode(PDO::FETCH_OBJ); 
+                        $statement->execute($args);
+                        return $statement->fetchAll();
+                    }
+                    else{
+                        $statement = $this->query($sql);
+                        $statement->setFetchMode(PDO::FETCH_OBJ);
+                        return $statement->fetchAll();
+                    }
+                } catch (\Throwable $e) {
+                    $backTraceLog = $this->debugBacktrace();
+                    throw new PDOException("PDOException: ". $e->getMessage().". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+                }
+            }
+
+            /**
              * fetchClass()
              * 
              * Select single row from table using FETCH_CLASS.

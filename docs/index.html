@@ -149,25 +149,35 @@ $string = $clock->toString($date2, DatetimeFormat::BdDatetime());</code></pre>
             </div>
 
             <section class="card">
-                <h2>Database()</h2>
-                <pre><code class="language-php">Required::->Database();
-$db = new Database(DB_SERVER, DB_NAME, DB_USER, DB_PASSWORD);
+                <h2>Database- Extended PDO</h2>
+                <pre><code class="language-php">
+$db = new ExPDO(DB_SERVER, DB_NAME, DB_USER, DB_PASSWORD);
 
-//Create connection
-$db->connect();
+//Get single row-
+$db->fetchAssoc(); //PDO::FETCH_ASSOC;
+$db->fetchObject();  //PDO::FETCH_OBJ; 
+$db->fetchClass();  //PDO::FETCH_OBJ; 
 
-$db->fetchAsAssoc(); //PDO::FETCH_ASSOC;  This is default fetch style.
-$db->fetchAsObject();  //PDO::FETCH_OBJ; 
+//Get multiple rows-
+$db->fetchAssocs(); //PDO::FETCH_ASSOC;
+$db->fetchObjects();  //PDO::FETCH_OBJ; 
+$db->fetchClasses();  //PDO::FETCH_OBJ; 
+
+//A simple select query for a single record (non-parameterized)
+$sql = "SELECT * FROM student WHERE id=1"; 
+$student = $db->fetchAssoc($sql);
+
+//A simple select query for a single record (parameterized)
+$sql = "SELECT * FROM student WHERE login=:login AND password=:password"; 
+$student = $db->fetchAssoc($sql, array("login"=> $login, "password"=>$password));
 
 //A simple select query for all records
 $sql = "SELECT * FROM student";
-$students = $db->selectMany($sql);
+$students = $db->selectAssocs($sql);
 
 $count = count($students);
 
-//A simple select query for a single record.
-$sql = "SELECT * FROM student WHERE id=1";
-$student = $db->selectSingle($sql);
+
 
 //A parameterized select query for a single record.
 $id = 458;
@@ -212,34 +222,34 @@ $tableName = "students"; //database table name.
 $studentId = $db->insert($tableName, $newStudent);
 
 //Update -------------
-$newName = "xyz";
-$newAge = 19;
+$name = "xyz";
+$age = 19;
 $id = 4;
-$updateSql = "UPDATE students SET name=$newName, age=$newAge WHERE id=$id";  //simple SQL
+$updateSql = "UPDATE students SET name=$name, age=$age WHERE id=$id";  //non-parameterized SQL
 $affectedRows = $db->update($updateSql);
 
-$updateSql = "UPDATE students SET name=:name, age=$newAge WHERE id=:id"; //parameterized SQL
+$updateSql = "UPDATE students SET name=:name, age=$age WHERE id=:id"; //parameterized SQL
+$affectedRows = $db->update($updateSql, array("name"=>$name, "age"=>$age, "id"=>$id));
 
-//Pass parameter values 'directly' in update() statemnt-
-$affectedRows = $db->update($updateSql, array("name"=>$newName, "age"=>$newAge, "id"=>$id));
+//Update from data array --
+$data["name"] = "Saumitra Paul";
+$data["age"] = 19;
 
-//OR, pass parameter values as an 'array' in update() statemnt-
-$updateParams["name"] = "xyz";
-$updateParams["age"] = 19;
-$updateParams["id"] = 4;
-$affectedRows = $db->update($updateSql, $updateParams);
+$updateSql = $db->prepareUpdateSql("students", $data, "id=:id", true);
+$data["id"] = 4; // need for where clause paramter binding
 
-//update() has an overload
-$affectedRows = $db->update("tableName", $whereSQL, $updatedDataArray, $whereDataArray);
+$affectedRows = $db->update($updateSql, $data);
 
-//let's see in details -
-$whereSQL = "id=:id";
-$whereDataArray["id"] = 197;
+//Update from object --
+$data = new stdClass();
+$data->name = "Saumitra Paul";
+$data->age = 19;
 
-$student["name"]= "PQR";
-$student["age"]= 24;
+$updateSql = $db->prepareUpdateSql("students", $data, "id=:id", true);
+$data->id = 4; // need for where clause paramter binding
 
-$affectedRows = $db->update("students", $whereSQL, $student, $whereDataArray);
+$affectedRows = $db->update($updateSql, $data);
+
 
 //Delete
 $sql = "DELETE FROM students WHERE id=1";
@@ -262,12 +272,12 @@ $affectedRows = $db->delete($sql, $deleteParams);
     rollBack()
 
 //Exception
-    $db throws 'DatabaseException' if any select(), insert(), update() or delete() fails to exectute.
+    $db throws 'PDOException' if any select(), insert(), update() or delete() fails to exectute.
 
     try{
        //do here your db CRUD operation.
     }
-    catch (\DatabaseException $dbEx) {
+    catch (\PDOException $exp) {
        $exceptionDetails = $exp->getMessage();
     }
                 </code></pre>
