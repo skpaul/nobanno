@@ -1,7 +1,7 @@
 
 <?php 
     /*
-        Last modified - 01-09-2023
+        Last modified - 02-10-2023
     */
 
     /*
@@ -203,7 +203,11 @@
             else{
                 $ajax = true;  //this is an ajax call
                 $data= new \stdClass();
-                $data->issuccess = false; $data->redirecturl = $url;
+                $data->issuccess = false; 
+                //Send both 'redirecturl' and 'message'. Frontend script will decide the final action-
+                $data->redirecturl = $url;
+                $data->message = "Invalid session. Please login to continue.";
+
                 $json = json_encode($data, JSON_FORCE_OBJECT);
                 header("Content-type: application/json; charset=utf-8");
             }             
