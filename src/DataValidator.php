@@ -16,9 +16,9 @@
         
             private $label = "";
 
-            private $requiredLang =  "required." ;   //"উল্লেখ করুন";
-            private $invalidLang = "incorrect." ;             //"সঠিক নয়";
-            private $foundLang = "found.";
+            private $requiredLang =  "উল্লেখ করুন";    //"উল্লেখ করুন" "required."
+            private $invalidLang = "সঠিক নয়";        //"সঠিক নয়" "incorrect."
+            private $foundLang = "পাওয়া গেছে";            //"পাওয়া গেছে"  "found."
 
             /**
              * Here we keep the value we going to be validated.
@@ -753,13 +753,28 @@
              */
             public function asDate($datetimeZone = "Asia/Dhaka"){
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
-                    $pattern =   '~^(((0[1-9]|[12]\\d|3[01])\\-(0[13578]|1[02])\\-((19|[2-9]\\d)\\d{2}))|((0[1-9]|[12]\\d|30)\\-(0[13456789]|1[012])\\-((19|[2-9]\\d)\\d{2}))|((0[1-9]|1\\d|2[0-8])\\-02\\-((19|[2-9]\\d)\\d{2}))|(29\\/02\\-((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))))$~';
+                    // $pattern =   '~^(((0[1-9]|[12]\\d|3[01])\\-(0[13578]|1[02])\\-((19|[2-9]\\d)\\d{2}))|((0[1-9]|[12]\\d|30)\\-(0[13456789]|1[012])\\-((19|[2-9]\\d)\\d{2}))|((0[1-9]|1\\d|2[0-8])\\-02\\-((19|[2-9]\\d)\\d{2}))|(29\\/02\\-((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))))$~';
 
-                    $isValidFormat =  preg_match($pattern, strval($this->valueToValidate)); // Outputs 1 if date is in valid format i.e. "30-03-2022";
-                    if(!$isValidFormat) throw new ValidationException("{$this->label} {$this->invalidLang}");
+                    // $isValidFormat =  preg_match($pattern, strval($this->valueToValidate)); // Outputs 1 if date is in valid format i.e. "30-03-2022";
+                    // if(!$isValidFormat) throw new ValidationException("{$this->label} {$this->invalidLang}");
 
                     try {
-                        $this->valueToValidate = new Datetime(strval($this->valueToValidate), new DatetimeZone($datetimeZone));
+                        $format = 'd-m-Y';
+                        $date = strval($this->valueToValidate);
+                        $dt = DateTime::createFromFormat($format, $date, new DatetimeZone($datetimeZone));
+                        $isValid =  $dt && $dt->format($format) == $date;
+                    
+                        if($isValid){
+                            // $this->valueToValidate = $dt;  <--- Don't return $dt. Because, DateTime::createFromFormat() method added extra hours with datetime value.
+                            $this->valueToValidate = new Datetime(strval($this->valueToValidate), new DatetimeZone($datetimeZone));
+
+                        }
+                        else{
+                            // echo "not ok";
+                            throw new ValidationException("{$this->label} {$this->invalidLang}");
+                        }
+
+                       
                     } catch (Exception $exp) {
                         throw new ValidationException("{$this->label} {$this->invalidLang}");
                     }
