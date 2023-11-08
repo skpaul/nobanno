@@ -147,5 +147,30 @@
 
         #endregion
 
+        #region Hour manipulation
+            public function addHours(int $hoursToAdd, mixed $datetime ){
+
+                if ($datetime instanceof DateTime){
+                    $dt = $datetime;
+                }
+                else{
+                    $dt = new DateTime($datetime, $this->datetimeZone);
+                }
+                return  $dt->add(new DateInterval("PT" . $hoursToAdd . "H"));
+            }
+
+            public function deductHours(int $hoursToSubtract, mixed $datetime ){
+
+                if ($datetime instanceof DateTime){
+                    $dt = $datetime;
+                }
+                else{
+                    $dt = new DateTime($datetime, $this->datetimeZone);
+                }
+                return  $dt->sub(new DateInterval("PT" . $hoursToSubtract . "H"));
+            }
+
+        #endregion
+
     }
 ?>
