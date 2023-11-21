@@ -207,7 +207,6 @@
                 //Send both 'redirecturl' and 'message'. Frontend script will decide the final action-
                 $data->redirecturl = $url;
                 $data->message = "Invalid session. Please login to continue.";
-
                 $json = json_encode($data, JSON_FORCE_OBJECT);
                 header("Content-type: application/json; charset=utf-8");
             }             
@@ -226,6 +225,8 @@
                 }
 
                 $this->continue((int)$sessionId);
+
+                return $encSessionId;
 
             } catch (\SessionException $th) {
                 if($ajax) die($json);
