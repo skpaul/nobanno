@@ -7,9 +7,6 @@
                 return '<option value="'.$value.'" selected>'.$text.'</option>'; 
             else
                 return '<option value="'.$value.'">'.$text.'</option>'; 
-               
-           
-              
         }
 
         /**
@@ -26,8 +23,8 @@
             $options = "";
             if (isset($selectedValue) && !empty($selectedValue)) {
                 foreach ($array as $item) {
-                    $value = $item[0];
-                    $text = $item[1];
+                    $value = $item["value"];
+                    $text = $item["text"];
                     if ($value == $selectedValue) {
                         $options .= '<option value="'.$value.'" selected>'.$text.'</option>';
                     }
@@ -37,8 +34,8 @@
                 } 
             }else {
                 foreach ($array as $item) {
-                    $value = $item[0];
-                    $text = $item[1];
+                    $value = $item["value"];
+                    $text = $item["text"];
                     $options .= '<option value="'.$value.'">'.$text.'</option>';
                 } 
             }
