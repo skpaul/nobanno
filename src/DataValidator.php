@@ -16,9 +16,9 @@
         
             private $label = "";
 
-            private $requiredLang =  "উল্লেখ করুন";    //"উল্লেখ করুন" "required."
-            private $invalidLang = "সঠিক নয়";        //"সঠিক নয়" "incorrect."
-            private $foundLang = "পাওয়া গেছে";            //"পাওয়া গেছে"  "found."
+            private $requiredLang =  "required.";    //"উল্লেখ করুন" "required."
+            private $invalidLang = "incorrect.";        //"সঠিক নয়" "incorrect."
+            private $foundLang = "found.";            //"পাওয়া গেছে"  "found."
 
             /**
              * Here we keep the value we going to be validated.
