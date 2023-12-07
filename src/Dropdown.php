@@ -37,8 +37,8 @@
                 } 
             }else {
                 foreach ($array as $item) {
-                    $value = $item[0];
-                    $text = $item[1];
+                    $value = $item["value"];
+                    $text = $item["text"];
                     $options .= '<option value="'.$value.'">'.$text.'</option>';
                 } 
             }
