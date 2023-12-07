@@ -7,6 +7,9 @@
                 return '<option value="'.$value.'" selected>'.$text.'</option>'; 
             else
                 return '<option value="'.$value.'">'.$text.'</option>'; 
+               
+           
+              
         }
 
         /**
@@ -34,8 +37,8 @@
                 } 
             }else {
                 foreach ($array as $item) {
-                    $value = $item["value"];
-                    $text = $item["text"];
+                    $value = $item[0];
+                    $text = $item[1];
                     $options .= '<option value="'.$value.'">'.$text.'</option>';
                 } 
             }

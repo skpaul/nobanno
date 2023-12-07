@@ -1042,7 +1042,8 @@
                 
         private function _reset_private_variables(){
             $this->label = "";
-            unset($this->defaultValue);
+            // unset($this->defaultValue);
+            $this->defaultValue = null;
             $this->required = false;
             // unset($this->valueToValidate);
             $this->valueToValidate = null;
