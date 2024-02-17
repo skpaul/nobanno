@@ -242,11 +242,11 @@
              * @param string $className  Name of the returned class.
              * @param mixed $param  null/object/array. 
              * 
-             * @return object  Single object of the specified class.
+             * @return mixed  if found, returns single object of the specified class. Otherwise, return false.
              * 
              * @throws PDOException.
              */
-            public function fetchClass(string $sql, string $className, mixed $args = null):object{
+            public function fetchClass(string $sql, string $className, mixed $args = null): mixed{
                 try {
                     if ($args)
                     {
