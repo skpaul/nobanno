@@ -9,8 +9,10 @@
     <title>Nobanno || Developers Documentation </title>
 
 	<link href="assets/prism.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/skpaul/monogrid@0.0.1/monogrid.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/skpaul/omnicss@0.1.2/omnicss.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/skpaul/griddle@1.0/griddle.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/skpaul/omnicss@12.0.0/omnicss.min.css">
+	<link href="assets/theme.css" rel="stylesheet" />
+
 
     <style type="text/css">
         h1, h2, h3, h4{
@@ -22,7 +24,7 @@
             gap:2rem;
         }	 
 
-        :not(pre)>code[class*=language-], pre[class*=language-] {
+        /* :not(pre)>code[class*=language-], pre[class*=language-] {
             background: #22272e;
         }
 
@@ -37,7 +39,7 @@
             padding: 0 1px;
             white-space: nowrap;
             background-color: #22272e;
-        }
+        } */
 
 
         .card{
@@ -51,7 +53,7 @@
         	<ul>
         		<li><a href="#Require">Require</a></li>
         		<li><a href="#Logger">Logger</a></li>
-        		<li><a href="#database">Database</a></li>
+        		<li><a href="#expdo">Database</a></li>
         		<li><a href="#php-csv">CSV</a></li>
         		<li><a href="#http-header">HttpHeader</a></li>
         		<li><a href="#endecryptor">EnDecryptor</a></li>
@@ -148,7 +150,59 @@ DatetimeFormat::Custom($format) // $format = any valid php datetime format
 $string = $clock->toString($date2, DatetimeFormat::BdDatetime());</code></pre>
             </div>
 
-            <section class="card">
+            <section id="ex-pdo">
+                <h2>ExPDO (Extended PDO)</h2>
+
+                <code class="language-php">
+                    $db = new ExPDO(DB_SERVER, DB_NAME, DB_USER, DB_PASSWORD);
+                </code>
+
+                <h3>Get single row from database</h3>
+                <p>
+                    You can read a single row from database in 3 ways -
+                </p>
+                
+                <div>
+                    <pre><code class="language-php">fetchAssoc(string $sql, mixed $args = null)
+fetchObject(string $sql, mixed $args = null)
+fetchClass(string $sql, string $className, mixed $args = null): mixed
+                    </code> </pre>
+                </div>
+
+                <div>
+                    Select single row from table using <code>PDO::FETCH_ASSOC</code>
+                </div>
+
+                <div>
+                    <div>Parameters</div>
+                    <table>
+                        <tr>
+                            <td><code>$sql</code></td>
+                            <td>:</td>
+                            <td>SQL statement</td>
+                        </tr>
+                        <tr>
+                            <td><code>$args</code></td>
+                            <td>:</td>
+                            <td>Object or Array. Optional.</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div>
+                    <div>Example</div>
+                    <div>
+                        <pre><code class="language-php">//A simple select query for a single record (non-parameterized).
+$sql = "SELECT * FROM student WHERE id=1"; 
+$student = $db->fetchAssoc($sql);</code></pre>
+                    </div>
+                </div>
+
+                
+                <h4></h4>
+            </section>
+
+            <section class="card" id="expdo">
                 <h2>Database- Extended PDO</h2>
                 <pre><code class="language-php">
 $db = new ExPDO(DB_SERVER, DB_NAME, DB_USER, DB_PASSWORD);
