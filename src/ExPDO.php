@@ -77,7 +77,7 @@
              */
             public static function prepareInsertSql(mixed $dataToInsert, string $tableName, bool $isParameterized): string {
                 if(is_object($dataToInsert)) $dataToInsert = get_object_vars($dataToInsert);
-                $columns = implode(",", array_keys($dataToInsert));
+                $columns = "`" . implode("`, `", array_keys($dataToInsert)) . "`";
                 $values= "";
                 if($isParameterized){
                     $values = ":" .implode(", :", array_keys($dataToInsert));
