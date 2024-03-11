@@ -24,8 +24,9 @@
             gap:2rem;
         }	 
 
-        /* :not(pre)>code[class*=language-], pre[class*=language-] {
-            background: #22272e;
+         :not(pre)>code[class*=language-], pre[class*=language-] {
+            /* background: #22272e; */
+            background: transparent;
         }
 
         code[class*=language-]{
@@ -39,12 +40,9 @@
             padding: 0 1px;
             white-space: nowrap;
             background-color: #22272e;
-        } */
+        } 
 
 
-        .card{
-            margin-bottom: 5rem;
-        }
     </style>
 </head>
 <body>
@@ -162,32 +160,230 @@ $string = $clock->toString($date2, DatetimeFormat::BdDatetime());</code></pre>
                     You can read a single row from database in 3 ways -
                 </p>
                 
-                <div>
-                    <pre><code class="language-php">fetchAssoc(string $sql, mixed $args = null)
+                <div >
+                    <pre><code class="language-php">fetchAssoc(string $sql, mixed $args = null) : mixed
 fetchObject(string $sql, mixed $args = null)
 fetchClass(string $sql, string $className, mixed $args = null): mixed
                     </code> </pre>
                 </div>
 
-                <div>
-                    Select single row from table using <code>PDO::FETCH_ASSOC</code>
+                <!-- fetchAssoc -->
+                <div id="fetch-assoc">
+                    Example of <code class="language-php">fetchAssoc(string $sql, mixed $args = null) : mixed</code> <br>
+                    if found, returns an associative array. Otherwise, return false.
+                    <pre>
+                        <code class="language-php">
+                            $sql = "SELECT id, name, age FROM students";
+                            $student = $db->fetchAssoc($sql);
+            
+                            //Let's find a student by id with a simple where clause -
+                            $studentId = 12;
+                            $sql = "SELECT id, name, age FROM students WHERE id = $studentId"; <br>
+                            $student = $db->fetchAssoc($sql);
+
+                            //Let's find a student by id with a parameterized where clause - 
+                            $sql = "SELECT id, name, age FROM students WHERE id = :id"; <br>
+                            $parameters= ["id"=>1];
+                            $student = $db->fetchAssoc($sql, $parameters);
+
+                            //You can also use multiple conditions -
+                            $sql = "SELECT id, name, age FROM students WHERE id = :id AND age > :age"; <br>
+                            $parameters= ["id"=>1, "age"=>23];
+                            $student = $db->fetchAssoc($sql, $parameters); //passed parameters as an array.
+
+                            //You also can pass parameters as an object -
+                            $parameters = new stdClass();
+                            $parameters->id= 1 ;
+                            $parameters->age = 25;
+                            $student = $db->fetchAssoc($sql, $parameters); //passed parameters as an object.
+
+                            //Now accessing the $student data -
+                            if($student == false){
+                                //record not found.
+                            }
+                            else{
+                                $name = $student["name"];
+                                $age = $student["age"];  
+                            }
+                        </code>
+                    </pre>
                 </div>
 
-                <div>
-                    <div>Parameters</div>
-                    <table>
-                        <tr>
-                            <td><code>$sql</code></td>
-                            <td>:</td>
-                            <td>SQL statement</td>
-                        </tr>
-                        <tr>
-                            <td><code>$args</code></td>
-                            <td>:</td>
-                            <td>Object or Array. Optional.</td>
-                        </tr>
-                    </table>
+
+                <!-- fetchObject() -->
+                <div id="fetch-object">
+                    <code class="language-php">fetchObject(string $sql, mixed $args = null) : mixed</code> <br>
+                    if found, returns a single object. Otherwise, return false.
+                    <pre>
+                        <code class="language-php">
+                            $sql = "SELECT id, name, age FROM students";
+                            $student = $db->fetchObject($sql);
+            
+                            //Let's find a student by id with a simple where clause -
+                            $studentId = 12;
+                            $sql = "SELECT id, name, age FROM students WHERE id = $studentId"; <br>
+                            $student = $db->fetchObject($sql);
+
+                            //Let's find a student by id with a parameterized where clause - 
+                            $sql = "SELECT id, name, age FROM students WHERE id = :id"; <br>
+                            $parameters= ["id"=>1];
+                            $student = $db->fetchObject($sql, $parameters);
+
+                            //You can also use multiple conditions -
+                            $sql = "SELECT id, name, age FROM students WHERE id = :id AND age > :age"; <br>
+                            $parameters= ["id"=>1, "age"=>23];
+                            $student = $db->fetchObject($sql, $parameters); //passed parameters as an array.
+
+                            //You also can pass parameters as an object -
+                            $parameters = new stdClass();
+                            $parameters->id= 1 ;
+                            $parameters->age = 25;
+                            $student = $db->fetchObject($sql, $parameters); //passed parameters as an object.
+
+                            //Now accessing the $student data -
+                            if(!$student){
+                                //record not found.
+                            }
+                            else{
+                                $name = $student->name;
+                                $age = $student->age;  
+                            }
+                        </code>
+                    </pre>
                 </div>
+
+                <!-- fetchClass() -->
+                <div id="fetch-class">
+                    <code class="language-php">fetchClass(string $sql, string $className, mixed $args = null) : mixed</code> <br>
+                    if found, returns single object of the specified class. Otherwise, return false.
+
+                    <div>
+                        The PDO::FETCH_CLASS uses the following rules when assigning column values to the object properties:
+                        <ul>
+                            <li> if there is a class property, which name is the same as a column name, the column value will be assigned to this property.</li>
+                            <li>if there is no such property, then a magic __set() method will be called.</li>
+                            <li>if __set() method is not defined for the class, then a public property will be created and a column value assigned to it.</li>
+                        </ul>
+                    </div>
+                    <pre>
+                        <code class="language-php">
+                            class Student {
+                                // Properties
+                                public int $id;
+                                public string $name;
+                                public int $age;
+                            }
+
+                            $sql = "SELECT id, name, age FROM students";
+                            $student = $db->fetchClass($sql, "Student");
+            
+                            //Find a student by id with a simple where clause -
+                            $studentId = 12;
+                            $sql = "SELECT id, name, age FROM students WHERE id = $studentId"; <br>
+                            $student = $db->fetchClass($sql, "Student");
+
+                            //Find a student by id with a parameterized where clause - 
+                            $sql = "SELECT id, name, age FROM students WHERE id = :id"; <br>
+                            $parameters= ["id"=>1];
+                            $student = $db->fetchClass($sql, "Student", $parameters);
+
+                            //You can also use multiple conditions -
+                            $sql = "SELECT id, name, age FROM students WHERE id = :id AND age > :age"; <br>
+                            $parameters= ["id"=>1, "age"=>23];
+                            $student = $db->fetchClass($sql, "Student", $parameters); //passed parameters as an array.
+
+                            //You also can pass parameters as an object -
+                            $parameters = new stdClass();
+                            $parameters->id= 1 ;
+                            $parameters->age = 25;
+                            $student = $db->fetchClass($sql, "Student", $parameters); //passed parameters as an object.
+
+                            //Now accessing the $student data -
+                            if(!$student){
+                                //record not found.
+                            }
+                            else{
+                                $name = $student->name;
+                                $age = $student->age;  
+                            }
+                        </code>
+                    </pre>
+                </div>
+
+
+                <!-- fetchAssocs() -->
+                <div id="fetch-assocs">
+                    <code class="language-php">fetchAssocs(string $sql, mixed $args = null) : mixed</code> <br>
+                    An empty array is returned if there are zero results to fetch.
+                    <pre>
+                        <code class="language-php">
+
+                            $sql = "SELECT id, name, age FROM students";
+                            $student = $db->fetchAssocs($sql);
+            
+                            //Find some students by school with a simple where clause -
+                            $schoolId = 106;
+                            $sql = "SELECT id, name, age FROM students WHERE schoolId = $schoolId";
+                            $students = $db->fetchAssocs($sql);
+
+                            ///Find some students by school with a parameterized where clause - 
+                            $sql = "SELECT id, name, age FROM students WHERE schoolId = $schoolId"; 
+                            $parameters= ["schoolId"=> $schoolId];
+                            $student = $db->fetchAssocs($sql, $parameters);
+
+                            //You can also use multiple conditions -
+                            $sql = "SELECT id, name, age FROM students WHERE schoolId > :schoolId AND age > :age"; <br>
+                            $parameters= ["schoolId"=> $schoolId, "age"=>23];
+                            $student = $db->fetchAssocs($sql, $parameters); //passed parameters as an array.
+
+                            //You also can pass parameters as an object -
+                            $parameters = new stdClass();
+                            $parameters->id= 1 ;
+                            $parameters->age = 25;
+                            $student = $db->fetchAssocs($sql, $parameters); //passed parameters as an object.
+
+                            //Now accessing the $student data -
+                            $name = $student->name;
+                            $age = $student->age;  
+                        </code>
+                    </pre>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                 <div>
                     <div>Example</div>
@@ -202,13 +398,14 @@ $student = $db->fetchAssoc($sql);</code></pre>
                 <h4></h4>
             </section>
 
-            <section class="card" id="expdo">
+            <section id="expdo">
                 <h2>Database- Extended PDO</h2>
                 <pre><code class="language-php">
 $db = new ExPDO(DB_SERVER, DB_NAME, DB_USER, DB_PASSWORD);
 
 //Get single row-
-$db->fetchAssoc(); //PDO::FETCH_ASSOC;
+//$car = array("brand"=>"Ford", "model"=>"Mustang", "year"=>1964);
+$db->fetchAssoc(string $sql, mixed $args = null); //PDO::FETCH_ASSOC;
 $db->fetchObject();  //PDO::FETCH_OBJ; 
 $db->fetchClass();  //PDO::FETCH_OBJ; 
 
@@ -263,17 +460,17 @@ $db->backToPrevFetchStyle(); //back to prev style.
 
 //Insert--------------
 $sql = "INSERT INTO students(name, age) VALUES("Saumitra Kumar Paul", 26)";
-$studentId = $db->insert($sql);  //returns auto-incremented column value.
+$id = $db->insert($sql);  //returns auto-incremented column value.
 
 $sql = "INSERT INTO students(name, age) VALUES(:name, :age)";
-$studentId = $db->insert($sql, array("name"=>"Saumitra Kumar Paul", "age"=>26)); 
+$id = $db->insert($sql, array("name"=>"Saumitra Kumar Paul", "age"=>26)); 
 
 //OR, create a array (convenient if you have many data to insert)
 $newStudent["name"] = "Saumitra Kumar Paul";
 $newStudent["age"] = 26;
 
 $tableName = "students"; //database table name.
-$studentId = $db->insert($tableName, $newStudent);
+$id = $db->insert($tableName, $newStudent);
 
 //Update -------------
 $name = "xyz";
