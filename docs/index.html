@@ -493,7 +493,7 @@ try {
                 <!-- update() -->
                 <div id="update">
                     <code class="language-php">update($sql, $data = null):int</code> <br>
-                    Execute insert sql and returns Number of rows affected.
+                    Execute update sql and returns number of rows affected.
                     <pre><code class="language-php">
 $sql = "UPDATE student_table SET name = 'Sindhu' WHERE id = 2 ";
 echo $db->update($sql);
@@ -504,6 +504,42 @@ $student["name"] = "SUBORNO PAUL"; //update name
 $student["age"] = 06; //update age
 $sql = "UPDATE student SET name = :name, age=:age WHERE id = 2 ";
 echo $db->update($sql, $student);
+
+If you use a single column (i.e. primary key) in where clause, you can dynamically generate an UPDATE statement as follows-
+
+
+$where["id"] = 1; //define a where array
+$sql = $db->prepareUpdateSql("student_table", $student, $where, true);
+$data = array_merge($student, $where);
+echo $db->update($sql, $data);
+
+//Please note that, in prepareUpdateSql() method, $student and $where CAN NOT contain same parameter. For example-
+
+//This is the data you want to update-
+$student["name"] = "ABC";
+$student["id"] =  12;
+
+//And, this is the data used in where clause-
+$where["id"] = 12; 
+
+//Here 'id' column is common in both the data. This will create 'Invalid parameter number' error.
+//To solve this, you need to remove the common column from $student data-
+unset($student['id']);
+
+//If you use parameterized statement, the $student data MUST HAVE the same columns as in SET clause. For example-
+$sql = "UPDATE test_table SET name=:name, age=:age";
+
+//Your $student data must have the same column names and quantity-
+$student["name"] = "ABC";
+$student["age"] =  12;
+
+//If your $student has other columns also, you need to remove those-
+unset($student['fatherName']);
+unset($student['contactNumber']);
+
+//In some complex queries, you may need to use same column name in both SET & WHERE clause. 
+//In that case, you need to change the parameter name. See the following example-
+$sql = "UPDATE test_table SET name=:newName, age=:newAge WHERE age>:minAge AND `name` LIKE CONCAT('%', :similarName, '%')";
 
 //Select a student as object-
 $student = $db->fetchObject("SELECT name, age FROM student_table WHERE id = 2")
