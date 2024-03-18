@@ -8,41 +8,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nobanno || Developers Documentation </title>
 
-	<link href="assets/prism.css" rel="stylesheet" />
+	<!-- <link href="assets/prism.css" rel="stylesheet" /> -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/panda-syntax-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/skpaul/griddle@1.0/griddle.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/skpaul/omnicss@12.0.0/omnicss.min.css">
-	<link href="assets/theme.css" rel="stylesheet" />
+	<!-- <link href="assets/theme.css" rel="stylesheet" /> -->
 
 
-    <style type="text/css">
-        h1, h2, h3, h4{
-            margin-bottom: 1.5rem;
+    <style>
+        /* pre[class*=language-] {
+            background: #282c34;
+        } */
+        code[class*=language-] {
+            /* background: #282c34;
+            color: #fff;
+            box-shadow: -.3em 0 0 .3em #282c34,.3em 0 0 .3em #282c34; */
+            line-height: 1.7;
         }
-        .grid{
-            width: calc(100% - 64px) !important;
-            margin: auto;
-            gap:2rem;
-        }	 
-
-         :not(pre)>code[class*=language-], pre[class*=language-] {
-            /* background: #22272e; */
-            background: transparent;
-        }
-
-        code[class*=language-]{
-            white-space: break-spaces;
-        }
-
-        code:not(code[class*=language-]){
-            font-family: Consolas;
-            border-radius: 0.30rem;
-            border:1px solid #373e47;
-            padding: 0 1px;
-            white-space: nowrap;
-            background-color: #22272e;
-        } 
-
-
     </style>
 </head>
 <body>
@@ -315,47 +300,45 @@ fetchClass(string $sql, string $className, mixed $args = null): mixed
                 <div id="fetch-assocs">
                     <code class="language-php">fetchAssocs(string $sql, mixed $args = null) : mixed</code> <br>
                     An empty array is returned if there are zero results to fetch.
-                    <pre>
-                        <code class="language-php">
-                            //Select some students -
-                            $sql = "SELECT id, name, age FROM students";
-                            $students = $db->fetchAssocs($sql);
-            
-                            //Find some students by school with a simple where clause -
-                            $schoolId = 106;
-                            $sql = "SELECT id, name, age FROM students WHERE schoolId = $schoolId";
-                            $students = $db->fetchAssocs($sql);
+                    <pre><code class="language-php">//Select some students -
+$sql = "SELECT id, name, age FROM students";
+$students = $db->fetchAssocs($sql);
 
-                            ///Find some students by school with a parameterized where clause - 
-                            $sql = "SELECT id, name, age FROM students WHERE schoolId = $schoolId"; 
-                            $parameters= ["schoolId"=> $schoolId];
-                            $students = $db->fetchAssocs($sql, $parameters);
+//Find some students by school with a simple where clause -
+$schoolId = 106;
+$sql = "SELECT id, name, age FROM students WHERE schoolId = $schoolId";
+$students = $db->fetchAssocs($sql);
 
-                            //You can also use multiple conditions -
-                            $sql = "SELECT id, name, age FROM students WHERE schoolId > :schoolId AND age > :age"; <br>
-                            $parameters= ["schoolId"=> $schoolId, "age"=>23];
-                            $students = $db->fetchAssocs($sql, $parameters); //passed parameters as an array.
+//Find some students by school with a parameterized where clause - 
+$sql = "SELECT id, name, age FROM students WHERE schoolId = $schoolId"; 
+$parameters= ["schoolId"=> $schoolId];
+$students = $db->fetchAssocs($sql, $parameters);
 
-                            //You also can pass parameters as an object -
-                            $parameters = new stdClass();
-                            $parameters->schoolId = $schoolId ;
-                            $parameters->age = 25;
-                            $students = $db->fetchAssocs($sql, $parameters); //passed parameters as an object.
+//You can also use multiple conditions -
+$sql = "SELECT id, name, age FROM students WHERE schoolId = :schoolId AND age > :age"; <br>
+$parameters= ["schoolId"=> $schoolId, "age"=>23];
+$students = $db->fetchAssocs($sql, $parameters); //passed parameters as an array.
 
-                            //Now accessing the $student data -
-                            if(!$students){
-                                //No record found.
-                            }
-                            else{
-                                foreach ($students as $student) {
-                                    echo $student["name"];
-                                }
-                            }
+//You also can pass parameters as an object -
+$parameters = new stdClass();
+$parameters->schoolId = $schoolId ;
+$parameters->age = 25;
+$students = $db->fetchAssocs($sql, $parameters); //passed parameters as an object.
+
+//Now accessing the $student data -
+if(!$students){
+    //No record found.
+}
+else{
+    foreach ($students as $student) {
+        echo $student["name"];
+    }
+}
                         </code>
                     </pre>
                 </div>
 
-
+                
 
 
 
@@ -712,7 +695,17 @@ $jsonString = $json->success()->data($data)->create(); //data() created dynamica
 
    
 
-    <script src="assets/prism.js"></script>
-    <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+    <!-- <script src="assets/prism.js"></script> -->
+        <!-- <script src="assets/prism.js"></script> -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', (event) => {
+                document.querySelectorAll('pre code').forEach((el) => {
+                    hljs.highlightElement(el);
+                });
+            });
+        </script>
+
 </body>
 </html>
