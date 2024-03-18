@@ -161,7 +161,7 @@ fetchClass(string $sql, string $className, mixed $args = null): mixed
                             $sql = "SELECT id, name, age FROM students";
                             $student = $db->fetchAssoc($sql);
             
-                            //Let's find a student by id with a simple where clause -
+                            //Let's find a student by id with a non-parameterized where clause -
                             $studentId = 12;
                             $sql = "SELECT id, name, age FROM students WHERE id = $studentId"; <br>
                             $student = $db->fetchAssoc($sql);
@@ -204,7 +204,7 @@ fetchClass(string $sql, string $className, mixed $args = null): mixed
                             $sql = "SELECT id, name, age FROM students";
                             $student = $db->fetchObject($sql);
             
-                            //Let's find a student by id with a simple where clause -
+                            //Let's find a student by id with a non-parameterized where clause -
                             $studentId = 12;
                             $sql = "SELECT id, name, age FROM students WHERE id = $studentId"; <br>
                             $student = $db->fetchObject($sql);
@@ -262,7 +262,7 @@ fetchClass(string $sql, string $className, mixed $args = null): mixed
                             $sql = "SELECT id, name, age FROM students";
                             $student = $db->fetchClass($sql, "Student");
             
-                            //Find a student by id with a simple where clause -
+                            //Find a student by id with a non-parameterized where clause -
                             $studentId = 12;
                             $sql = "SELECT id, name, age FROM students WHERE id = $studentId"; <br>
                             $student = $db->fetchClass($sql, "Student");
@@ -304,7 +304,7 @@ fetchClass(string $sql, string $className, mixed $args = null): mixed
 $sql = "SELECT id, name, age FROM students";
 $students = $db->fetchAssocs($sql);
 
-//Find some students by school with a simple where clause -
+//Find some students by school with a non-parameterized where clause -
 $schoolId = 106;
 $sql = "SELECT id, name, age FROM students WHERE schoolId = $schoolId";
 $students = $db->fetchAssocs($sql);
@@ -326,13 +326,197 @@ $parameters->age = 25;
 $students = $db->fetchAssocs($sql, $parameters); //passed parameters as an object.
 
 //Now accessing the $student data -
-if(!$students){
-    //No record found.
-}
-else{
+if($students){
     foreach ($students as $student) {
         echo $student["name"];
     }
+}
+else{
+    //No record found.
+}
+                        </code>
+                    </pre>
+                </div>
+
+                
+                <!-- fetchObjects() -->
+                <div id="fetch-objects">
+                    <code class="language-php">fetchObjects(string $sql, mixed $args = null) : mixed</code> <br>
+                    An empty array is returned if there are zero results to fetch.
+                    <pre><code class="language-php">//Select some students -
+$sql = "SELECT id, name, age FROM students";
+$students = $db->fetchObjects($sql);
+
+//Find some students by school with a non-parameterized where clause -
+$schoolId = 106;
+$sql = "SELECT id, name, age FROM students WHERE schoolId = $schoolId";
+$students = $db->fetchObjects($sql);
+
+//Find some students by school with a parameterized where clause - 
+$sql = "SELECT id, name, age FROM students WHERE schoolId = $schoolId"; 
+$parameters= ["schoolId"=> $schoolId];
+$students = $db->fetchObjects($sql, $parameters);
+
+//You can also use multiple conditions -
+$sql = "SELECT id, name, age FROM students WHERE schoolId = :schoolId AND age > :age"; <br>
+$parameters= ["schoolId"=> $schoolId, "age"=>23];
+$students = $db->fetchObjects($sql, $parameters); //passed parameters as an array.
+
+//You also can pass parameters as an object -
+$parameters = new stdClass();
+$parameters->schoolId = $schoolId ;
+$parameters->age = 25;
+$students = $db->fetchObjects($sql, $parameters); //$students are now an array of objects.
+
+//Count total students-
+$totalStudents = count($students);
+
+//Now accessing the $student data -
+if($students){
+    $firstStudent = $students[0];
+    echo $firstStudent->name;
+    echo $firstStudent->age;
+}
+
+//Loop all the students data -
+if($students){
+    foreach ($students as $student) {
+        echo $student->name;
+    }
+}
+else{
+    //No record found.
+}
+                        </code>
+                    </pre>
+                </div>
+
+                
+                <!-- fetchClasses() -->
+                <div id="fetch-classes">
+                    <code class="language-php">fetchClasses(string $sql, string $className, mixed $args = null) : mixed</code> <br>
+                    An empty array is returned if there are zero results to fetch.
+                    <pre><code class="language-php">
+class Student {
+    // Properties
+    public int $id;
+    public string $name;
+    public int $age;
+}
+
+//Select some students -
+$sql = "SELECT id, name, age FROM students";
+$students = $db->fetchClasses($sql, "Student");
+
+//Find some students by school with a non-parameterized where clause -
+$schoolId = 106;
+$sql = "SELECT id, name, age FROM students WHERE schoolId = $schoolId";
+$students = $db->fetchClasses($sql, "Student");
+
+//Find some students by school with a parameterized where clause - 
+$sql = "SELECT id, name, age FROM students WHERE schoolId = $schoolId"; 
+$parameters= ["schoolId"=> $schoolId];
+$students = $db->fetchClasses($sql, "Student", $parameters);
+
+//You can also use multiple conditions -
+$sql = "SELECT id, name, age FROM students WHERE schoolId = :schoolId AND age > :age"; <br>
+$parameters= ["schoolId"=> $schoolId, "age"=>23];
+$students = $db->fetchClasses($sql, "Student", $parameters); //passed parameters as an array.
+
+//You also can pass parameters as an object -
+$parameters = new stdClass();
+$parameters->schoolId = $schoolId ;
+$parameters->age = 25;
+$students = $db->fetchClasses($sql, "Student", $parameters); //$students are now an array of objects.
+
+//Count total students-
+$totalStudents = count($students);
+
+//Now accessing the $student data -
+if($students){
+    $firstStudent = $students[0];
+    echo $firstStudent->name;
+    echo $firstStudent->age;
+}
+
+//Loop all the students data -
+if($students){
+    foreach ($students as $student) {
+        echo $student->name;
+    }
+}
+else{
+    //No record found.
+}
+                        </code>
+                    </pre>
+                </div>
+
+                
+                
+                <!-- insert() -->
+                <div id="insert">
+                    <code class="language-php">insert(string $sql, mixed $param = null) : int</code> <br>
+                    Execute insert sql and returns lastInsertId.
+                    <pre><code class="language-php">
+$sql = "INSERT INTO students(name,age,dob) VALUES('SAUMITRA KUMAR PAUL', 47, '1978-03-01')";
+$newStudentId = $db->insert($sql, $student);
+
+$student = new Student();
+$student->name = "SAUMITRA PAUL";
+$student->age = 47;
+$student->dob = '2001-03-13';
+$sql = "INSERT INTO test_table(name, age, dob) VALUES(:name, :age, :dob)";
+$newStudentId = $db->insert($sql, $student);
+
+$student["name"] = "Ghonta";
+$student["age"] = 35;
+$student["dob"] = '2019-01-11';
+$sql = "INSERT INTO test_table(name, age, dob) VALUES(:name, :age, :dob)";
+$newStudentId = $db->insert($sql, $student);
+
+//You also can 'auto-generate' the insert SQL statement - 
+$sql = $db->prepareInsertSql($student, "student_table");
+$newStudentId = $db->insert($sql, $student); 
+
+//Handling exceptions- 
+try {
+    $db->insert($sql, $student);
+} catch (\PDOException $th) {
+    echo $th->getMessage();
+}
+                        </code>
+                    </pre>
+                </div>
+
+                
+                <!-- update() -->
+                <div id="update">
+                    <code class="language-php">update($sql, $data = null):int</code> <br>
+                    Execute insert sql and returns Number of rows affected.
+                    <pre><code class="language-php">
+$sql = "UPDATE student_table SET name = 'Sindhu' WHERE id = 2 ";
+echo $db->update($sql);
+
+//Select a student as associative array-
+$student = $db->fetchAssoc("SELECT name, age FROM student_table WHERE id = 2")
+$student["name"] = "SUBORNO PAUL"; //update name
+$student["age"] = 06; //update age
+$sql = "UPDATE student SET name = :name, age=:age WHERE id = 2 ";
+echo $db->update($sql, $student);
+
+//Select a student as object-
+$student = $db->fetchObject("SELECT name, age FROM student_table WHERE id = 2")
+$student->name = "SAUMITRA PAUL";
+$student->age = 47;
+$sql = "UPDATE student_table SET name = :name, age=:age WHERE id = 2 ";
+echo $db->update($sql, $student);
+
+//Handling exceptions- 
+try {
+    $db->update($sql, $student);
+} catch (\PDOException $th) {
+    echo $th->getMessage();
 }
                         </code>
                     </pre>
@@ -374,14 +558,7 @@ else{
 
 
 
-                <div>
-                    <div>Example</div>
-                    <div>
-                        <pre><code class="language-php">//A simple select query for a single record (non-parameterized).
-$sql = "SELECT * FROM student WHERE id=1"; 
-$student = $db->fetchAssoc($sql);</code></pre>
-                    </div>
-                </div>
+
 
                 
                 <h4></h4>

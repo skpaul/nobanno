@@ -40,17 +40,17 @@
              * 
              * 
              * @param string $sql  SQL statement. parameterized/non-parameterized.
-             * @param mixed $param  null/object/array. 
+             * @param mixed $data  null/object/array. 
              * 
              */
-            public function insert(string $sql, mixed $param = null){
+            public function insert(string $sql, mixed $data = null): int{
                 try {
                     $statement = new PDOStatement;
-                    if ($param)
+                    if ($data)
                     {
-                        if(is_object($param)) $param = get_object_vars($param);
+                        if(is_object($data)) $data = get_object_vars($data);
                         $statement = $this->prepare($sql);
-                        $statement->execute($param);
+                        $statement->execute($data);
                         
                         return $this->lastInsertId();               
                     }
@@ -75,7 +75,7 @@
              * 
              * @return string  "INSERT INTO mytable(ColA, ColB) VALUES(ValA, ValB)". 
              */
-            public static function prepareInsertSql(mixed $dataToInsert, string $tableName, bool $isParameterized): string {
+            public static function prepareInsertSql(mixed $dataToInsert, string $tableName, bool $isParameterized = true): string {
                 if(is_object($dataToInsert)) $dataToInsert = get_object_vars($dataToInsert);
                 $columns = "`" . implode("`, `", array_keys($dataToInsert)) . "`";
                 $values= "";
@@ -281,7 +281,7 @@
              * 
              * @throws PDOException.            
              */
-            public function fetchClasses(string $sql, string $className, mixed $args = null): array{
+            public function fetchClasses(string $sql, string $className, mixed $args = null): mixed{
                 try {
                     if ($args)
                     {
