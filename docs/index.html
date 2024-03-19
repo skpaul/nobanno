@@ -295,7 +295,6 @@ fetchClass(string $sql, string $className, mixed $args = null): mixed
                     </pre>
                 </div>
 
-
                 <!-- fetchAssocs() -->
                 <div id="fetch-assocs">
                     <code class="language-php">fetchAssocs(string $sql, mixed $args = null) : mixed</code> <br>
@@ -337,7 +336,6 @@ else{
                         </code>
                     </pre>
                 </div>
-
                 
                 <!-- fetchObjects() -->
                 <div id="fetch-objects">
@@ -390,7 +388,6 @@ else{
                         </code>
                     </pre>
                 </div>
-
                 
                 <!-- fetchClasses() -->
                 <div id="fetch-classes">
@@ -451,8 +448,6 @@ else{
                         </code>
                     </pre>
                 </div>
-
-                
                 
                 <!-- insert() -->
                 <div id="insert">
@@ -482,26 +477,25 @@ $newStudentId = $db->insert($sql, $student);
 //Handling exceptions- 
 try {
     $db->insert($sql, $student);
-} catch (\PDOException $th) {
-    echo $th->getMessage();
+} catch (\PDOException $exp) {
+    echo $exp->getMessage();
 }
                         </code>
                     </pre>
                 </div>
-
                 
                 <!-- update() -->
                 <div id="update">
-                    <code class="language-php">update($sql, $data = null):int</code> <br>
+                    <code class="language-php">update(string $sql, mixed $data = null):int</code> <br>
                     Execute update sql and returns number of rows affected.
                     <pre><code class="language-php">//The most basic use case-
 $sql = "UPDATE students SET name = 'John Doe' WHERE id = 26 "; 
-echo $db->update($sql); //print 1
+$affectedRows = $db->update($sql); //1
 
 //Parameterized SQL statement-
 $sql = "UPDATE students SET name=:name, age=:age WHERE id=:id"; 
 $parameters = ["name"=>"John Doe", "age"=>21, "id"=>26];
-echo $db->update($sql, $parameters);
+$affectedRows = $db->update($sql, $parameters);
 
 //Parameters can also be an object-
 $sql = "UPDATE students SET name=:name, dob=:dob WHERE id=:id"; 
@@ -509,7 +503,7 @@ $parameters = new stdClass();
 $parameters->name =  "John Doe";
 $parameters->dob = '2018-01-19';
 $parameters->id = 1;
-echo $db->update($sql, $parameters); //print 1
+$affectedRows = $db->update($sql, $parameters); //1
 
 //Update an existing data-
 //in this example, student object must have equal properties as in SET :parameters.
@@ -520,7 +514,7 @@ $student->name = "Foo Bar"; //update name.
 unset($student->age); //remove additional property from student.
 unset($student->roll); //remove additional property from student.
 $sql = "UPDATE students SET name=:name WHERE id=:id"; //We only need :name & :id parameters from student.
-echo $db->update($sql, $student);
+$affectedRows = $db->update($sql, $student);
 
 //Auto-generate SQL statement-
 $studentId = 1;
@@ -530,31 +524,26 @@ $student->name = "Foo Bar"; //update name.
 $student->age= 2; //update age.
 $where = new stdClass(); //required for where clause.
 $where->id = $studentId; //add 'id' parameter with value.
-$sql = $db->prepareUpdateSql("students", $student, $where, true);
+$sql = $db->prepareUpdateSql("students", $student, $where, true); //automatically generates update statement.
 $data = array_merge((array)$student, (array)$where); //merge two objects into a single array.
-echo $db->update($sql, $data);
+$affectedRows = $db->update($sql, $data);
 
 //NOTE: in prepareUpdateSql() method, $student and $where CAN NOT contain same parameter name. For example-
-
 //Data you want to update-
 $student->name = "ABC";
 $student->father = "XYZ";
 $student->id =  12;
-
 //Where clause-
 $where->id = 12; 
-
 //Here 'id' column is common in both the data. This will create 'Invalid parameter number' error.
 //To solve this, you need to remove the common column from $student data-
 unset($student->id);
 
 //If you use parameterized statement, the $student data MUST HAVE the same columns as in SET clause. For example-
 $sql = "UPDATE students SET name=:name, age=:age";
-
 //Your $student data must have the same name & quantity of parameters-
 $student->name = "ABC";
 $student->age =  12;
-
 //If $student has any additional parameters, you need to remove those-
 unset($student->fatherName);
 unset($student->contactNumber);
@@ -562,201 +551,100 @@ unset($student->contactNumber);
 //In some complex queries, you may need to use same column name in both SET & WHERE clause. 
 //In that case, you need to change the parameter name. See the following example-
 $sql = "UPDATE students SET name=:newName, age=:newAge WHERE age>:minAge AND `name` LIKE CONCAT('%', :similarName, '%')";
-
-//Select a student as object-
-$student = $db->fetchObject("SELECT name, age FROM student_table WHERE id = 2")
-$student->name = "SAUMITRA PAUL";
-$student->age = 47;
-$sql = "UPDATE student_table SET name = :name, age=:age WHERE id = 2 ";
-echo $db->update($sql, $student);
+$parameters = new stdClass();
+$parameters->newName = "ABC";
+$parameters->newAge = 21;
+$parameters->minAge = 10;
+$parameters->similarName = "Something";
+$affectedRows = $db->update($sql, $data); //5
 
 //Handling exceptions- 
 try {
     $db->update($sql, $student);
-} catch (\PDOException $th) {
-    echo $th->getMessage();
+} catch (\PDOException $exp) {
+    echo $exp->getMessage();
+}
+                        </code>
+                    </pre>
+                </div>
+              
+                <!-- delete() -->
+                <div id="delete">
+                    <code class="language-php">delete(string $sql, mixed $data = null):int</code> <br>
+                    Execute sql and returns number of rows affected.
+                    <pre><code class="language-php">//The most basic use case-
+$sql = "DELETE FROM students WHERE sex = 'male' AND age > 18"; 
+$affectedRows = $db->delete($sql);
+
+//Parameterized SQL statement-
+$sql = "DELETE FROM students WHERE sex=:sex AND age>:age"; 
+$parameters = ["sex"=>"male", "age"=>21];
+$affectedRows = $db->update($sql, $parameters);
+
+//Parameters can also be an object-
+$sql = "DELETE FROM students WHERE sex=:sex AND age>:age"; 
+$parameters = new stdClass();
+$parameters->sex =  "male";
+$parameters->age = 18;
+$affectedRows = $db->delete($sql, $parameters);
+
+//Auto-generate SQL statement-
+$where = new stdClass();
+$where->sex =  "male";
+$where->age = 18;
+$sql = $db->prepareDeleteSql($where, "students", true); //automatically generates delete statement.
+$affectedRows = $db->update($sql, $data);
+
+//Handling exceptions- 
+try {
+    $db->delete($sql, $params);
+} catch (\PDOException $exp) {
+    echo $exp->getMessage();
 }
                         </code>
                     </pre>
                 </div>
 
-                
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                
-                <h4></h4>
-            </section>
-
-            <section id="expdo">
-                <h2>Database- Extended PDO</h2>
-                <pre><code class="language-php">
-$db = new ExPDO(DB_SERVER, DB_NAME, DB_USER, DB_PASSWORD);
-
-//Get single row-
-//$car = array("brand"=>"Ford", "model"=>"Mustang", "year"=>1964);
-$db->fetchAssoc(string $sql, mixed $args = null); //PDO::FETCH_ASSOC;
-$db->fetchObject();  //PDO::FETCH_OBJ; 
-$db->fetchClass();  //PDO::FETCH_OBJ; 
-
-//Get multiple rows-
-$db->fetchAssocs(); //PDO::FETCH_ASSOC;
-$db->fetchObjects();  //PDO::FETCH_OBJ; 
-$db->fetchClasses();  //PDO::FETCH_OBJ; 
-
-//A simple select query for a single record (non-parameterized)
-$sql = "SELECT * FROM student WHERE id=1"; 
-$student = $db->fetchAssoc($sql);
-
-//A simple select query for a single record (parameterized)
-$sql = "SELECT * FROM student WHERE login=:login AND password=:password"; 
-$student = $db->fetchAssoc($sql, array("login"=> $login, "password"=>$password));
-
-//A simple select query for all records
-$sql = "SELECT * FROM student";
-$students = $db->selectAssocs($sql);
-
-$count = count($students);
-
-
-
-//A parameterized select query for a single record.
-$id = 458;
-$sql = "SELECT * FROM student WHERE id=:id";
-$student = $db->selectSingle($sql, array('id' => $id);
-
-$name = "abc";
-$sql = "SELECT `name` FROM students WHERE `name` LIKE concat('%', :name, '%') ORDER BY `name` LIMIT 10";
-$studentList = $db->selectMany($sql, array("term"=>$name));
-
-//Check whether $studentLists has any record
-if(count($studentList) > 0){
-    $firstStudent = $studentList[0];
-}
-
-//loop
-foreach ($studentList as $student) {
-    $name = $student["name"]; //if $db->fetchAsAssoc() used.
-    $name = $student->name;    //if $db->fetchAsObject() used.
-}
-
-//temporarily switch to another fetch style and then back to previous- 
-
-$db->fetchAsAssoc();
-//do some tasks-
-$db->fetchAsObject(); //temporarily switch to PDO::FETCH_OBJ
-//do one task
-$db->backToPrevFetchStyle(); //back to prev style.
-
-//Insert--------------
-$sql = "INSERT INTO students(name, age) VALUES("Saumitra Kumar Paul", 26)";
-$id = $db->insert($sql);  //returns auto-incremented column value.
-
-$sql = "INSERT INTO students(name, age) VALUES(:name, :age)";
-$id = $db->insert($sql, array("name"=>"Saumitra Kumar Paul", "age"=>26)); 
-
-//OR, create a array (convenient if you have many data to insert)
-$newStudent["name"] = "Saumitra Kumar Paul";
-$newStudent["age"] = 26;
-
-$tableName = "students"; //database table name.
-$id = $db->insert($tableName, $newStudent);
-
-//Update -------------
-$name = "xyz";
-$age = 19;
-$id = 4;
-$updateSql = "UPDATE students SET name=$name, age=$age WHERE id=$id";  //non-parameterized SQL
-$affectedRows = $db->update($updateSql);
-
-$updateSql = "UPDATE students SET name=:name, age=$age WHERE id=:id"; //parameterized SQL
-$affectedRows = $db->update($updateSql, array("name"=>$name, "age"=>$age, "id"=>$id));
-
-//Update from data array --
-$data["name"] = "Saumitra Paul";
-$data["age"] = 19;
-
-$updateSql = $db->prepareUpdateSql("students", $data, "id=:id", true);
-$data["id"] = 4; // need for where clause paramter binding
-
-$affectedRows = $db->update($updateSql, $data);
-
-//Update from object --
-$data = new stdClass();
-$data->name = "Saumitra Paul";
-$data->age = 19;
-
-$updateSql = $db->prepareUpdateSql("students", $data, "id=:id", true);
-$data->id = 4; // need for where clause paramter binding
-
-$affectedRows = $db->update($updateSql, $data);
-
-
-//Delete
-$sql = "DELETE FROM students WHERE id=1";
-$affectedRows = $db->delete($sql);
-
-$sql = "DELETE FROM students WHERE id=:id";
-$affectedRows = $db->delete($sql, array("id"=>1));
-//OR
-$deleteParams["id"]=1;
-$affectedRows = $db->delete($sql, $deleteParams);
-
-//Transaction
+                <!-- transactions() -->
+                <div id="transactions">
+                    
+                    transactions
+                    <pre><code class="language-php">
+try {
+    /* Begin a transaction, turning off autocommit */
     $db->beginTransaction(); //Returns true on success or false on failure.
+
     //do some insert/update/delete
 
     //then commit
     $db->commit(); //Returns true on success or false on failure.
-
+} catch (\PDOException $exp) {
     //rollback if fails to commit.
-    rollBack()
+    $db->rollBack();
+    /* Database connection is now back in autocommit mode */
+}
+                        </code>
+                    </pre>
+                </div>
 
-//Exception
-    $db throws 'PDOException' if any select(), insert(), update() or delete() fails to exectute.
+                 <!-- transactions() -->
+                 <div id="transactions">
+                    
+                    Utility Methods
+                    <pre><code class="language-php">
+$db->prepareSelectSql(string $columns, string $tableName, mixed $where, bool $isParameterized): string
 
-    try{
-       //do here your db CRUD operation.
-    }
-    catch (\PDOException $exp) {
-       $exceptionDetails = $exp->getMessage();
-    }
-                </code></pre>
+$db->prepareInsertSql(mixed $dataToInsert, string $tableName, bool $isParameterized = true): string
+
+$db->prepareUpdateSql(string $tableToUpdate, mixed $dataToUpdate, mixed $where, bool $isParameterized): string
+
+$db->prepareDeleteSql(mixed $where, string $tableName, bool $isParameterized): string
+                        </code>
+                    </pre>
+                </div>
+
             </section>
+
 
             <section class="card" id="Validable">
                 <h2>Data Validation</h2>

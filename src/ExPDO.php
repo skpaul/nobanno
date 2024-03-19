@@ -349,7 +349,7 @@
              * 
              * @throws PDOException.             
              */
-            public function update($sql, $data = null):int{
+            public function update(string $sql, mixed $data = null):int{
                 try {
                     if ($data)
                     {
@@ -431,7 +431,7 @@
              * 
              * @throws PDOException.             
              */
-            public function delete($sql, mixed $param = null):int{
+            public function delete(string $sql, mixed $param = null):int{
                 try {
                     if ($param)
                     {
