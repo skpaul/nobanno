@@ -494,52 +494,74 @@ try {
                 <div id="update">
                     <code class="language-php">update($sql, $data = null):int</code> <br>
                     Execute update sql and returns number of rows affected.
-                    <pre><code class="language-php">
-$sql = "UPDATE student_table SET name = 'Sindhu' WHERE id = 2 ";
-echo $db->update($sql);
+                    <pre><code class="language-php">//The most basic use case-
+$sql = "UPDATE students SET name = 'John Doe' WHERE id = 26 "; 
+echo $db->update($sql); //print 1
 
-//Select a student as associative array-
-$student = $db->fetchAssoc("SELECT name, age FROM student_table WHERE id = 2")
-$student["name"] = "SUBORNO PAUL"; //update name
-$student["age"] = 06; //update age
-$sql = "UPDATE student SET name = :name, age=:age WHERE id = 2 ";
+//Parameterized SQL statement-
+$sql = "UPDATE students SET name=:name, age=:age WHERE id=:id"; 
+$parameters = ["name"=>"John Doe", "age"=>21, "id"=>26];
+echo $db->update($sql, $parameters);
+
+//Parameters can also be an object-
+$sql = "UPDATE students SET name=:name, dob=:dob WHERE id=:id"; 
+$parameters = new stdClass();
+$parameters->name =  "John Doe";
+$parameters->dob = '2018-01-19';
+$parameters->id = 1;
+echo $db->update($sql, $parameters); //print 1
+
+//Update an existing data-
+//in this example, student object must have equal properties as in SET :parameters.
+$studentId = 1;
+$sql = "SELECT id, name, age, roll FROM students WHERE id=:id";
+$student = $db->fetchObject($sql, ["id"=>$studentId]); //read from database.
+$student->name = "Foo Bar"; //update name.
+unset($student->age); //remove additional property from student.
+unset($student->roll); //remove additional property from student.
+$sql = "UPDATE students SET name=:name WHERE id=:id"; //We only need :name & :id parameters from student.
 echo $db->update($sql, $student);
 
-If you use a single column (i.e. primary key) in where clause, you can dynamically generate an UPDATE statement as follows-
-
-
-$where["id"] = 1; //define a where array
-$sql = $db->prepareUpdateSql("student_table", $student, $where, true);
-$data = array_merge($student, $where);
+//Auto-generate SQL statement-
+$studentId = 1;
+$sql = "SELECT name, age FROM students WHERE id=:id"; //select only columns which you want to modify.
+$student = $db->fetchObject($sql, ["id"=>$studentId]); 
+$student->name = "Foo Bar"; //update name.
+$student->age= 2; //update age.
+$where = new stdClass(); //required for where clause.
+$where->id = $studentId; //add 'id' parameter with value.
+$sql = $db->prepareUpdateSql("students", $student, $where, true);
+$data = array_merge((array)$student, (array)$where); //merge two objects into a single array.
 echo $db->update($sql, $data);
 
-//Please note that, in prepareUpdateSql() method, $student and $where CAN NOT contain same parameter. For example-
+//NOTE: in prepareUpdateSql() method, $student and $where CAN NOT contain same parameter name. For example-
 
-//This is the data you want to update-
-$student["name"] = "ABC";
-$student["id"] =  12;
+//Data you want to update-
+$student->name = "ABC";
+$student->father = "XYZ";
+$student->id =  12;
 
-//And, this is the data used in where clause-
-$where["id"] = 12; 
+//Where clause-
+$where->id = 12; 
 
 //Here 'id' column is common in both the data. This will create 'Invalid parameter number' error.
 //To solve this, you need to remove the common column from $student data-
-unset($student['id']);
+unset($student->id);
 
 //If you use parameterized statement, the $student data MUST HAVE the same columns as in SET clause. For example-
-$sql = "UPDATE test_table SET name=:name, age=:age";
+$sql = "UPDATE students SET name=:name, age=:age";
 
-//Your $student data must have the same column names and quantity-
-$student["name"] = "ABC";
-$student["age"] =  12;
+//Your $student data must have the same name & quantity of parameters-
+$student->name = "ABC";
+$student->age =  12;
 
-//If your $student has other columns also, you need to remove those-
-unset($student['fatherName']);
-unset($student['contactNumber']);
+//If $student has any additional parameters, you need to remove those-
+unset($student->fatherName);
+unset($student->contactNumber);
 
 //In some complex queries, you may need to use same column name in both SET & WHERE clause. 
 //In that case, you need to change the parameter name. See the following example-
-$sql = "UPDATE test_table SET name=:newName, age=:newAge WHERE age>:minAge AND `name` LIKE CONCAT('%', :similarName, '%')";
+$sql = "UPDATE students SET name=:newName, age=:newAge WHERE age>:minAge AND `name` LIKE CONCAT('%', :similarName, '%')";
 
 //Select a student as object-
 $student = $db->fetchObject("SELECT name, age FROM student_table WHERE id = 2")
