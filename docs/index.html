@@ -121,19 +121,21 @@ $date1 = $clock->toDate('24-04-2022'); //Returns a php datetime object from any 
 $date2 = $clock->toDate('2022/04/17'); //Returns a php datetime object from any valid datetime string.
 $dateWithTime = $clock->toDate('24-04-2022 23:59:01'); //Returns a php datetime object from any valid datetime string.
 
-//Datetime to string conversion syntax-
-$string = $clock->toString($datetimeObject, DatetimeFormat::Format());
+//Datetime to string conversion-
+$datetime = $clock->toDate('2024/04/17 01:45:13 PM');
+echo $clock->toString($datetime, DatetimeFormat::MySqlDate()); //2024-04-17
+echo $clock->toString($datetime, DatetimeFormat::MySqlDatetime()); //2024-04-17 13:45:13
+echo $clock->toString($datetime, DatetimeFormat::BdDate()); //17-04-2024 (Bangladesh Date format)
+echo $clock->toString($datetime, DatetimeFormat::BdTime()); //01:45 PM (Bangladesh Time format)
+echo $clock->toString($datetime, DatetimeFormat::BdDatetime()); //17-04-2024 01:45 PM (Bangladesh Datetime format)
+echo $clock->toString($datetime, DatetimeFormat::Custom($format)); // $format = any valid php datetime format 
 
-//DatetimeFormat Enums -
-DatetimeFormat::MySqlDate() //"Y-m-d"
-DatetimeFormat::MySqlDatetime() //"Y-m-d H:i:s"
-DatetimeFormat::BdDate() //"d-m-Y"
-DatetimeFormat::BdTime() //"h:i A"
-DatetimeFormat::BdDatetime() //"h:i A d-m-Y"
-DatetimeFormat::Custom($format) // $format = any valid php datetime format 
+//Datetime manipulation- 
+$newDatetime = addHours(int $hoursToAdd, mixed $oldDatetime) :DateTime  //$oldDatetime = php datetime object or valid php datetime string.
+$newDatetime = deductHours(int $hoursToSubtract, mixed $oldDatetime) :DateTime  //$oldDatetime = php datetime object or valid php datetime string.
 
-//Example
-$string = $clock->toString($date2, DatetimeFormat::BdDatetime());</code></pre>
+
+</code></pre>
             </section>
             <!-- Clock// -->
 

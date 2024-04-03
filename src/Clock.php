@@ -83,8 +83,8 @@
         #endregion
 
         #region Hour manipulation
-            public function addHours(int $hoursToAdd, mixed $datetime ){
-
+            public function addHours(int $hoursToAdd, mixed $datetime):DateTime
+            {
                 if ($datetime instanceof DateTime){
                     $dt = $datetime;
                 }
@@ -94,8 +94,8 @@
                 return  $dt->add(new DateInterval("PT" . $hoursToAdd . "H"));
             }
 
-            public function deductHours(int $hoursToSubtract, mixed $datetime ){
-
+            public function deductHours(int $hoursToSubtract, mixed $datetime):DateTime
+            {
                 if ($datetime instanceof DateTime){
                     $dt = $datetime;
                 }
@@ -118,7 +118,7 @@
              * 
              * @return DateTime The modified datetime.
             */
-            public function addDays(int $daysToAdd, mixed $datetime ){
+            public function addDays(int $daysToAdd, mixed $datetime):DateTime{
 
                 if ($datetime instanceof DateTime){
                     $dt = $datetime;
@@ -139,7 +139,7 @@
              * 
              * @return DateTime The modified datetime.
             */
-            public function deductDays(mixed $datetime, int $daysToSubtract){
+            public function deductDays(mixed $datetime, int $daysToSubtract):DateTime{
                 if ($datetime instanceof DateTime){
                     $dt = $datetime;
                 }
@@ -151,7 +151,7 @@
         #endregion
 
         #region Year manipulation
-            public function addMonths(int $monthsToAdd, mixed $datetime ){
+            public function addMonths(int $monthsToAdd, mixed $datetime):DateTime{
 
                 if ($datetime instanceof DateTime){
                     $dt = $datetime;
@@ -162,7 +162,7 @@
                 return  $dt->add(new DateInterval("P" . $monthsToAdd . "M"));
             }
 
-            public function deductMonths(int $monthsToSubtract, mixed $datetime ){
+            public function deductMonths(int $monthsToSubtract, mixed $datetime):DateTime{
 
                 if ($datetime instanceof DateTime){
                     $dt = $datetime;
@@ -176,7 +176,7 @@
         #endregion
 
         #region Year manipulation
-            public function addYears(int $yearsToAdd, mixed $datetime ){
+            public function addYears(int $yearsToAdd, mixed $datetime):DateTime{
 
                 if ($datetime instanceof DateTime){
                     $dt = $datetime;
@@ -187,7 +187,7 @@
                 return  $dt->add(new DateInterval("P" . $yearsToAdd . "Y"));
             }
 
-            public function deductYears(int $yearsToSubtract, mixed $datetime ){
+            public function deductYears(int $yearsToSubtract, mixed $datetime):DateTime{
 
                 if ($datetime instanceof DateTime){
                     $dt = $datetime;
