@@ -104,9 +104,12 @@ catch (\Exception $exp) {
 </code></pre>
         	</div><!-- card ends -->
 
-            <div class="card" id="Clock">
-                <h2>Clock</h2>
-                <p>A datetime utility class.</p>
+            <section id="clock">
+                <h2>Clock (Datetime Utility)</h2>
+
+               <pre><code class="language-php">
+$clock = new Clock(string $datetimeZone = "Asia/Dhaka");
+                </code></pre>
                 <pre><code class="language-php">//Create new instance-
 $clock = new Clock();
 
@@ -131,7 +134,8 @@ DatetimeFormat::Custom($format) // $format = any valid php datetime format
 
 //Example
 $string = $clock->toString($date2, DatetimeFormat::BdDatetime());</code></pre>
-            </div>
+            </section>
+            <!-- Clock// -->
 
             <section id="ex-pdo">
                 <h2>ExPDO (Extended PDO)</h2>

@@ -38,47 +38,75 @@
     }
 
     class Clock{
+        protected $datetimeZone = "";
         public function __construct(string $datetimeZone = "Asia/Dhaka") {
             $this->datetimeZone=new DateTimeZone($datetimeZone);
         }
 
-        /**
-         * toDate()
-         * 
-         * Returns a php datetime object.
-         * 
-         * @param string $value
-         * 
-         * @return Datetime
-         */
-        public function toDate(string $value):DateTime
-        {
-            return new DateTime($value, $this->datetimeZone);
-        }
-
-
-        /**
-         * toDate()
-         * 
-         * Returns a php datetime object.
-         * 
-         * @param mixed $value
-         * 
-         * @param DatetimeFormat $format
-         * 
-         * @return string
-         */
-        public function toString(mixed $value, DatetimeFormat $format):string
-        {
-            if ($value instanceof DateTime){
-                return $value->format($format);
+        #region Core Methods
+            /**
+             * toDate()
+             * 
+             * Returns a php datetime object.
+             * 
+             * @param string $value
+             * 
+             * @return Datetime
+             */
+            public function toDate(string $value):DateTime
+            {
+                return new DateTime($value, $this->datetimeZone);
             }
-            else{
-                $dt = new DateTime($value, $this->datetimeZone);
-                return $dt->format($format);
-            }
-        }
 
+
+            /**
+             * toDate()
+             * 
+             * Returns a php datetime object.
+             * 
+             * @param mixed $value
+             * 
+             * @param DatetimeFormat $format
+             * 
+             * @return string
+             */
+            public function toString(mixed $value, DatetimeFormat $format):string
+            {
+                if ($value instanceof DateTime){
+                    return $value->format($format);
+                }
+                else{
+                    $dt = new DateTime($value, $this->datetimeZone);
+                    return $dt->format($format);
+                }
+            }
+        #endregion
+
+        #region Hour manipulation
+            public function addHours(int $hoursToAdd, mixed $datetime ){
+
+                if ($datetime instanceof DateTime){
+                    $dt = $datetime;
+                }
+                else{
+                    $dt = new DateTime($datetime, $this->datetimeZone);
+                }
+                return  $dt->add(new DateInterval("PT" . $hoursToAdd . "H"));
+            }
+
+            public function deductHours(int $hoursToSubtract, mixed $datetime ){
+
+                if ($datetime instanceof DateTime){
+                    $dt = $datetime;
+                }
+                else{
+                    $dt = new DateTime($datetime, $this->datetimeZone);
+                }
+                return  $dt->sub(new DateInterval("PT" . $hoursToSubtract . "H"));
+            }
+
+        #endregion
+            
         #region Day manipulation
             /**
              * addDays()
@@ -123,6 +151,31 @@
         #endregion
 
         #region Year manipulation
+            public function addMonths(int $monthsToAdd, mixed $datetime ){
+
+                if ($datetime instanceof DateTime){
+                    $dt = $datetime;
+                }
+                else{
+                    $dt = new DateTime($datetime, $this->datetimeZone);
+                }
+                return  $dt->add(new DateInterval("P" . $monthsToAdd . "M"));
+            }
+
+            public function deductMonths(int $monthsToSubtract, mixed $datetime ){
+
+                if ($datetime instanceof DateTime){
+                    $dt = $datetime;
+                }
+                else{
+                    $dt = new DateTime($datetime, $this->datetimeZone);
+                }
+                return  $dt->sub(new DateInterval("P" . $monthsToSubtract . "M"));
+            }
+
+        #endregion
+
+        #region Year manipulation
             public function addYears(int $yearsToAdd, mixed $datetime ){
 
                 if ($datetime instanceof DateTime){
@@ -143,31 +196,6 @@
                     $dt = new DateTime($datetime, $this->datetimeZone);
                 }
                 return  $dt->sub(new DateInterval("P" . $yearsToSubtract . "Y"));
-            }
-
-        #endregion
-
-        #region Hour manipulation
-            public function addHours(int $hoursToAdd, mixed $datetime ){
-
-                if ($datetime instanceof DateTime){
-                    $dt = $datetime;
-                }
-                else{
-                    $dt = new DateTime($datetime, $this->datetimeZone);
-                }
-                return  $dt->add(new DateInterval("PT" . $hoursToAdd . "H"));
-            }
-
-            public function deductHours(int $hoursToSubtract, mixed $datetime ){
-
-                if ($datetime instanceof DateTime){
-                    $dt = $datetime;
-                }
-                else{
-                    $dt = new DateTime($datetime, $this->datetimeZone);
-                }
-                return  $dt->sub(new DateInterval("PT" . $hoursToSubtract . "H"));
             }
 
         #endregion
