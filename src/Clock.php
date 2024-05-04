@@ -45,7 +45,7 @@
 
         #region Core Methods
             /**
-             * toDate()
+             * toDate()  DEPRECATED
              * 
              * Returns a php datetime object.
              * 
@@ -58,6 +58,19 @@
                 return new DateTime($value, $this->datetimeZone);
             }
 
+            /**
+             * toDatetime()
+             * 
+             * Returns a php datetime object.
+             * 
+             * @param string $value
+             * 
+             * @return Datetime
+             */
+            public function toDatetime(string $value):DateTime
+            {
+                return new DateTime($value, $this->datetimeZone);
+            }
 
             /**
              * toDate()

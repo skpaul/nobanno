@@ -74,29 +74,17 @@
             </section><!-- Installation ends -->
 
 
-        	<div id="Require">
-        		<h2>Require</h2>
-                <p>Include this .php file in every all pages. This is a php class with static methods.</p>
-        		<pre><code class="language-php">require_once('./Required.php');	                      
-Required::Logger();  //Include logger class
-Required::Database(); //Include Database class.
-
-//The above two methods can be called in a single line using method chaining.
-Required::Logger()->Database();</code></pre>
-        	</div>
-
-            <div class="card" id="Logger">
+            <div class="card" id="logger">
         		<h2>Logger()</h2>
                 <p>Create logs for all handled/unhandled errors & exceptions. 	
-                <pre><code class="language-php">//Include Logger class in the script- 
-Required::Logger();  //You should include Logger class before of all other class/s.
+                <pre><code class="language-php">
 
 //Create new instance-
-$logger = new Logger($errorLogFilePath);  //Default-  '/web-root-directory/error.log'
+$logger = new Logger($errorLogFilePath);  //Default-  '/root-directory/error.log'
 
 //Example of logging exceptions-
 try{
-    .....
+    //malfunctioning code
 }
 catch (\Exception $exp) {
     $logger->createLog($exp->getMessage());
@@ -106,20 +94,16 @@ catch (\Exception $exp) {
 
             <section id="clock">
                 <h2>Clock (Datetime Utility)</h2>
-
-               <pre><code class="language-php">
-$clock = new Clock(string $datetimeZone = "Asia/Dhaka");
-                </code></pre>
                 <pre><code class="language-php">//Create new instance-
-$clock = new Clock();
+$clock = new Clock(string $datetimeZone);  //default "Asia/Dhaka"
 
 //Get current datetime-
-$now = $clock->toDate("now"); //returns datetime object.
+$now = $clock->toDatetime("now"); //returns datetime object.
 
-//String to datetime conversion-
-$date1 = $clock->toDate('24-04-2022'); //Returns a php datetime object from any valid datetime string.
-$date2 = $clock->toDate('2022/04/17'); //Returns a php datetime object from any valid datetime string.
-$dateWithTime = $clock->toDate('24-04-2022 23:59:01'); //Returns a php datetime object from any valid datetime string.
+//Get a php datetime object from any valid datetime string -
+$date1 = $clock->toDatetime('24-04-2022'); 
+$date2 = $clock->toDatetime('2022/04/17'); 
+$datetime = $clock->toDatetime('24-04-2022 23:59:01');
 
 //Datetime to string conversion-
 $datetime = $clock->toDate('2024/04/17 01:45:13 PM');
