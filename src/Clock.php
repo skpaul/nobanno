@@ -163,7 +163,7 @@
             }
         #endregion
 
-        #region Year manipulation
+        #region month manipulation
             public function addMonths(int $monthsToAdd, mixed $datetime):DateTime{
 
                 if ($datetime instanceof DateTime){
