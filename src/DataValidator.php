@@ -395,7 +395,7 @@
              * 
              * @throws ValidationException
              */
-            public function asAlphabetic($allowSpace){
+            public function asAlphabetic(bool $allowSpace){
                 $this->character_or_digit = "characters"; //"অক্ষর";
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
                     if($allowSpace){
@@ -446,7 +446,7 @@
              * @return this $this
              * @throws ValidationException
              */
-            public function asAlphaNumeric($allowSpace){
+            public function asAlphaNumeric(bool $allowSpace){
                 $this->character_or_digit = "characters"; //"অক্ষর";
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
                     if($allowSpace){
@@ -476,7 +476,7 @@
              * 
              * @throws ValidationException
              */
-            public function asString($allowSpace){
+            public function asString(bool $allowSpace){
                 $this->character_or_digit = "characters"; //"অক্ষর";
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
                     if(!$allowSpace){
@@ -516,7 +516,7 @@
              * 
              * @throws ValidationException
              */
-            public function asInteger($allowNegative){
+            public function asInteger(bool $allowNegative){
                 $this->character_or_digit = "digits"; //"সংখ্যা";
             
                 $valueToValidate = $this->valueToValidate;
@@ -558,7 +558,7 @@
              * 
              * @throws ValidationException
              */
-            public function asFloat($allowNegative){
+            public function asFloat(bool $allowNegative){
                 //check whether has a decimal point.
                 //if has a decimal point, then check it with is_float().
                 //if no decimal point, then check it with is_int().
@@ -751,7 +751,7 @@
              * 
              * @return this $this
              */
-            public function asDate($datetimeZone = "Asia/Dhaka"){
+            public function asDate(string $datetimeZone = "Asia/Dhaka"){
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
                     // $pattern =   '~^(((0[1-9]|[12]\\d|3[01])\\-(0[13578]|1[02])\\-((19|[2-9]\\d)\\d{2}))|((0[1-9]|[12]\\d|30)\\-(0[13456789]|1[012])\\-((19|[2-9]\\d)\\d{2}))|((0[1-9]|1\\d|2[0-8])\\-02\\-((19|[2-9]\\d)\\d{2}))|(29\\/02\\-((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))))$~';
 
@@ -788,7 +788,6 @@
              * Checks whether the value is a valid boolean
              * Convert the value as boolean.
              * 
-             * @param string $datetimeZone Default is "Asia/Dhaka".
              * @throws ValidationException Exception if the value is invalid.
              * 
              * @return this $this
@@ -820,7 +819,7 @@
              * 
              * @throws ValidationException
              */
-            public function exactLen($length){
+            public function exactLen(int $length){
                 if(!empty($this->valueToValidate)){
                     $_length = strlen(strval($this->valueToValidate));
                     $label = $this->label;
@@ -844,7 +843,7 @@
              * 
              * @throws ValidationException
              */
-            public function minLen($length){
+            public function minLen(int $length){
                 if(!empty($this->valueToValidate)){
                     $_length = strlen(strval($this->valueToValidate));
                     $label = $this->label;
@@ -867,7 +866,7 @@
              * 
              * @throws ValidationException
              */
-            public function maxLen($length){
+            public function maxLen(int $length){
                 if(!empty($this->valueToValidate)){
                     $_length = strlen(strval($this->valueToValidate));
                     $label = $this->label;
@@ -943,40 +942,42 @@
             }
         #endregion
 
-        public function startsWith($startString){ 
-            $string = $this->valueToValidate;
-            $label = $this->label;
-            if(!$this->_starts_with($string,$startString)){
-                $msg = "$label শুরু হবে $startString দিয়ে।";
-                throw new ValidationException($msg);
-            }
-            return $this;
-        } 
+        #region Misc.
+            public function startsWith($startString){ 
+                $string = $this->valueToValidate;
+                $label = $this->label;
+                if(!$this->_starts_with($string,$startString)){
+                    $msg = "$label শুরু হবে $startString দিয়ে।";
+                    throw new ValidationException($msg);
+                }
+                return $this;
+            } 
 
-        private function _starts_with($string, $startString){ 
-            $len = strlen($startString); 
-            if(strlen($string) === 0){
-                return false;
-            }
-            return (substr($string, 0, $len) === $startString); 
-        } 
-        
-        function endsWith($endString){ 
-            $string = $this->valueToValidate;
-            if(!$this->_ends_with($string, $endString)){
-                $msg = "$this->label শেষ হবে $endString দিয়ে।";
-                throw new ValidationException($msg);
-            }
-            return $this;
-        } 
+            private function _starts_with($string, $startString){ 
+                $len = strlen($startString); 
+                if(strlen($string) === 0){
+                    return false;
+                }
+                return (substr($string, 0, $len) === $startString); 
+            } 
+            
+            function endsWith($endString){ 
+                $string = $this->valueToValidate;
+                if(!$this->_ends_with($string, $endString)){
+                    $msg = "$this->label শেষ হবে $endString দিয়ে।";
+                    throw new ValidationException($msg);
+                }
+                return $this;
+            } 
 
-        private function _ends_with($string, $endString){ 
-            $len = strlen($endString); 
-            if(strlen($string) === 0){
-                return false;
-            }
-            return (substr($string, -$len) === $endString); 
-        } 
+            private function _ends_with($string, $endString){ 
+                $len = strlen($endString); 
+                if(strlen($string) === 0){
+                    return false;
+                }
+                return (substr($string, -$len) === $endString); 
+            } 
+        #endregion
 
         /**
          * validate()

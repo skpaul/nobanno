@@ -70,7 +70,15 @@
         <main class="fr8">
             <section class="card"> 
                 <h2>Installation</h2>
-                <pre><code class="language-php">composer require nobanno/nobanno</code> </pre>
+                <pre><code class="language-php">Update your composer.json -
+{
+    "require": {
+        "nobanno/nobanno": "2.1.7"
+    }
+}
+
+And then execute the following command in your terminal - 
+$ composer update</code></pre>
             </section><!-- Installation ends -->
 
 
@@ -665,7 +673,7 @@ $validator->title("Name")->post("fullName")->required()->asString(true)->maxLen(
     //MANDATORY/OPTIONAL VALIDATION
     ===============================
     optional()   //The value is optional. This is default.
-    required()   //The value is mandatory. 
+    required()   //The value is mandatory. If there is no call to $validator->required(), $validator->optional() will be used automatically.
 
     default($defaultValue)  //Sets default value if the source value is absent. 
                             //Must use this method if required() not used.
@@ -679,24 +687,60 @@ $validator->title("Name")->post("fullName")->required()->asString(true)->maxLen(
 
     //DATATYPE VALIDATION
     =====================
-    asString($allowSpace)       //Checks whether the value is a valid integer. $allowSpace=true/false.    
-    asInteger($allowNegative)   //Checks whether the value is a valid integer. $allowNegative=true/false.
-    asFloat($allowNegative)     //Checks whether the value is a valid float.  $allowNegative=true/false.
-    asEmail()                   //Checks whether the value is a valid emaill address.
-    asMobile()                  //Checks whether the value is a valid mobile number (Bangladesh only).
-    asDate()                    //Checks whether the value type is a valid date/datetime.
-    asBool()                    //Checks whether the value type is a valid bolean(true/false).
+    asAlphabetic(bool $allowSpace) - Allows letters (A-Z/a-z) only.
+    Example: $validator->title("Student Name")->post("name")->asAlphabetic(true)->validate();
+
+    asNumeric() - Allows numbers only.
+    Example: $validator->title("A long number")->post("longNumber")->asNumeric()->validate();
+
+    asAlphaNumeric(bool $allowSpace) - Letters and/or numbers allowd (A-Z, a-z and 0-9).
+    Example - $validator->title("Address")->post("address")->asAlphaNumeric(true)->validate();
+
+    asString(bool $allowSpace) - Allows all alphabets/letters/arithmatic signs/special characters.    
+    Example - $validator->title("Address")->post("address")->asString(true)->validate();
+
+    asInteger(bool $allowNegative) - Value must be of integer type. Parameter can be with/without quote symbol ("1001" or 1001).
+    Example - $validator->title("Amount to deduct")->post("amount")->asInteger(true)->validate();
+
+    asFloat(bool $allowNegative) - Value must be of float type. Parameter can be with/without quote symbol ("10.01" or 10.01).
+    Example - $validator->title("Amount to deduct")->post("amount")->asFloat(true)->validate();
+
+    asArray() - Value must be an array.
+    Example - $validator->title("Invoice items")->post("items")->asArray()->validate();
+
+    asEmail() - Value must be an email.
+    Example - $validator->title("Invoice items")->post("items")->asEmail()->validate();
+
+    asMobile() - Value must be a mobile number (Bangladesh only). It returns the number with prefix - "880".
+    Example - $validator->title("Contact Number")->post("mobile")->asMobile()->validate();
+
+    asDate(string $datetimeZone = "Asia/Dhaka") - Value must be a valid boolean string/integer. It returns php bool.
+    Example - $validator->title("Date of Birth")->post("dob")->asDate()->validate();
+
+    asBool() - Value must be a date/datetime string. It returns php datetime object.
+    Example - $validator->title("Date of Birth")->post("dob")->asBool()->validate();
+
 
     //DATA LENGTH VALIDATION
     ========================
-    exactLen($length)       //Checks whether the value has exactly 50 characters length.
-    minLen($minLength)      //Checks whether the value has minimum 50 characters length.
+    exactLen(int $length) -  Checks whether the value has exactly an specific length.
+    Example - $validator->title("Passport Number")->post("passportNo")->asString(false)->exactLen(13)->validate();
+
+    minLen(int $minLength) - Checks whether the value has minimum specified length.
+    Example - $validator->title("Name")->post("name")->minLen(5)->validate();
+
+    maxLen(int $maxLength) - Checks whether the value has maximum specified length.
+    Example - $validator->title("Name")->post("name")->maxLen(5)->validate();
+
     maxLen($maxLength)      //Checks whether the value has maximum 50 characters length.
 
     //MIN OR MAX VALUE VALIDATION
     =============================
-    ->minVal($minValue)->  //Checks whether the value has minimum value of 2021.
-    ->maxVal($maxValue)->  //Checks whether the value has maximum value of 54.9.
+    minVal($minValue) -  Checks whether the value has minimum specified value. If datatype is date, then convert into date before passing as arguement.
+    Example - $validator->title("Age")->post("age")->minVal(18)->validate();
+
+    maxVal($maxValue) -  Checks whether the value exceeded the maximum specified value. If datatype is date, then convert into date before passing as arguement.
+    Example - $validator->title("Age")->post("age")->maxVal(40)->validate();
 
     //MISCELLANEOUS
     ===============
