@@ -116,7 +116,12 @@
              */
             public function post($httpPostFieldName){
                 if(isset($_POST[$httpPostFieldName])){
-                    $value = trim($_POST[$httpPostFieldName]);
+                    if(is_array($_POST[$httpPostFieldName])){
+                        $value = $_POST[$httpPostFieldName]; //dont use trim() on an array.
+                    }
+                    else{
+                        $value = trim($_POST[$httpPostFieldName]);
+                    }
                     $this->valueToValidate = $value;
                 }
                 else{
@@ -342,14 +347,14 @@
              */
             public function required(){
                 $this->required = true;
-                if(!isset($this->valueToValidate)){
+                if(!isset($this->valueToValidate) || empty($this->valueToValidate)){
                     throw new ValidationException("{$this->label} {$this->requiredLang}");
                 }
-                else{
-                    if(empty($this->valueToValidate)){
-                        throw new ValidationException("{$this->label} {$this->requiredLang}");
-                    }
-                }
+                // else{
+                //     if(empty($this->valueToValidate)){
+                //         throw new ValidationException("{$this->label} {$this->requiredLang}");
+                //     }
+                // }
                 return $this;
             }
 
@@ -378,24 +383,6 @@
         #endregion
 
         #region Check for data type
-            /**
-             * asAscii()
-             * 
-             * It allows only english language.
-             * 
-             * @return this $this
-             * 
-             * @throws ValidationException
-             */
-            public function asAscii(){
-                if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
-                    if(!is_numeric($this->valueToValidate)){
-                        throw new ValidationException("{$this->label} must be numeric.");
-                    }
-                }
-                
-                return $this;
-            }
             
             /**
              * asAlphabetic()
@@ -614,18 +601,6 @@
                 return $this;
             }
         
-            //It counts the digits after a decimal point.
-            //i.e. 
-            private function _count_decimal_value($required_digits){
-                $arr = explode('.', strval($this->valueToValidate));
-                if(strlen($arr[1]) == $required_digits){
-                    return true;
-                }
-                else{
-                    return false;
-                }
-            }
-    
             private function _has_decimal($number){
                 $count = substr_count(strval($number), '.');
                 if($count == 1){
@@ -634,6 +609,31 @@
                 else{
                     return false;
                 }
+            }
+
+            /**
+             * asArray()
+             * 
+             * Value must be an array.
+             * 
+             * @return this $this
+             * 
+             * @throws ValidationException
+             */
+            public function asArray(){
+                if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
+                    if(!is_array($this->valueToValidate)){
+                        throw new ValidationException("{$this->label} {$this->invalidLang}");
+                    }
+                    else{
+                        if($this->required){
+                            if(count($this->valueToValidate) == 0){
+                                throw new ValidationException("{$this->label} {$this->invalidLang}");
+                            }
+                        }
+                    }
+                }
+                return $this;
             }
 
             /**
@@ -804,35 +804,6 @@
                 }
                 return $this;
             }
-      
-            private function _is_date_valid($date_string){
-                //$date_string = '23-11-2010';
-
-                $matches = array();
-                $pattern = '/^([0-9]{1,2})\\-([0-9]{1,2})\\-([0-9]{4})$/';
-                if (!preg_match($pattern, $date_string, $matches)) return false;
-                if (!checkdate($matches[2], $matches[1], $matches[3])) return false;
-                return true;
-
-                // $test_arr  = explode('-', $date_string);
-                // if (count($test_arr) == 3) {
-                //     //checkdate ( int $month , int $day , int $year ) : bool
-                //     if (checkdate($test_arr[1], $test_arr[0], $test_arr[2])) {
-                //         return true;
-                //     } else {
-                //         false;
-                //     }
-                // }
-                // else{
-                //     return false;
-                // }
-            }
-
-            private function _convert_string_to_date($DateString){
-                $date =  date("Y-m-d", strtotime($DateString));
-                return $date;
-            }
-
 
         #endregion
         
