@@ -339,7 +339,14 @@
             /**
              * update()
              * 
-             * Execute update sql and returns number of rows affected.
+             * Execute update sql and returns number of rows affected. 
+             * 
+             * $id = 1; //DON'T use $data["id"]
+             * $data["name"] = "Saumitra";
+             * $data["ghonta"] = "Suborno";
+             * $sql = $db->prepareUpdateSql("table", $data, "id=:id", true);
+             * $data["id"] = $id; //add $id, just before update()
+             * $result = $db->update($sql,$data);
              * 
              * 
              * @param string $sql  SQL statement. parameterized/non-parameterized.
@@ -374,6 +381,12 @@
              * 
              * Creates a vanilla general-purpose UPDATE statement i.e. "UPDATE myTable SET column1=value1, ...". 
              * 
+             * $id = 1; //DON'T use $data["id"]
+             * $data["name"] = "Saumitra";
+             * $data["ghonta"] = "Suborno";
+             * $sql = $db->prepareUpdateSql("table", $data, "id=:id", true);
+             * $data["id"] = $id; //add $id, just before update()
+             * $result = $db->update($sql,$data);
              * 
              * @param string $tableToUpdate  The name of the destination table.
              * @param mixed $dataToUpdate  An array/object. 
