@@ -64,6 +64,22 @@
                 }
             }
 
+            public function insertAuto(string $tableName, array|object $dataToInsert, bool $isParameterized = true) : int {
+                try {
+                    $statement = new PDOStatement;
+                    if(is_object($dataToInsert)) $dataToInsert = get_object_vars($dataToInsert);
+                    $sql = $this->prepareInsertSql($dataToInsert, $tableName, $isParameterized);
+                    $statement = $this->prepare($sql);
+                    $statement->execute($dataToInsert);
+                    
+                    return $this->lastInsertId();      
+
+                } catch (\Throwable $e) {
+                    $backTraceLog = $this->debugBacktrace();
+                    throw new PDOException("PDOException: ". $e->getMessage().". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+                }
+            }
+
             /**
              * prepareInsertSql()
              * 
