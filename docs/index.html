@@ -482,7 +482,32 @@ try {
                     </pre>
                 </div>
                 
-                <!-- update() -->
+                <!-- updateAuto() -->
+                <div id="updateAuto">
+                    <code class="language-php">updateAuto(string $tableName, array|object $dataToUpdate, array|object $where, bool $isParameterized = true) : int</code> <br>
+                    Prepare & Execute update sql and returns number of rows affected. 
+                    <pre><code class="language-php">
+$student = new stdClass(); //or, array();
+$student->name =  "John Doe";  //or $student["name"] = "John Doe";
+$student->dob = '2018-01-19'; 
+
+$where = new stdClass(); //or, array();
+$where->id = 1;  //or $where["id"] = 1;
+
+try {
+    $db->updateAuto("students", $student, $where, true);
+} catch (\PDOException $exp) {
+    echo $exp->getMessage();
+}
+                        </code>
+                    </pre>
+                </div>
+
+
+
+
+
+
                 <div id="update">
                     <code class="language-php">update(string $sql, mixed $data = null):int</code> <br>
                     Execute update sql and returns number of rows affected.

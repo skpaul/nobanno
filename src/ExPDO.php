@@ -375,6 +375,41 @@
                 }
             }
 
+            /**
+             * updateNew()
+             * 
+             * Prepare & Execute update sql and returns number of rows affected. 
+             * 
+             * @param string $tableName Table name to update
+             * @param array|object $dataToUpdate array or object. 
+             * @param array|object $where array or object. 
+             * @param bool $isParameterized true or false, default = true. 
+             * 
+             * @return int  Number of rows affected.
+             * 
+             * @throws PDOException.             
+             */
+
+            public function updateAuto(string $tableName, array|object $dataToUpdate, array|object $where, bool $isParameterized = true) : int {
+                try {
+                    $sql = $this->prepareUpdateSql($tableName, $dataToUpdate, $where, $isParameterized);
+                    //convert object to array-
+                    if(is_object($dataToUpdate)) $dataToUpdate = get_object_vars($dataToUpdate);
+                    if(is_object($where)) $where = get_object_vars($where);
+
+                    //combine -
+                    $params = array_merge($dataToUpdate, $where); 
+
+                    $statement = $this->prepare($sql) ;
+                    $statement->execute($params);
+                    return $statement->rowCount();           
+
+                } catch (\Throwable $e) {
+                    $backTraceLog = $this->debugBacktrace();
+                    throw new PDOException("PDOException: ". $e->getMessage().". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+                }
+            }
+
 
             /**
              * prepareUpdateSql()
