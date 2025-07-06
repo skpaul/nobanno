@@ -11,6 +11,12 @@
             return new self("Y-m-d H:i:s");
         }
 
+
+        /**
+         * BdDate()
+         * 
+         * Format as 'd-m-Y'
+         */
         static public function BdDate() {
             return new self("d-m-Y");
         }
@@ -24,16 +30,6 @@
             return new self($format);
         }
 
-        /**
-         * Get the format string value.
-         *
-         * @return string
-         */
-        public function getValue(): string
-        {
-            return $this->value;
-        }
-
         // const MySqlDate =  'Y-m-d';
         // const MySqlDatetime = 'Y-m-d H:i:s';
         // const BdDate = 'd-m-Y';
@@ -42,16 +38,14 @@
     }
 
     class Clock{
-        protected DateTimeZone $datetimeZone;
+        protected $datetimeZone = "";
         public function __construct(string $datetimeZone = "Asia/Dhaka") {
-            $this->datetimeZone = new DateTimeZone($datetimeZone);
+            $this->datetimeZone=new DateTimeZone($datetimeZone);
         }
 
         #region Core Methods
             /**
-             * @deprecated Use toDatetime() instead.
-             *
-             * toDate()  
+             * toDate()  DEPRECATED
              * 
              * Returns a php datetime object.
              * 
@@ -79,17 +73,18 @@
             }
 
             /**
-             * toString()
+             * toDate()
              * 
-             * Returns a formatted date string.
+             * Returns a php datetime object.
              * 
-             * @param mixed $value  DateTime object or date string.
-             * @param string|DatetimeFormat $format  Format string or DatetimeFormat instance.
+             * @param mixed $value
+             * 
+             * @param DatetimeFormat $format
+             * 
              * @return string
              */
-            public function toString(mixed $value, string|DatetimeFormat $format): string
+            public function toString(mixed $value, DatetimeFormat $format):string
             {
-                // Optionally, use $format = $format instanceof DatetimeFormat ? $format->getValue() : $format;
                 if ($value instanceof DateTime){
                     return $value->format($format);
                 }
@@ -104,90 +99,118 @@
             public function addHours(int $hoursToAdd, mixed $datetime):DateTime
             {
                 if ($datetime instanceof DateTime){
-                    $dt = clone $datetime;
+                    $dt = $datetime;
                 }
                 else{
                     $dt = new DateTime($datetime, $this->datetimeZone);
                 }
-                return $dt->add(new DateInterval("PT" . $hoursToAdd . "H"));
+                return  $dt->add(new DateInterval("PT" . $hoursToAdd . "H"));
             }
 
             public function deductHours(int $hoursToSubtract, mixed $datetime):DateTime
             {
                 if ($datetime instanceof DateTime){
-                    $dt = clone $datetime;
+                    $dt = $datetime;
                 }
                 else{
                     $dt = new DateTime($datetime, $this->datetimeZone);
                 }
-                return $dt->sub(new DateInterval("PT" . $hoursToSubtract . "H"));
+                return  $dt->sub(new DateInterval("PT" . $hoursToSubtract . "H"));
             }
+
         #endregion
-
+            
         #region Day manipulation
+            /**
+             * addDays()
+             * 
+             * Add days to a datetime object.
+             * 
+             * @param int $daysToAdd The quantity of days to add, for example '7'
+             * @param mixed $datetime The datetime value to modify.
+             * 
+             * @return DateTime The modified datetime.
+            */
             public function addDays(int $daysToAdd, mixed $datetime):DateTime{
+
                 if ($datetime instanceof DateTime){
-                    $dt = clone $datetime;
+                    $dt = $datetime;
                 }
                 else{
                     $dt = new DateTime($datetime, $this->datetimeZone);
                 }
-                return $dt->add(new DateInterval("P" . $daysToAdd . "D"));
+                return  $dt->add(new DateInterval("P" . $daysToAdd . "D"));
             }
 
+            /**
+             * deductDays()
+             * 
+             * Deduct days from a datetime object.
+             * 
+             * @param mixed $datetime The datetime value to modify.
+             * @param int $daysToSubtract The quantity of days to subtract, for example '7'
+             * 
+             * @return DateTime The modified datetime.
+            */
             public function deductDays(mixed $datetime, int $daysToSubtract):DateTime{
                 if ($datetime instanceof DateTime){
-                    $dt = clone $datetime;
+                    $dt = $datetime;
                 }
                 else{
                     $dt = new DateTime($datetime, $this->datetimeZone);
                 }
-                return $dt->sub(new DateInterval("P" . $daysToSubtract . "D"));
+                return  $dt->sub(new DateInterval("P" . $daysToSubtract . "D"));
             }
         #endregion
 
         #region month manipulation
             public function addMonths(int $monthsToAdd, mixed $datetime):DateTime{
+
                 if ($datetime instanceof DateTime){
-                    $dt = clone $datetime;
+                    $dt = $datetime;
                 }
                 else{
                     $dt = new DateTime($datetime, $this->datetimeZone);
                 }
-                return $dt->add(new DateInterval("P" . $monthsToAdd . "M"));
+                return  $dt->add(new DateInterval("P" . $monthsToAdd . "M"));
             }
 
             public function deductMonths(int $monthsToSubtract, mixed $datetime):DateTime{
+
                 if ($datetime instanceof DateTime){
-                    $dt = clone $datetime;
+                    $dt = $datetime;
                 }
                 else{
                     $dt = new DateTime($datetime, $this->datetimeZone);
                 }
-                return $dt->sub(new DateInterval("P" . $monthsToSubtract . "M"));
+                return  $dt->sub(new DateInterval("P" . $monthsToSubtract . "M"));
             }
+
         #endregion
 
         #region Year manipulation
             public function addYears(int $yearsToAdd, mixed $datetime):DateTime{
+
                 if ($datetime instanceof DateTime){
-                    $dt = clone $datetime;
+                    $dt = $datetime;
                 }
                 else{
                     $dt = new DateTime($datetime, $this->datetimeZone);
                 }
-                return $dt->add(new DateInterval("P" . $yearsToAdd . "Y"));
+                return  $dt->add(new DateInterval("P" . $yearsToAdd . "Y"));
             }
 
             public function deductYears(int $yearsToSubtract, mixed $datetime):DateTime{
+
                 if ($datetime instanceof DateTime){
-                    $dt = clone $datetime;
+                    $dt = $datetime;
                 }
                 else{
                     $dt = new DateTime($datetime, $this->datetimeZone);
                 }
-                return $dt->sub(new DateInterval("P" . $yearsToSubtract . "Y"));
+                return  $dt->sub(new DateInterval("P" . $yearsToSubtract . "Y"));
             }
+
         #endregion
 
     }
