@@ -11,9 +11,9 @@
                 PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
                 PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
             ];
+            // $options = array_replace($default_options, $options);
             $charset = 'utf8';
-            // Fix DSN charset
-            $dsn = "mysql:host=$server;dbname=$databaseName;charset=$charset";
+            $dsn = "mysql:host=$server;dbname=$databaseName;$charset";
             parent::__construct($dsn, $databaseUser, $databasePassword, $options);          
         }
 
@@ -34,20 +34,18 @@
         #region Insert
 
             /**
-             * insert
+             * insert()
              * 
-             * Executes an SQL INSERT statement and returns the last inserted ID.
-             * If $data is provided, a prepared statement is used with the given parameters.
-             * Otherwise, the SQL is executed directly.
+             * Execute insert sql and returns lastInsertId.
              * 
-             * @param string $sql  The SQL INSERT statement (parameterized or not).
-             * @param array|object|null $data  Optional. Parameters for the prepared statement as an array or object, or null for direct execution.
-             * @return int  The last inserted ID.
-             * @throws PDOException on error.
+             * 
+             * @param string $sql  SQL statement. parameterized/non-parameterized.
+             * @param mixed $data  null/object/array. 
+             * 
              */
             public function insert(string $sql, mixed $data = null): int{
                 try {
-                    // Removed unnecessary: $statement = new PDOStatement;
+                    $statement = new PDOStatement;
                     if ($data)
                     {
                         if(is_object($data)) $data = get_object_vars($data);
@@ -66,21 +64,9 @@
                 }
             }
 
-            /**
-             * insertAuto
-             * 
-             * Automatically generates and executes an INSERT statement for the specified table and data.
-             * Uses parameterized queries by default.
-             * 
-             * @param string $tableName  The name of the table to insert into.
-             * @param array|object $dataToInsert  The data to insert as an associative array or object.
-             * @param bool $isParameterized  Optional. Whether to use parameterized queries (default: true).
-             * @return int  The last inserted ID.
-             * @throws PDOException on error.
-             */
             public function insertAuto(string $tableName, array|object $dataToInsert, bool $isParameterized = true) : int {
                 try {
-                    // Removed unnecessary: $statement = new PDOStatement;
+                    $statement = new PDOStatement;
                     if(is_object($dataToInsert)) $dataToInsert = get_object_vars($dataToInsert);
                     $sql = $this->prepareInsertSql($dataToInsert, $tableName, $isParameterized);
                     $statement = $this->prepare($sql);
@@ -139,7 +125,25 @@
              * @throws PDOException.
              */
             public function fetchAssoc(string $sql, mixed $args = null){
-                return $this->executeFetch($sql, $args, PDO::FETCH_ASSOC);
+                try {
+                    if ($args)
+                    {
+                        if(is_object($args)) $args = get_object_vars($args);
+
+                        $statement = $this->prepare($sql) ;
+                        $statement->setFetchMode(PDO::FETCH_ASSOC); 
+                        $statement->execute($args);
+                        return $statement->fetch();
+                    }
+                    else{
+                        $statement = $this->query($sql);
+                        $statement->setFetchMode(PDO::FETCH_ASSOC);
+                        return $statement->fetch();
+                    }
+                } catch (\Throwable $e) {
+                    $backTraceLog = $this->debugBacktrace();
+                    throw new PDOException("PDOException: ". $e->getMessage().". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+                }
             }
 
             /**
@@ -156,7 +160,24 @@
              * @throws PDOException.
              */
             public function fetchAssocs(string $sql, mixed $args = null):array{
-                return $this->executeFetch($sql, $args, PDO::FETCH_ASSOC, true);
+                try {
+                    if ($args)
+                    {
+                        if(is_object($args)) $args = get_object_vars($args);
+                        $statement = $this->prepare($sql) ;
+                        $statement->setFetchMode(PDO::FETCH_ASSOC); 
+                        $statement->execute($args);
+                        return $statement->fetchAll();
+                    }
+                    else{
+                        $statement = $this->query($sql);
+                        $statement->setFetchMode(PDO::FETCH_ASSOC);
+                        return $statement->fetchAll();
+                    }
+                } catch (\Throwable $e) {
+                    $backTraceLog = $this->debugBacktrace();
+                    throw new PDOException("PDOException: ". $e->getMessage().". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+                }
             }
 
             /**
@@ -172,7 +193,25 @@
              * @throws PDOException.
              */
             public function fetchObject(string $sql, mixed $args = null){
-                return $this->executeFetch($sql, $args, PDO::FETCH_OBJ);
+                try {
+                    if ($args)
+                    {
+                        if(is_object($args)) $args = get_object_vars($args);
+
+                        $statement = $this->prepare($sql) ;
+                        $statement->setFetchMode(PDO::FETCH_OBJ); 
+                        $statement->execute($args);
+                        return $statement->fetch();
+                    }
+                    else{
+                        $statement = $this->query($sql);
+                        $statement->setFetchMode(PDO::FETCH_OBJ);
+                        return $statement->fetch();
+                    }
+                } catch (\Throwable $e) {
+                    $backTraceLog = $this->debugBacktrace();
+                    throw new PDOException("PDOException: ". $e->getMessage().". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+                }
             }
 
             /**
@@ -189,7 +228,24 @@
              * @throws PDOException.
              */
             public function fetchObjects(string $sql, mixed $args = null):array{
-                return $this->executeFetch($sql, $args, PDO::FETCH_OBJ, true);
+                try {
+                    if ($args)
+                    {
+                        if(is_object($args)) $args = get_object_vars($args);
+                        $statement = $this->prepare($sql) ;
+                        $statement->setFetchMode(PDO::FETCH_OBJ); 
+                        $statement->execute($args);
+                        return $statement->fetchAll();
+                    }
+                    else{
+                        $statement = $this->query($sql);
+                        $statement->setFetchMode(PDO::FETCH_OBJ);
+                        return $statement->fetchAll();
+                    }
+                } catch (\Throwable $e) {
+                    $backTraceLog = $this->debugBacktrace();
+                    throw new PDOException("PDOException: ". $e->getMessage().". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+                }
             }
 
             /**
@@ -519,23 +575,5 @@
             }
         #endregion
     
-        private function executeFetch(string $sql, mixed $args = null, int $fetchMode = PDO::FETCH_ASSOC, bool $fetchAll = false) {
-            try {
-                if ($args) {
-                    if (is_object($args)) $args = get_object_vars($args);
-                    $statement = $this->prepare($sql);
-                    $statement->setFetchMode($fetchMode);
-                    $statement->execute($args);
-                    return $fetchAll ? $statement->fetchAll() : $statement->fetch();
-                } else {
-                    $statement = $this->query($sql);
-                    $statement->setFetchMode($fetchMode);
-                    return $fetchAll ? $statement->fetchAll() : $statement->fetch();
-                }
-            } catch (\Throwable $e) {
-                $backTraceLog = $this->debugBacktrace();
-                throw new PDOException("PDOException: ". $e->getMessage().". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
-            }
-        }
     }
 ?>
