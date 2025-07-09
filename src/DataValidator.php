@@ -1,9 +1,18 @@
 
-<?php 
+<?php
 
-    /**
-     * Last modified on 18-04-2020
-     */
+/**
+ * DataValidator Class
+ *
+ * This class provides a fluent interface for validating and sanitizing various types of data.
+ * It supports input from POST/GET, manual values, and offers a wide range of validation rules
+ * including type checking (numeric, alphabetic, email, mobile, date, boolean, array),
+ * length constraints, and value range checks. It also includes sanitization methods
+ * for removing tags, slashes, and converting HTML special characters.
+ * All validation failures result in a ValidationException.
+ *
+ * Last modified: July 8, 2025
+ */
 
      
     class ValidationException extends Exception
@@ -56,6 +65,8 @@
         #region Receive value to validate
 
             /**
+             * @deprecated Use title() instead.
+             * 
              * label()
              * 
              * Sets the description of the value. Example- 'Customer Name' or 'Date of Birth'.
@@ -67,23 +78,21 @@
              *
              * @return this
              */
-            public function label($label){
+            public function label(string $label): self{
                 $this->label = trim($label);
                 return $this;
             }
 
             /**
-             * title()
-             * 
-             * Sets the description of the value. Example- 'Customer Name' or 'Date of Birth'.
-             * 
-             * It is required to compose a meaningful message if validation fails.
+             * Sets the human-readable name for the value being validated.
              *
-             * @param string $title
+             * This name is used in validation error messages to make them more descriptive.
              *
-             * @return this
+             * @param string $title The name for the value (e.g., 'Customer Name', 'Date of Birth').
+             * @return $this
              */
-            public function title($title){
+            public function title(string $title): self
+            {
                 $this->label = trim($title);
                 return $this;
             }
@@ -100,7 +109,7 @@
              *
              * @return this
              */
-            public function value($value){
+            public function value(string $value): self{
                 $this->valueToValidate = trim($value);
                 return $this;
             }
@@ -114,7 +123,7 @@
              *
              * @return this
              */
-            public function post($httpPostFieldName){
+            public function post(string $httpPostFieldName): self{
                 if(isset($_POST[$httpPostFieldName])){
                     if(is_array($_POST[$httpPostFieldName])){
                         $value = $_POST[$httpPostFieldName]; //dont use trim() on an array.
@@ -140,7 +149,7 @@
              *
              * @return this
              */
-            public function get($httpGetFieldName){
+            public function get(string $httpGetFieldName): self{
                 if(isset($_GET[$httpGetFieldName])){
                     $this->valueToValidate = trim($_GET[$httpGetFieldName]);
                 }
@@ -158,7 +167,7 @@
              * 
              * @return this. 
              */
-            public function default($defaultValue){
+            public function default(mixed $defaultValue): self{
                 $this->defaultValue = $defaultValue;
                 return $this;
             }
@@ -177,7 +186,7 @@
              * 
              * @return this $this
              */
-            public function sanitize($removeTags = true, $removeSlash = true, $convertHtmlSpecialChars = true){
+            public function sanitize(bool $removeTags = true, bool $removeSlash = true, bool $convertHtmlSpecialChars = true): self{
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
                     $valueToValidate = $this->valueToValidate;
 
@@ -210,13 +219,13 @@
              * 
              * @return this $this
              */
-            public function removeTags($allowableTags = null){
+            public function removeTags(string|array|null $allowableTags = null): self{
                 $this->valueToValidate = $this->_strip_tags($this->valueToValidate, $allowableTags); 
                 return $this;
             }
 
             //Called from removeTags() and sanitize()
-            private function _strip_tags($valueToValidate, $allowableTags){
+            private function _strip_tags(mixed $valueToValidate, string|array|null $allowableTags): mixed{
                 //strip_tags() - Strip HTML and PHP tags from a string
 
                 if(isset($allowableTags) && !empty($allowableTags)){
@@ -236,7 +245,7 @@
              * Example: "how\'s going on?" = "how's going on?"
              * 
              */
-            public function removeSlash(){
+            public function removeSlash(): self{
                 //The following cascading variables used for making the debugging easy.
                 $valueToValidate = $this->valueToValidate ;
                 $valueToValidate = $this->_removeSlash($valueToValidate); 
@@ -244,10 +253,10 @@
                 return $this;
             }
 
-            private function _removeSlash($valueToValidate){
+            private function _removeSlash(string $valueToValidate): string{
                 /* 
                     Example 
-                    $text="My dog don\\\\\\\\\\\\\\\\'t like the postman!";
+                    $text="My dog don\\\\\\\\'t like the postman!";
                     echo removeslashes($text);
                     RESULT: My dog don't like the postman!
                 */
@@ -269,7 +278,7 @@
              * @param bool $convertDoubleQuote - whether convert double quote
              * @param bool $convertSingleQuote - whether convert single quote
              */
-            public function convert($convertDoubleQuote, $convertSingleQuote){
+            public function convert(bool $convertDoubleQuote, bool $convertSingleQuote): self{
 
                 $flag = ENT_QUOTES; //ENT_QUOTES	Will convert both double and single quotes.
 
@@ -296,8 +305,8 @@
                 return $this;
             }
             
-            private function _convert($valueToValidate, $flag = ENT_QUOTES){
-
+            private function _convert(string $valueToValidate, int $flag = ENT_QUOTES): string
+            {
                 /*
                     htmlentities — Convert all applicable characters to HTML entities.
                     htmlspecialchars — Convert special characters to HTML entities.
@@ -311,12 +320,7 @@
                     ENT_QUOTES	Will convert both double and single quotes.
                     ENT_NOQUOTES	Will leave both double and single quotes unconverted.
                 */
-                $valueToValidate = htmlspecialchars($valueToValidate, $flag); 
-
-                //There is a bug, therefore use that function twice
-                $valueToValidate = htmlspecialchars($valueToValidate, $flag); 
-
-                return $valueToValidate;
+                return htmlspecialchars($valueToValidate, $flag);
             }
         #endregion
 
@@ -331,30 +335,32 @@
              * 
              * @return this @this
              */
-            public function optional(){
+            public function optional(): self{
                 $this->required = false;
                 return $this;
             }
 
             /**
-             * required()
-             * 
-             * Checks whether current value is required or optional.
-             * 
+             * Marks the current value as required.
+             *
+             * If the value is not provided (null, empty string, or empty array),
+             * a ValidationException is thrown.
+             *
              * @return $this
-             * 
-             * @throws ValidationException
+             * @throws ValidationException If the value is missing or empty.
              */
-            public function required(){
+            public function required(): self
+            {
                 $this->required = true;
-                if(!isset($this->valueToValidate) || empty($this->valueToValidate)){
+
+                $value = $this->valueToValidate;
+                // An input is considered empty if it is null, an empty string, or an empty array.
+                // Crucially, '0', 0, and false are considered valid, non-empty inputs.
+                $isEffectivelyEmpty = ($value === null || $value === '' || (is_array($value) && count($value) === 0));
+
+                if ($isEffectivelyEmpty) {
                     throw new ValidationException("{$this->label} {$this->requiredLang}");
                 }
-                // else{
-                //     if(empty($this->valueToValidate)){
-                //         throw new ValidationException("{$this->label} {$this->requiredLang}");
-                //     }
-                // }
                 return $this;
             }
 
@@ -362,22 +368,38 @@
 
         #region Language check
             /**
-             * englishOnly()
-             * 
-             * It allows only english language.
-             * 
-             * @return this $this
-             * 
-             * @throws ValidationException
+             * Checks if the value contains only English letters, numbers, and spaces in between.
+             *
+             * @return $this
+             * @throws ValidationException If the value contains any other characters.
              */
-            public function englishOnly(){
-                if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
-                    if (!preg_match('/[^A-Za-z0-9]/', strval($this->valueToValidate)))  {
-                        //string contains only letters from the English alphabet
-                        throw new ValidationException("{$this->label} must be in english.");
+            public function englishOnly(): self
+            {
+                if (isset($this->valueToValidate) && $this->valueToValidate !== '') {
+                    // The regex /^[A-Za-z0-9]+(?: [A-Za-z0-9]+)*$/ ensures the entire string consists of only
+                    // English letters and numbers, allowing single spaces between them.
+                    if (!preg_match('/^[A-Za-z0-9]+(?: [A-Za-z0-9]+)*$/', strval($this->valueToValidate))) {
+                        throw new ValidationException("{$this->label} must contain only English letters, numbers, and spaces.");
                     }
                 }
-                
+                return $this;
+            }
+
+            /**
+             * Checks if the value contains only Bengali characters and spaces.
+             *
+             * @return $this
+             * @throws ValidationException If the value contains any other characters.
+             */
+            public function banglaOnly(): self
+            {
+                if (isset($this->valueToValidate) && $this->valueToValidate !== '') {
+                    // This regex matches one or more characters in the Bengali Unicode block,
+                    // as well as spaces. The 'u' modifier is essential for Unicode matching.
+                    if (!preg_match('/^[\x{0980}-\x{09FF}\s]+$/u', strval($this->valueToValidate))) {
+                        throw new ValidationException("{$this->label} শুধুমাত্র বাংলা অক্ষর ব্যবহার করুন।");
+                    }
+                }
                 return $this;
             }
         #endregion
@@ -395,7 +417,7 @@
              * 
              * @throws ValidationException
              */
-            public function asAlphabetic(bool $allowSpace){
+            public function asAlphabetic(bool $allowSpace): self{
                 $this->character_or_digit = "characters"; //"অক্ষর";
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
                     if($allowSpace){
@@ -425,7 +447,7 @@
              * 
              * @throws ValidationException
              */
-            public function asNumeric(){
+            public function asNumeric(): self{
                 $this->character_or_digit = "digits"; //"সংখ্যা";
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
                     if(!is_numeric($this->valueToValidate)){
@@ -446,7 +468,7 @@
              * @return this $this
              * @throws ValidationException
              */
-            public function asAlphaNumeric(bool $allowSpace){
+            public function asAlphaNumeric(bool $allowSpace): self{
                 $this->character_or_digit = "characters"; //"অক্ষর";
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
                     if($allowSpace){
@@ -476,7 +498,7 @@
              * 
              * @throws ValidationException
              */
-            public function asString(bool $allowSpace){
+            public function asString(bool $allowSpace): self{
                 $this->character_or_digit = "characters"; //"অক্ষর";
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
                     if(!$allowSpace){
@@ -496,7 +518,7 @@
              * @return bool
              *   TRUE if any character creates some sort of whitespace; otherwise, FALSE.
              */
-            private function _hasWhitespace( $text )
+            private function _hasWhitespace(string $text ): bool
             {
                 for ( $idx = 0; $idx < strlen( $text ); $idx += 1 )
                     if ( ctype_space( $text[ $idx ] ) )
@@ -516,7 +538,7 @@
              * 
              * @throws ValidationException
              */
-            public function asInteger(bool $allowNegative){
+            public function asInteger(bool $allowNegative): self{
                 $this->character_or_digit = "digits"; //"সংখ্যা";
             
                 $valueToValidate = $this->valueToValidate;
@@ -558,7 +580,7 @@
              * 
              * @throws ValidationException
              */
-            public function asFloat(bool $allowNegative){
+            public function asFloat(bool $allowNegative): self{
                 //check whether has a decimal point.
                 //if has a decimal point, then check it with is_float().
                 //if no decimal point, then check it with is_int().
@@ -601,7 +623,7 @@
                 return $this;
             }
         
-            private function _has_decimal($number){
+            private function _has_decimal(mixed $number): bool{
                 $count = substr_count(strval($number), '.');
                 if($count == 1){
                     return true;
@@ -620,7 +642,7 @@
              * 
              * @throws ValidationException
              */
-            public function asArray(){
+            public function asArray(): self{
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
                     if(!is_array($this->valueToValidate)){
                         throw new ValidationException("{$this->label} {$this->invalidLang}");
@@ -645,7 +667,7 @@
              * 
              * @throws ValidationException
              */
-            public function asEmail(){
+            public function asEmail(): self{
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
                     // $label = $this->label;
                     if (!filter_var($this->valueToValidate, FILTER_VALIDATE_EMAIL)) {
@@ -656,88 +678,53 @@
             }
 
             /**
-             * asMobile()
-             * 
-             * Checks whether a mobile number is valid.
-             * 
-             * It produces a valid mobile mobile with "880" prefix.
-             * 
-             * @return this $this
-             * 
-             * @throws ValidationException.
+             * Checks and formats a Bangladeshi mobile number.
+             *
+             * It validates mobile numbers with or without the '88' or '880' prefix and,
+             * upon success, formats the number to the '8801...' standard.
+             *
+             * @return $this
+             * @throws ValidationException If the number is invalid.
              */
-            public function asMobile(){
-                $MobileNumber = $this->valueToValidate;
-            
-                if(empty($MobileNumber)){
-                    throw new ValidationException("{$this->label} {$this->invalidLang}");
-                }
-            
-                if(!is_numeric($MobileNumber)){
-                    throw new ValidationException("{$this->label} {$this->invalidLang}");
-                }
-            
-                if(strlen($MobileNumber)<10){
-                    throw new ValidationException("{$this->label} {$this->invalidLang}");
-                }
-            
-                $OperatorCodes = array( "013", "014", "015", "016", "017", "018", "019" );
-                
-                if($this->_starts_with($MobileNumber,"1")){
-                    //if the number is 1711781878, it's length must be 10 digits        
-                    if(strlen($MobileNumber) != 10){
-                        throw new ValidationException("{$this->label} {$this->invalidLang}");
-                    }
-            
-                    $firstTwoDigits = substr($MobileNumber, 0, 2); //returns 17, 18 etc,
-                    $operatorCode = "0" . $firstTwoDigits; //Making first two digits a valid operator code with adding 0.
-            
-                    if (!in_array($operatorCode, $OperatorCodes)) {
-                        throw new ValidationException("{$this->label} {$this->invalidLang}");
-                    }
-            
-                    $finalNumberString = "880" . $MobileNumber;
-                
-                    $this->valueToValidate = $finalNumberString;
+            public function asMobile()
+            {
+                $mobileNumber = $this->valueToValidate;
+
+                // If the field is optional and no value is provided, skip validation.
+                // If it's required, the required() method should have already handled it.
+                if (!isset($mobileNumber) || $mobileNumber === '') {
                     return $this;
                 }
-                
-                if($this->_starts_with($MobileNumber,"01")){
-                    //if the number is 01711781878, it's length must be 11 digits        
-                    if(strlen($MobileNumber) != 11){
-                        throw new ValidationException("{$this->label} {$this->invalidLang}");
-                    }
-            
-                    $operatorCode = substr($MobileNumber, 0, 3); //returns 017, 018 etc,
-                    
-                    if (!in_array($operatorCode, $OperatorCodes)) {
-                        throw new ValidationException("{$this->label} {$this->invalidLang}");
-                    }
-            
-                    $finalNumberString = "88" . $MobileNumber;
-                    $this->valueToValidate = $finalNumberString;
-                    return $this;
+
+                if (!is_numeric($mobileNumber)) {
+                    throw new ValidationException("{$this->label} {$this->invalidLang}");
                 }
-            
-                if($this->_starts_with($MobileNumber,"8801")){
-                    //if the number is 8801711781878, it's length must be 13 digits    
-                    if(strlen($MobileNumber) != 13){
-                        throw new ValidationException("{$this->label} {$this->invalidLang}");
-                    }
-            
-                    $operatorCode = substr($MobileNumber, 2, 3); //returns 017, 018 etc,
-                    
-                    if (!in_array($operatorCode, $OperatorCodes)) {
-                        $this->is_valid = false;
-                        return false;
-                    }        
-            
-                
-                    $this->valueToValidate = $MobileNumber;
-                    return $this;
+
+                $operatorCodes = ["013", "014", "015", "016", "017", "018", "019"];
+                $normalizedNumber = null;
+
+                // Normalize the number to the 11-digit (01...) format
+                if ($this->_starts_with($mobileNumber, "8801")) { // 13 digits: 8801...
+                    $normalizedNumber = substr($mobileNumber, 2);
+                } elseif ($this->_starts_with($mobileNumber, "01")) { // 11 digits: 01...
+                    $normalizedNumber = $mobileNumber;
+                } elseif ($this->_starts_with($mobileNumber, "1")) { // 10 digits: 1...
+                    $normalizedNumber = "0" . $mobileNumber;
                 }
-            
-                throw new ValidationException("{$this->label} {$this->invalidLang}");
+
+                // Perform validation on the normalized number
+                if ($normalizedNumber === null || strlen($normalizedNumber) !== 11) {
+                    throw new ValidationException("{$this->label} {$this->invalidLang}");
+                }
+
+                $operatorCode = substr($normalizedNumber, 0, 3);
+                if (!in_array($operatorCode, $operatorCodes)) {
+                    throw new ValidationException("{$this->label} {$this->invalidLang}");
+                }
+
+                // Success: store the fully formatted number (e.g., 88017...)
+                $this->valueToValidate = "88" . $normalizedNumber;
+                return $this;
             }
 
             /**
@@ -751,9 +738,9 @@
              * 
              * @return this $this
              */
-            public function asDate(string $datetimeZone = "Asia/Dhaka"){
+            public function asDate(string $datetimeZone = "Asia/Dhaka"): self{
                 if(isset($this->valueToValidate) && !empty($this->valueToValidate)){
-                    // $pattern =   '~^(((0[1-9]|[12]\\d|3[01])\\-(0[13578]|1[02])\\-((19|[2-9]\\d)\\d{2}))|((0[1-9]|[12]\\d|30)\\-(0[13456789]|1[012])\\-((19|[2-9]\\d)\\d{2}))|((0[1-9]|1\\d|2[0-8])\\-02\\-((19|[2-9]\\d)\\d{2}))|(29\\/02\\-((1[6-9]|[2-9]\\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))))$~';
+                    // $pattern =   '~^(((0[1-9]|[12]\d|3[01])\-(0[13578]|1[02])\-((19|[2-9]\d)\d{2}))|((0[1-9]|[12]\d|30)\-(0[13456789]|1[012])\-((19|[2-9]\d)\d{2}))|((0[1-9]|1\d|2[0-8])\-02\-((19|[2-9]\d)\d{2}))|(29\/02\-((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))))$~';
 
                     // $isValidFormat =  preg_match($pattern, strval($this->valueToValidate)); // Outputs 1 if date is in valid format i.e. "30-03-2022";
                     // if(!$isValidFormat) throw new ValidationException("{$this->label} {$this->invalidLang}");
@@ -792,7 +779,7 @@
              * 
              * @return this $this
              */
-            public function asBool(){
+            public function asBool(): self{
                 $valueToValidate = $this->valueToValidate; //make it debug-friendly with xdebug.
                 if(strlen(strval($valueToValidate)) > 0){
                     $valueToValidate = filter_var($valueToValidate, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
@@ -819,7 +806,7 @@
              * 
              * @throws ValidationException
              */
-            public function exactLen(int $length){
+            public function exactLen(int $length): self{
                 if(!empty($this->valueToValidate)){
                     $_length = strlen(strval($this->valueToValidate));
                     $label = $this->label;
@@ -843,7 +830,7 @@
              * 
              * @throws ValidationException
              */
-            public function minLen(int $length){
+            public function minLen(int $length): self{
                 if(!empty($this->valueToValidate)){
                     $_length = strlen(strval($this->valueToValidate));
                     $label = $this->label;
@@ -866,7 +853,7 @@
              * 
              * @throws ValidationException
              */
-            public function maxLen(int $length){
+            public function maxLen(int $length): self{
                 if(!empty($this->valueToValidate)){
                     $_length = strlen(strval($this->valueToValidate));
                     $label = $this->label;
@@ -893,7 +880,7 @@
              * 
              * @throws ValidationException
              */
-            public function minVal($minimumValue){   
+            public function minVal(int|float $minimumValue): self{   
                 $valueToValidate = $this->valueToValidate;
 
                 //NOTE: Don't use empty() for numeric value. It treats 0 as empty.
@@ -923,7 +910,7 @@
              * @return this $this
              * @throws ValidationException
              */
-            public function maxVal($maximumValue){ 
+            public function maxVal(int|float $maximumValue): self{ 
                 $valueToValidate = $this->valueToValidate;
 
                 //NOTE: Don't use empty() for numeric value. It treats 0 as empty.
@@ -943,7 +930,7 @@
         #endregion
 
         #region Misc.
-            public function startsWith($startString){ 
+            public function startsWith(string $startString): self{ 
                 $string = $this->valueToValidate;
                 $label = $this->label;
                 if(!$this->_starts_with($string,$startString)){
@@ -953,7 +940,7 @@
                 return $this;
             } 
 
-            private function _starts_with($string, $startString){ 
+            private function _starts_with(string $string, string $startString): bool{ 
                 $len = strlen($startString); 
                 if(strlen($string) === 0){
                     return false;
@@ -961,7 +948,7 @@
                 return (substr($string, 0, $len) === $startString); 
             } 
             
-            function endsWith($endString){ 
+            public function endsWith(string $endString): self{ 
                 $string = $this->valueToValidate;
                 if(!$this->_ends_with($string, $endString)){
                     $msg = "$this->label শেষ হবে $endString দিয়ে।";
@@ -970,7 +957,7 @@
                 return $this;
             } 
 
-            private function _ends_with($string, $endString){ 
+            private function _ends_with(string $string, string $endString): bool{ 
                 $len = strlen($endString); 
                 if(strlen($string) === 0){
                     return false;
@@ -980,39 +967,36 @@
         #endregion
 
         /**
-         * validate()
-         * 
-         * This must be the final call.
-         * 
-         * @return mix $valueToValidate Value or default value.
+         * Validates the value and returns the final result.
+         *
+         * This must be the final method called in the chain. It returns the validated and
+         * sanitized value. If the input was missing or empty (null, '', or []),
+         * it returns the default value (which is null if not explicitly set).
+         *
+         * @return mixed The validated value or the default value.
          */
-        public function validate(){
-            //  $valueToValidate = $this->valueToValidate;
-             $valueToValidate = "";
-          
-            if(!isset($this->valueToValidate)){
-                $valueToValidate = $this->defaultValue;
-            }
-            else{
-                if(empty($this->valueToValidate)){
-                    if(isset($this->defaultValue)){
-                        $valueToValidate = $this->defaultValue;
-                    }
-                    else{
-                        $valueToValidate = NULL;
-                    }
-                }
-                else{
-                    $valueToValidate = $this->valueToValidate;
-                }
+        public function validate()
+        {
+            $value = $this->valueToValidate;
+
+            // An input is considered empty if it is null, an empty string, or an empty array.
+            // Crucially, '0', 0, and false are considered valid, non-empty inputs.
+            $isEffectivelyEmpty = ($value === null || $value === '' || (is_array($value) && count($value) === 0));
+
+            if ($isEffectivelyEmpty) {
+                // If the provided value is empty, fall back to the default.
+                $finalValue = $this->defaultValue;
+            } else {
+                // Otherwise, use the provided value.
+                $finalValue = $this->valueToValidate;
             }
 
             $this->_reset_private_variables();
-            return $valueToValidate;
+            return $finalValue;
         }
 
                 
-        private function _reset_private_variables(){
+        private function _reset_private_variables(): void{
             $this->label = "";
             // unset($this->defaultValue);
             $this->defaultValue = null;

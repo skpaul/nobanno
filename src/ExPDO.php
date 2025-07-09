@@ -20,7 +20,7 @@ class ExPDO extends PDO
     //Parameters: are the names listed in the function's definition. 
     //Arguments: are the real values passed to the function.
 
-    private function debugBacktrace()
+    private function debugBacktrace_old()
     {
         $backTraces = debug_backtrace();
         $backTraceLog = "";
@@ -30,6 +30,38 @@ class ExPDO extends PDO
             $backTraceLog .= "File: $fileName, Line: $lineNo <br>";
         }
         return $backTraceLog;
+    }
+
+    /**
+     *
+     * Returns a formatted string of the backtrace to help debugging.
+     * The trace starts from the file that called the ExPDO method.
+     * @return string A formatted string of the call stack.
+     */
+    private function debugBacktrace(): string
+    {
+        $backTraces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        
+        // Shift twice to remove the call to this method and the ExPDO public method (e.g., executeInsert).
+        // This makes the trace start from the user's code, which is more relevant for debugging.
+        if (isset($backTraces[0]) && $backTraces[0]['function'] === __FUNCTION__) {
+            array_shift($backTraces); // Removes call to debugBacktrace()
+        }
+        if (isset($backTraces[0]['class']) && $backTraces[0]['class'] === __CLASS__) {
+            array_shift($backTraces); // Removes call from within ExPDO (e.g., executeInsert)
+        }
+
+        $backTraceLog = [];
+        foreach ($backTraces as $i => $trace) {
+            $file = $trace['file'] ?? '[internal function]';
+            $line = $trace['line'] ?? 0;
+            $function = $trace['function'] ?? '';
+            $class = $trace['class'] ?? '';
+            $type = $trace['type'] ?? '';
+            
+            $backTraceLog[] = sprintf("#%d %s(%d): %s%s%s()", $i, $file, $line, $class, $type, $function);
+        }
+        return " Backtrace:\n" . implode("\n", $backTraceLog);
     }
 
     #region Insert
@@ -656,6 +688,34 @@ class ExPDO extends PDO
                 $statement->setFetchMode($fetchMode);
                 return $fetchAll ? $statement->fetchAll() : $statement->fetch();
             }
+        } catch (\Throwable $e) {
+            $backTraceLog = $this->debugBacktrace();
+            throw new PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * fetchColumnValues()
+     * 
+     * Fetches a single column from all rows in the result set.
+     * 
+     * @param string $sql  SQL statement (parameterized or not).
+     * @param mixed $args  null/object/array. 
+     * @param int $columnNumber  The column number to fetch (0-indexed).
+     * @return array  Array of values from the specified column.
+     * @throws PDOException.
+     */
+    public function fetchColumnValues(string $sql, mixed $args = null, int $columnNumber = 0): array
+    {
+        try {
+            if ($args) {
+                if (is_object($args)) $args = get_object_vars($args);
+                $statement = $this->prepare($sql);
+                $statement->execute($args);
+            } else {
+                $statement = $this->query($sql);
+            }
+            return $statement->fetchAll(PDO::FETCH_COLUMN, $columnNumber);
         } catch (\Throwable $e) {
             $backTraceLog = $this->debugBacktrace();
             throw new PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);

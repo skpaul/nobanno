@@ -1,79 +1,53 @@
-
 <?php 
-   
-    //The prefix "Swift" is used to avoid conflict with other namespaces.
+
+    /**
+     * Logger class for error and custom log management.
+     */
     class Logger
     {
-
         private $rootDirectory = "";
-
-        //sub-directory is needed to prevent guess the log file path from hacker.
-        //DON'T USE UNDERSCORE BEFORE A FOLDER NAME. .gitignore does not work with underscore prefix.
         private $subDirectory = "";
-
         private $logFileName = "error.log";
         private $logFilePath = "";
 
-        //Constructor this class.
-        //If user provides values in this, it will call connect() method.
-        //Otherwise, user have to call connect() method by himself.
+        /**
+         * Constructor for Logger.
+         * @param string $rootDirectoryPath
+         * @param string|null $subDirectoryName
+         * @throws Exception
+         */
         public function __construct($rootDirectoryPath, $subDirectoryName = null) {
-
             $this->rootDirectory = $rootDirectoryPath;
 
-            if(isset($subDirectoryName)){
+            if ($subDirectoryName !== null) {
                 $this->subDirectory = $subDirectoryName;
-                if (!file_exists($this->rootDirectory . "/" . $this->subDirectory)) {
-                    mkdir($this->rootDirectory . "/" . $this->subDirectory, 0777, true);
+                $logDir = $this->rootDirectory . DIRECTORY_SEPARATOR . $this->subDirectory;
+                if (!file_exists($logDir)) {
+                    if (!mkdir($logDir, 0777, true) && !is_dir($logDir)) {
+                        throw new \RuntimeException("Failed to create log directory: $logDir");
+                    }
                 }
-    
-                $this->logFilePath = $this->rootDirectory . "/" . $this->subDirectory . "/" . $this->logFileName;
-        
-                if(!file_exists($this->logFilePath)){
-                    $handle = fopen($this->logFilePath, 'w') or die("Can't create file");
-                    fclose($handle);
-                }
-            }
-            else{
-    
-                $this->logFilePath = $this->rootDirectory . "/" . $this->logFileName;
-        
-                if(!file_exists($this->logFilePath)){
-                    $handle = fopen($this->logFilePath, 'w') or die("Can't create file");
-                    fclose($handle);
-                }
+                $this->logFilePath = $logDir . DIRECTORY_SEPARATOR . $this->logFileName;
+            } else {
+                $this->logFilePath = $this->rootDirectory . DIRECTORY_SEPARATOR . $this->logFileName;
             }
 
-            error_reporting( E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED); 
-            //error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+            $this->_ensureLogFileExists($this->logFilePath);
 
-            ini_set('log_errors', '1'); 
-            if(ENVIRONMENT == "PRODUCTION"){
-                ini_set('display_errors', 1); //show errors in response stream.
+            error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
+
+            ini_set('log_errors', '1');
+            if (defined('ENVIRONMENT') && ENVIRONMENT == "PRODUCTION") {
+                ini_set('display_errors', 1);
             }
 
-            
-            ini_set('error.log', $this->logFilePath);
+            ini_set('error_log', $this->logFilePath);
 
-            set_error_handler( function($errno, $errstr, $errfile, $errline){
+            set_error_handler(function($errno, $errstr, $errfile, $errline){
                 if (!(error_reporting() & $errno)) {
-                    // This error code is not included in error_reporting, so let it fall
-                    // through to the standard PHP error handler
                     return false;
                 }
-    
-                // $errstr may need to be escaped:
                 $errstr = htmlspecialchars($errstr);
-    
-                /*
-                "E_ALL"     => E_ALL,
-                            "E_NOTICE"  => E_NOTICE,
-                            "E_ERROR"   => E_ERROR,
-                            "E_WARNING" => E_WARNING,
-                            "E_PARSE"   => E_PARSE
-                            E_ALL & ~E_NOTICE
-                */
-
                 switch ($errno) {
                     case E_USER_DEPRECATED:
                         $this->_createErrorLog("E_USER_DEPRECATED", $errstr, $errfile, $errline);
@@ -99,7 +73,6 @@
                     case E_COMPILE_ERROR:
                         $this->_createErrorLog("E_COMPILE_ERROR", $errstr, $errfile, $errline);
                         break;
-                    
                     case E_ALL:
                         $this->_createErrorLog("E_ALL", $errstr, $errfile, $errline);
                         break;
@@ -109,16 +82,29 @@
                     default:
                         $this->_createErrorLog($errno, $errstr, $errfile, $errline);
                         break;
-                    }
-    
-                    /* Don't execute PHP internal error handler */
-                    return true;
+                }
+                return true;
             });
 
             set_exception_handler(function($exp){
                 $this->_createErrorLog($exp->getCode(), $exp->getMessage(), $exp->getFile(), $exp->getLine());
-                echo("Error occured. See the error log file for details");
+                echo("Error occurred. See the error log file for details");
             });
+        }
+
+        /**
+         * Ensure the log file exists.
+         * @param string $filePath
+         * @throws Exception
+         */
+        private function _ensureLogFileExists($filePath) {
+            if (!file_exists($filePath)) {
+                $handle = fopen($filePath, 'w');
+                if ($handle === false) {
+                    throw new \RuntimeException("Can't create file: $filePath");
+                }
+                fclose($handle);
+            }
         }
 
         //This function is used in set_error_handler() and set_exception_handler() to handle uncaught errors.
@@ -162,8 +148,6 @@
 
         private function _clearLogs($file){
             file_put_contents($file, "");
-            // $fh = fopen( 'filelist.txt', 'w' );
-            // fclose($fh);
         }
 
         public function clearLogs(){
@@ -176,18 +160,25 @@
         
 
         private function _readLogs($file){
+            if (!file_exists($file)) {
+                echo "Log file does not exist.";
+                return;
+            }
             $fp = fopen($file, "r");
-
+            if ($fp === false) {
+                echo "Unable to open log file.";
+                return;
+            }
             if(filesize($file) > 0){
                 $content = fread($fp, filesize($file));
-                $lines = explode("\n", $content);
                 fclose($fp);
-               
+                $lines = explode("\n", $content);
                 foreach($lines as $newline){
-                    echo ''.$newline.'<br>';
+                    echo htmlspecialchars($newline) . '<br>';
                 }
             }
             else{
+                fclose($fp);
                 echo "Hurray!! No log found.";
             }
         }
@@ -195,18 +186,12 @@
     
 
         public function readLogs(){
-           $this->_readLogs($this->logFilePath);
+            $this->_readLogs($this->logFilePath);
         }
 
         public function hasLogs(){
-            if(filesize($this->logFilePath) > 0){
-               return true;
-            }
-            else{
-               return false;
-            }
-         }
-
+            return (file_exists($this->logFilePath) && filesize($this->logFilePath) > 0);
+        }
     } //<--class
 
 ?>
