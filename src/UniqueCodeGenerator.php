@@ -1,10 +1,12 @@
 <?php
 
+namespace Nobanno;
+
     class UniqueCodeGenerator{
        
         protected $db;
         
-        public function __construct($ExPDO) {
+        public function __construct(ExPDO $ExPDO) {
             $this->db = $ExPDO;
         }
 

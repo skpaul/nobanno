@@ -1,15 +1,17 @@
 <?php
-class ExPDO extends PDO
+namespace Nobanno;
+
+class ExPDO extends \PDO
 {
     // public function __construct($dsn, $username = NULL, $password = NULL, $options = [])
     public function __construct(string $server, string $databaseName, string $databaseUser, string $databasePassword)
     {
         $options = [
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            // PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES   => false,
-            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
-            PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
+            \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
+            // \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+            \PDO::ATTR_EMULATE_PREPARES   => false,
+            \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
+            \PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
         ];
         $charset = 'utf8';
         // Fix DSN charset
@@ -20,7 +22,7 @@ class ExPDO extends PDO
     //Parameters: are the names listed in the function's definition. 
     //Arguments: are the real values passed to the function.
 
-    private function debugBacktrace_old()
+    private function debugBacktrace()
     {
         $backTraces = debug_backtrace();
         $backTraceLog = "";
@@ -30,38 +32,6 @@ class ExPDO extends PDO
             $backTraceLog .= "File: $fileName, Line: $lineNo <br>";
         }
         return $backTraceLog;
-    }
-
-    /**
-     *
-     * Returns a formatted string of the backtrace to help debugging.
-     * The trace starts from the file that called the ExPDO method.
-     * @return string A formatted string of the call stack.
-     */
-    private function debugBacktrace(): string
-    {
-        $backTraces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-        
-        // Shift twice to remove the call to this method and the ExPDO public method (e.g., executeInsert).
-        // This makes the trace start from the user's code, which is more relevant for debugging.
-        if (isset($backTraces[0]) && $backTraces[0]['function'] === __FUNCTION__) {
-            array_shift($backTraces); // Removes call to debugBacktrace()
-        }
-        if (isset($backTraces[0]['class']) && $backTraces[0]['class'] === __CLASS__) {
-            array_shift($backTraces); // Removes call from within ExPDO (e.g., executeInsert)
-        }
-
-        $backTraceLog = [];
-        foreach ($backTraces as $i => $trace) {
-            $file = $trace['file'] ?? '[internal function]';
-            $line = $trace['line'] ?? 0;
-            $function = $trace['function'] ?? '';
-            $class = $trace['class'] ?? '';
-            $type = $trace['type'] ?? '';
-            
-            $backTraceLog[] = sprintf("#%d %s(%d): %s%s%s()", $i, $file, $line, $class, $type, $function);
-        }
-        return " Backtrace:\n" . implode("\n", $backTraceLog);
     }
 
     #region Insert
@@ -96,7 +66,7 @@ class ExPDO extends PDO
             }
         } catch (\Throwable $e) {
             $backTraceLog = $this->debugBacktrace();
-            throw new PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+            throw new \PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
         }
     }
 
@@ -127,7 +97,7 @@ class ExPDO extends PDO
             }
         } catch (\Throwable $e) {
             $backTraceLog = $this->debugBacktrace();
-            throw new PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+            throw new \PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
         }
     }
 
@@ -157,7 +127,7 @@ class ExPDO extends PDO
             return $this->lastInsertId();
         } catch (\Throwable $e) {
             $backTraceLog = $this->debugBacktrace();
-            throw new PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+            throw new \PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
         }
     }
 
@@ -183,7 +153,7 @@ class ExPDO extends PDO
             return $this->lastInsertId();
         } catch (\Throwable $e) {
             $backTraceLog = $this->debugBacktrace();
-            throw new PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+            throw new \PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
         }
     }
 
@@ -233,7 +203,7 @@ class ExPDO extends PDO
      */
     public function fetchAssoc(string $sql, mixed $args = null)
     {
-        return $this->executeFetch($sql, $args, PDO::FETCH_ASSOC);
+        return $this->executeFetch($sql, $args, \PDO::FETCH_ASSOC);
     }
 
     /**
@@ -251,7 +221,7 @@ class ExPDO extends PDO
      */
     public function fetchAssocs(string $sql, mixed $args = null): array
     {
-        return $this->executeFetch($sql, $args, PDO::FETCH_ASSOC, true);
+        return $this->executeFetch($sql, $args, \PDO::FETCH_ASSOC, true);
     }
 
     /**
@@ -268,7 +238,7 @@ class ExPDO extends PDO
      */
     public function fetchObject(string $sql, mixed $args = null)
     {
-        return $this->executeFetch($sql, $args, PDO::FETCH_OBJ);
+        return $this->executeFetch($sql, $args, \PDO::FETCH_OBJ);
     }
 
     /**
@@ -286,7 +256,7 @@ class ExPDO extends PDO
      */
     public function fetchObjects(string $sql, mixed $args = null): array
     {
-        return $this->executeFetch($sql, $args, PDO::FETCH_OBJ, true);
+        return $this->executeFetch($sql, $args, \PDO::FETCH_OBJ, true);
     }
 
     /**
@@ -319,7 +289,7 @@ class ExPDO extends PDO
             }
         } catch (\Throwable $e) {
             $backTraceLog = $this->debugBacktrace();
-            throw new PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+            throw new \PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
         }
     }
 
@@ -353,7 +323,7 @@ class ExPDO extends PDO
             }
         } catch (\Throwable $e) {
             $backTraceLog = $this->debugBacktrace();
-            throw new PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+            throw new \PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
         }
     }
 
@@ -427,7 +397,7 @@ class ExPDO extends PDO
             }
         } catch (\Throwable $e) {
             $backTraceLog = $this->debugBacktrace();
-            throw new PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+            throw new \PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
         }
     }
 
@@ -455,7 +425,7 @@ class ExPDO extends PDO
             }
         } catch (\Throwable $e) {
             $backTraceLog = $this->debugBacktrace();
-            throw new PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+            throw new \PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
         }
     }
 
@@ -491,7 +461,7 @@ class ExPDO extends PDO
             return $statement->rowCount();
         } catch (\Throwable $e) {
             $backTraceLog = $this->debugBacktrace();
-            throw new PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+            throw new \PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
         }
     }
 
@@ -521,7 +491,7 @@ class ExPDO extends PDO
             return $statement->rowCount();
         } catch (\Throwable $e) {
             $backTraceLog = $this->debugBacktrace();
-            throw new PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+            throw new \PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
         }
     }
 
@@ -608,7 +578,7 @@ class ExPDO extends PDO
             }
         } catch (\Throwable $e) {
             $backTraceLog = $this->debugBacktrace();
-            throw new PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+            throw new \PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
         }
     }
 
@@ -674,7 +644,7 @@ class ExPDO extends PDO
     }
     #endregion
 
-    private function executeFetch(string $sql, mixed $args = null, int $fetchMode = PDO::FETCH_ASSOC, bool $fetchAll = false)
+    private function executeFetch(string $sql, mixed $args = null, int $fetchMode = \PDO::FETCH_ASSOC, bool $fetchAll = false)
     {
         try {
             if ($args) {
@@ -690,7 +660,7 @@ class ExPDO extends PDO
             }
         } catch (\Throwable $e) {
             $backTraceLog = $this->debugBacktrace();
-            throw new PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+            throw new \PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
         }
     }
 
@@ -715,10 +685,10 @@ class ExPDO extends PDO
             } else {
                 $statement = $this->query($sql);
             }
-            return $statement->fetchAll(PDO::FETCH_COLUMN, $columnNumber);
+            return $statement->fetchAll(\PDO::FETCH_COLUMN, $columnNumber);
         } catch (\Throwable $e) {
             $backTraceLog = $this->debugBacktrace();
-            throw new PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
+            throw new \PDOException("PDOException: " . $e->getMessage() . ". SQL: $sql, $backTraceLog", (int) $e->getCode(), $e);
         }
     }
 }
