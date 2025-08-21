@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UniqueCodeGenerator Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; background: #f9f9f9; }
+        h1, h2, h3 { color: #2c3e50; }
+        code, pre { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
+        pre { padding: 1em; overflow-x: auto; }
+        .tip { background: #e7f7e7; border-left: 4px solid #27ae60; padding: 1em; margin: 1em 0; }
+        .warn { background: #fff3cd; border-left: 4px solid #ffc107; padding: 1em; margin: 1em 0; }
+    </style>
+</head>
+<body>
+    <h1>UniqueCodeGenerator Class Documentation</h1>
+    <p><code>UniqueCodeGenerator</code> (namespace: <b>Nobanno</b>) generates unique, random alphanumeric codes and ensures their uniqueness in a database table/column using <code>ExPDO</code>.</p>
+
+    <h2>1. Constructor</h2>
+    <pre><code>use Nobanno\UniqueCodeGenerator;
+use Nobanno\ExPDO;
+
+$db = new ExPDO(...);
+$generator = new UniqueCodeGenerator($db);
+</code></pre>
+    <ul>
+        <li><b>__construct(ExPDO $ExPDO)</b>: Pass an <code>ExPDO</code> database connection.</li>
+    </ul>
+
+    <h2>2. Generating a Unique Code</h2>
+    <pre><code>$code = $generator->generate($length, $column, $table, $prefix = "");
+</code></pre>
+    <ul>
+        <li><b>$length</b>: Number of random characters in the code (integer).</li>
+        <li><b>$column</b>: Column name to check for uniqueness (string).</li>
+        <li><b>$table</b>: Table name to check for uniqueness (string).</li>
+        <li><b>$prefix</b>: (Optional) String to prepend to the code.</li>
+    </ul>
+    <div class="tip">
+        The code uses a custom character set (digits 2-9 and uppercase letters, omitting ambiguous ones) for readability.
+    </div>
+
+    <h2>3. How It Works</h2>
+    <ol>
+        <li>Generates a random code of the specified length (plus optional prefix).</li>
+        <li>Checks the database to ensure the code does not already exist in the specified column/table.</li>
+        <li>If the code exists, it recursively generates a new one until a unique code is found.</li>
+        <li>Returns the unique code.</li>
+    </ol>
+
+    <h2>4. Example</h2>
+    <pre><code>// Generate a unique 8-character code for the 'invite_code' column in the 'users' table
+$code = $generator->generate(8, 'invite_code', 'users');
+
+// With a prefix
+$code = $generator->generate(6, 'ref_code', 'referrals', 'REF-');
+</code></pre>
+
+    <h2>5. Notes & Best Practices</h2>
+    <ul>
+        <li>Make sure the target column is indexed or unique in your database for best performance.</li>
+        <li>For cryptographically secure codes, consider using <code>random_bytes</code> and <code>bin2hex</code> (see code comments).</li>
+        <li>Recursion is used for collision handling; for very high code volumes, consider a loop or limit attempts.</li>
+    </ul>
+
+    <h2>6. References</h2>
+    <ul>
+        <li><a href="https://stackoverflow.com/questions/4356289/php-random-string-generator" target="_blank">PHP: Random String Generator (StackOverflow)</a></li>
+        <li><a href="https://www.php.net/manual/en/function.random-bytes.php" target="_blank">PHP: random_bytes</a></li>
+    </ul>
+</body>
+</html>

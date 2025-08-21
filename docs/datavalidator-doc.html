@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DataValidator Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; background: #f9f9f9; }
+        h1, h2, h3 { color: #2c3e50; }
+        code, pre { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
+        pre { padding: 1em; overflow-x: auto; }
+        .tip { background: #e7f7e7; border-left: 4px solid #27ae60; padding: 1em; margin: 1em 0; }
+        .warn { background: #fff3cd; border-left: 4px solid #ffc107; padding: 1em; margin: 1em 0; }
+    </style>
+</head>
+<body>
+    <h1>DataValidator Class Documentation</h1>
+    <p><code>DataValidator</code> is a fluent PHP class (namespace: <b>Nobanno</b>) for validating and sanitizing data from user input, supporting a wide range of rules and types. All validation failures throw a <code>Nobanno\ValidationException</code>.</p>
+    <div class="tip">
+        <b>Namespace:</b> <code>Nobanno</code><br>
+        <b>Exception:</b> <code>Nobanno\ValidationException</code>
+    </div>
+
+    <h2>1. Basic Usage</h2>
+    <pre><code>use Nobanno\DataValidator;
+use Nobanno\ValidationException;
+
+try {
+    $value = (new DataValidator())
+        ->title('Customer Name')
+        ->post('customer_name')
+        ->required()
+        ->asAlphabetic(true)
+        ->minLen(3)
+        ->maxLen(50)
+        ->sanitize()
+        ->validate();
+    // Use $value
+} catch (ValidationException $e) {
+    echo $e->getMessage();
+}
+</code></pre>
+
+    <h2>2. Setting the Value</h2>
+    <ul>
+        <li><b>value($val)</b>: Set value manually</li>
+        <li><b>post($field)</b>: Get value from <code>$_POST</code></li>
+        <li><b>get($field)</b>: Get value from <code>$_GET</code></li>
+        <li><b>default($val)</b>: Set a default value if input is empty</li>
+    </ul>
+
+    <h2>3. Label/Title</h2>
+    <ul>
+        <li><b>label($str)</b>: (deprecated) Set label for error messages</li>
+        <li><b>title($str)</b>: Set human-readable name for error messages</li>
+    </ul>
+
+    <h2>4. Sanitization</h2>
+    <ul>
+        <li><b>sanitize()</b>: Remove tags, slashes, and convert HTML special chars</li>
+        <li><b>removeTags($allowableTags = null)</b></li>
+        <li><b>removeSlash()</b></li>
+        <li><b>convert($convertDoubleQuote, $convertSingleQuote)</b></li>
+    </ul>
+
+    <h2>5. Required/Optional</h2>
+    <ul>
+        <li><b>required()</b>: Mark as required (throws if empty)</li>
+        <li><b>optional()</b>: Mark as optional (default)</li>
+    </ul>
+
+    <h2>6. Language Checks</h2>
+    <ul>
+        <li><b>englishOnly()</b>: Only English letters, numbers, spaces</li>
+        <li><b>banglaOnly()</b>: Only Bengali characters and spaces</li>
+    </ul>
+
+    <h2>7. Type Checks</h2>
+    <ul>
+        <li><b>asAlphabetic($allowSpace)</b>: Only A-Z/a-z (optionally spaces)</li>
+        <li><b>asNumeric()</b>: Only numbers</li>
+        <li><b>asAlphaNumeric($allowSpace)</b>: Only A-Z/a-z/0-9 (optionally spaces)</li>
+        <li><b>asString($allowSpace)</b>: Any string (optionally spaces)</li>
+        <li><b>asInteger($allowNegative)</b>: Integer (optionally negative)</li>
+        <li><b>asFloat($allowNegative)</b>: Float (optionally negative)</li>
+        <li><b>asArray()</b>: Must be array</li>
+        <li><b>asEmail()</b>: Valid email</li>
+        <li><b>asMobile()</b>: Valid Bangladeshi mobile, returns 8801... format</li>
+        <li><b>asDate($timezone = 'Asia/Dhaka')</b>: Valid date (d-m-Y)</li>
+        <li><b>asBool()</b>: Boolean</li>
+    </ul>
+
+    <h2>8. Length & Range</h2>
+    <ul>
+        <li><b>exactLen($len)</b>: Exact length</li>
+        <li><b>minLen($len)</b>: Minimum length</li>
+        <li><b>maxLen($len)</b>: Maximum length</li>
+        <li><b>minVal($min)</b>: Minimum value</li>
+        <li><b>maxVal($max)</b>: Maximum value</li>
+    </ul>
+
+    <h2>9. Miscellaneous</h2>
+    <ul>
+        <li><b>startsWith($str)</b>: Must start with string</li>
+        <li><b>endsWith($str)</b>: Must end with string</li>
+    </ul>
+
+    <h2>10. Finalizing</h2>
+    <ul>
+        <li><b>validate()</b>: Returns the validated value or default, throws on failure</li>
+    </ul>
+
+    <h2>11. Example: Validating a POST Email</h2>
+    <pre><code>try {
+    $email = (new DataValidator())
+        ->title('Email')
+        ->post('email')
+        ->required()
+        ->asEmail()
+        ->sanitize()
+        ->validate();
+} catch (ValidationException $e) {
+    echo $e->getMessage();
+}
+</code></pre>
+
+    <h2>12. Exception Handling</h2>
+    <p>All validation failures throw <code>ValidationException</code> with a descriptive message. Use try/catch to handle errors.</p>
+
+    <h2>13. Tips & Best Practices</h2>
+    <ul>
+        <li>Chain methods for readable validation logic.</li>
+        <li>Always call <code>validate()</code> at the end.</li>
+        <li>Use <code>default()</code> for optional fields.</li>
+        <li>Use <code>sanitize()</code> to clean user input before saving or displaying.</li>
+    </ul>
+
+    <h2>14. References</h2>
+    <ul>
+        <li><a href="https://www.php.net/manual/en/filter.filters.validate.php" target="_blank">PHP: Validation Filters</a></li>
+        <li><a href="https://www.php.net/manual/en/function.filter-var.php" target="_blank">PHP: filter_var</a></li>
+        <li><a href="https://www.php.net/manual/en/function.htmlspecialchars.php" target="_blank">PHP: htmlspecialchars</a></li>
+    </ul>
+</body>
+</html>

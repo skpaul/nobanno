@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Session.php Usage Guide</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; background: #f9f9f9; }
+        h1, h2, h3 { color: #2c3e50; }
+        code, pre { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
+        pre { padding: 1em; overflow-x: auto; }
+        .tip { background: #e7f7e7; border-left: 4px solid #27ae60; padding: 1em; margin: 1em 0; }
+        .warn { background: #fff3cd; border-left: 4px solid #ffc107; padding: 1em; margin: 1em 0; }
+    </style>
+</head>
+<body>
+    <h1>Session.php Usage Guide</h1>
+    <p>This guide explains how to use <code>Session.php</code> for secure, database-backed PHP sessions, including best practices for session safety.</p>
+
+    <h2>1. Basic Usage</h2>
+    <pre><code>require_once __DIR__ . '/ExPDO.php';
+require_once __DIR__ . '/Session.php';
+
+use Nobanno\ExPDO;
+use Nobanno\Session;
+
+$db = new ExPDO("localhost", "database_name", "db_user", "db_pass");
+$session = new Session($db);
+$session->configure();
+</code></pre>
+    <p>After calling <code>$session->configure()</code>, you can use <code>$_SESSION</code> as usual.</p>
+
+    <h2>2. Setting and Reading Session Variables</h2>
+    <pre><code>if (!isset($_SESSION['test'])) {
+    $_SESSION['test'] = 'Hello, session world!';
+    echo "Session variable set.";
+} else {
+    echo "Session variable: ", $_SESSION['test'];
+}
+</code></pre>
+
+    <h2>3. Best Practices for Security</h2>
+    <ul>
+        <li><strong>Use Secure Cookies:</strong> In production, set <code>'secure' =&gt; true</code> in <code>session_set_cookie_params</code> to ensure cookies are only sent over HTTPS.</li>
+        <li><strong>Set HttpOnly and SameSite:</strong> These are already set in <code>Session.php</code> to help prevent XSS and CSRF.</li>
+        <li><strong>Use Absolute Paths for Includes:</strong> Always use <code>__DIR__</code> for <code>require_once</code> to avoid path issues.</li>
+        <li><strong>Regenerate Session ID on Privilege Change:</strong> After login or privilege elevation, call <code>session_regenerate_id(true);</code> to prevent session fixation.</li>
+        <li><strong>Handle Errors:</strong> Add error handling for session start and handler setup as needed.</li>
+    </ul>
+
+    <div class="tip">
+        <strong>Tip:</strong> Regenerate the session ID after a successful login or privilege change:<br>
+        <pre><code>// After successful login
+$_SESSION['user_id'] = $userId;
+session_regenerate_id(true);</code></pre>
+    </div>
+
+    <div class="warn">
+        <strong>Warning:</strong> Do not set <code>'secure' =&gt; true</code> unless your site uses HTTPS, or cookies will not be sent.
+    </div>
+
+    <h2>4. Example: Login Handler</h2>
+    <pre><code>// ... after verifying credentials ...
+$_SESSION['user_id'] = $userId;
+$_SESSION['role'] = $userRole;
+session_regenerate_id(true); // Prevent session fixation
+</code></pre>
+
+    <h2>5. Troubleshooting</h2>
+    <ul>
+        <li>If sessions are not persisting, check your database connection and session handler implementation.</li>
+        <li>Ensure cookies are enabled in your browser.</li>
+        <li>Check PHP error logs for issues with session start or handler registration.</li>
+    </ul>
+
+    <h2>6. Advanced: Customizing Session Parameters</h2>
+    <p>You can customize session lifetime and other parameters by passing them to the <code>Session</code> constructor or editing <code>Session.php</code> as needed.</p>
+
+    <h2>7. References</h2>
+    <ul>
+        <li><a href="https://www.php.net/manual/en/function.session-regenerate-id.php" target="_blank">PHP: session_regenerate_id</a></li>
+        <li><a href="https://www.php.net/manual/en/function.session-set-cookie-params.php" target="_blank">PHP: session_set_cookie_params</a></li>
+        <li><a href="https://owasp.org/www-community/attacks/Session_fixation" target="_blank">OWASP: Session Fixation</a></li>
+    </ul>
+    <h2>8. Database Table Structure for Sessions</h2>
+    <p>Below is a recommended SQL table structure for storing sessions securely and efficiently in your database. This structure uses <code>utf8mb4</code> for full Unicode support and is compatible with the <code>Session.php</code> handler.</p>
+    <pre><code>CREATE TABLE `sessions` (
+  `sessionId` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+  `lastAccess` datetime NULL DEFAULT NULL,
+  PRIMARY KEY (`sessionId`) USING BTREE,
+  INDEX `idx_lastAccess`(`lastAccess` ASC) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=Dynamic;
+</code></pre>
+    <ul>
+        <li><strong>sessionId</strong>: Stores the session ID. Use <code>utf8mb4</code> for maximum compatibility.</li>
+        <li><strong>data</strong>: Stores the serialized session data.</li>
+        <li><strong>lastAccess</strong>: Used for session expiration and garbage collection.</li>
+        <li><strong>idx_lastAccess</strong>: Index to speed up cleanup queries.</li>
+    </ul>
+    <div class="tip">
+        <strong>Tip:</strong> Always use the same character set (<code>utf8mb4</code>) for all columns to avoid encoding issues.
+    </div>
+</body>
+</html>
