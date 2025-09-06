@@ -1,5 +1,5 @@
 <?php 
-
+    namespace Nobanno;
     /**
      * Logger class for error and custom log management.
      */
@@ -34,7 +34,7 @@
 
             $this->_ensureLogFileExists($this->logFilePath);
 
-            error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
+            error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 
             ini_set('log_errors', '1');
             if (defined('ENVIRONMENT') && ENVIRONMENT == "PRODUCTION") {
@@ -113,7 +113,7 @@
             //     return;
             // }
             
-            $currentdatetime = new DateTime("now", new DateTimeZone('Asia/Dhaka'));
+            $currentdatetime = new \DateTime("now", new \DateTimeZone('Asia/Dhaka'));
             $FormattedDateTime = $currentdatetime->format('d-m-Y h:i:s A');  //date('Y-m-d H:i:s');
             
             $final_log = strval($errNo) . ":: Description-". $errDetails . "\n";
@@ -129,7 +129,7 @@
             $file_name = basename($path); // $file is set to "file.php"
             $line_number = $caller['line'];
             
-            $currentdatetime = new DateTime("now", new DateTimeZone('Asia/Dhaka'));
+            $currentdatetime = new \DateTime("now", new \DateTimeZone('Asia/Dhaka'));
             $FormattedDateTime = $currentdatetime->format('d-m-Y h:i:s A');  //date('Y-m-d H:i:s');
             
             $final_log = $log_text . "\n";

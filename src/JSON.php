@@ -1,4 +1,5 @@
 <?php
+    namespace Nobanno;
 class JSON
 {
     private $data;

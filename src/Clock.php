@@ -1,5 +1,5 @@
 <?php
-
+    namespace Nobanno;
     require_once("Abstractions/Enum.php");
 
     final class DatetimeFormat extends Enum {
@@ -41,10 +41,10 @@
         // const BdDatetime = 'h:i A d-m-Y';
     }
 
-    class Clock{
-        protected DateTimeZone $datetimeZone;
+    class Clock {
+        protected \DateTimeZone $datetimeZone;
         public function __construct(string $datetimeZone = "Asia/Dhaka") {
-            $this->datetimeZone = new DateTimeZone($datetimeZone);
+            $this->datetimeZone = new \DateTimeZone($datetimeZone);
         }
 
         #region Core Methods
@@ -59,9 +59,8 @@
              * 
              * @return Datetime
              */
-            public function toDate(string $value):DateTime
-            {
-                return new DateTime($value, $this->datetimeZone);
+            public function toDate(string $value): \DateTime {
+                return new \DateTime($value, $this->datetimeZone);
             }
 
             /**
@@ -73,9 +72,8 @@
              * 
              * @return Datetime
              */
-            public function toDatetime(string $value):DateTime
-            {
-                return new DateTime($value, $this->datetimeZone);
+            public function toDatetime(string $value): \DateTime {
+                return new \DateTime($value, $this->datetimeZone);
             }
 
             /**
@@ -87,106 +85,62 @@
              * @param string|DatetimeFormat $format  Format string or DatetimeFormat instance.
              * @return string
              */
-            public function toString(mixed $value, string|DatetimeFormat $format): string
-            {
-                // Optionally, use $format = $format instanceof DatetimeFormat ? $format->getValue() : $format;
-                if ($value instanceof DateTime){
-                    return $value->format($format);
-                }
-                else{
-                    $dt = new DateTime($value, $this->datetimeZone);
-                    return $dt->format($format);
+            public function toString(mixed $value, string|DatetimeFormat $format): string {
+                $formatStr = $format instanceof DatetimeFormat ? $format->getValue() : $format;
+                if ($value instanceof \DateTime) {
+                    return $value->format($formatStr);
+                } else {
+                    $dt = new \DateTime($value, $this->datetimeZone);
+                    return $dt->format($formatStr);
                 }
             }
         #endregion
 
         #region Hour manipulation
-            public function addHours(int $hoursToAdd, mixed $datetime):DateTime
-            {
-                if ($datetime instanceof DateTime){
-                    $dt = clone $datetime;
-                }
-                else{
-                    $dt = new DateTime($datetime, $this->datetimeZone);
-                }
-                return $dt->add(new DateInterval("PT" . $hoursToAdd . "H"));
+            public function addHours(int $hoursToAdd, mixed $datetime): \DateTime {
+                $dt = $datetime instanceof \DateTime ? clone $datetime : new \DateTime($datetime, $this->datetimeZone);
+                return $dt->add(new \DateInterval("PT{$hoursToAdd}H"));
             }
 
-            public function deductHours(int $hoursToSubtract, mixed $datetime):DateTime
-            {
-                if ($datetime instanceof DateTime){
-                    $dt = clone $datetime;
-                }
-                else{
-                    $dt = new DateTime($datetime, $this->datetimeZone);
-                }
-                return $dt->sub(new DateInterval("PT" . $hoursToSubtract . "H"));
+            public function deductHours(int $hoursToSubtract, mixed $datetime): \DateTime {
+                $dt = $datetime instanceof \DateTime ? clone $datetime : new \DateTime($datetime, $this->datetimeZone);
+                return $dt->sub(new \DateInterval("PT{$hoursToSubtract}H"));
             }
         #endregion
 
         #region Day manipulation
-            public function addDays(int $daysToAdd, mixed $datetime):DateTime{
-                if ($datetime instanceof DateTime){
-                    $dt = clone $datetime;
-                }
-                else{
-                    $dt = new DateTime($datetime, $this->datetimeZone);
-                }
-                return $dt->add(new DateInterval("P" . $daysToAdd . "D"));
+            public function addDays(int $daysToAdd, mixed $datetime): \DateTime {
+                $dt = $datetime instanceof \DateTime ? clone $datetime : new \DateTime($datetime, $this->datetimeZone);
+                return $dt->add(new \DateInterval("P{$daysToAdd}D"));
             }
 
-            public function deductDays(mixed $datetime, int $daysToSubtract):DateTime{
-                if ($datetime instanceof DateTime){
-                    $dt = clone $datetime;
-                }
-                else{
-                    $dt = new DateTime($datetime, $this->datetimeZone);
-                }
-                return $dt->sub(new DateInterval("P" . $daysToSubtract . "D"));
+            public function deductDays(mixed $datetime, int $daysToSubtract): \DateTime {
+                $dt = $datetime instanceof \DateTime ? clone $datetime : new \DateTime($datetime, $this->datetimeZone);
+                return $dt->sub(new \DateInterval("P{$daysToSubtract}D"));
             }
         #endregion
 
         #region month manipulation
-            public function addMonths(int $monthsToAdd, mixed $datetime):DateTime{
-                if ($datetime instanceof DateTime){
-                    $dt = clone $datetime;
-                }
-                else{
-                    $dt = new DateTime($datetime, $this->datetimeZone);
-                }
-                return $dt->add(new DateInterval("P" . $monthsToAdd . "M"));
+            public function addMonths(int $monthsToAdd, mixed $datetime): \DateTime {
+                $dt = $datetime instanceof \DateTime ? clone $datetime : new \DateTime($datetime, $this->datetimeZone);
+                return $dt->add(new \DateInterval("P{$monthsToAdd}M"));
             }
 
-            public function deductMonths(int $monthsToSubtract, mixed $datetime):DateTime{
-                if ($datetime instanceof DateTime){
-                    $dt = clone $datetime;
-                }
-                else{
-                    $dt = new DateTime($datetime, $this->datetimeZone);
-                }
-                return $dt->sub(new DateInterval("P" . $monthsToSubtract . "M"));
+            public function deductMonths(int $monthsToSubtract, mixed $datetime): \DateTime {
+                $dt = $datetime instanceof \DateTime ? clone $datetime : new \DateTime($datetime, $this->datetimeZone);
+                return $dt->sub(new \DateInterval("P{$monthsToSubtract}M"));
             }
         #endregion
 
         #region Year manipulation
-            public function addYears(int $yearsToAdd, mixed $datetime):DateTime{
-                if ($datetime instanceof DateTime){
-                    $dt = clone $datetime;
-                }
-                else{
-                    $dt = new DateTime($datetime, $this->datetimeZone);
-                }
-                return $dt->add(new DateInterval("P" . $yearsToAdd . "Y"));
+            public function addYears(int $yearsToAdd, mixed $datetime): \DateTime {
+                $dt = $datetime instanceof \DateTime ? clone $datetime : new \DateTime($datetime, $this->datetimeZone);
+                return $dt->add(new \DateInterval("P{$yearsToAdd}Y"));
             }
 
-            public function deductYears(int $yearsToSubtract, mixed $datetime):DateTime{
-                if ($datetime instanceof DateTime){
-                    $dt = clone $datetime;
-                }
-                else{
-                    $dt = new DateTime($datetime, $this->datetimeZone);
-                }
-                return $dt->sub(new DateInterval("P" . $yearsToSubtract . "Y"));
+            public function deductYears(int $yearsToSubtract, mixed $datetime): \DateTime {
+                $dt = $datetime instanceof \DateTime ? clone $datetime : new \DateTime($datetime, $this->datetimeZone);
+                return $dt->sub(new \DateInterval("P{$yearsToSubtract}Y"));
             }
         #endregion
 
