@@ -23,7 +23,7 @@
                 $this->subDirectory = $subDirectoryName;
                 $logDir = $this->rootDirectory . DIRECTORY_SEPARATOR . $this->subDirectory;
                 if (!file_exists($logDir)) {
-                    if (!mkdir($logDir, 0777, true) && !is_dir($logDir)) {
+                    if (!mkdir($logDir, 0755, true) && !is_dir($logDir)) {
                         throw new \RuntimeException("Failed to create log directory: $logDir");
                     }
                 }
@@ -37,8 +37,13 @@
             error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 
             ini_set('log_errors', '1');
-            if (defined('ENVIRONMENT') && ENVIRONMENT == "PRODUCTION") {
+
+            if (defined('ENVIRONMENT') && ENVIRONMENT === 'DEVELOPMENT') {
                 ini_set('display_errors', 1);
+                error_reporting(E_ALL);
+            } else {
+                ini_set('display_errors', 0);
+                error_reporting(E_ALL); // still report internally
             }
 
             ini_set('error_log', $this->logFilePath);
@@ -186,7 +191,7 @@
     
 
         public function readLogs(){
-            $this->_readLogs($this->logFilePath);
+            return $this->_readLogs($this->logFilePath);
         }
 
         public function hasLogs(){
