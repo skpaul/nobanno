@@ -1,37 +1,90 @@
 <?php
 namespace Nobanno;
 
-class SessionHandler implements \SessionHandlerInterface {
+use SessionHandlerInterface;
+
+class SessionHandler implements SessionHandlerInterface
+{
     private $pdo;
     private $maxlifetime;
 
-    public function __construct($pdo, $maxlifetime = 600) {
+    public function __construct($pdo, $maxlifetime = 3600)
+    {
         $this->pdo = $pdo;
         $this->maxlifetime = $maxlifetime;
     }
 
-    public function open(string $save_path, string $session_name): bool {
+    /**
+     * Static method to bootstrap the session in one call.
+     */
+    public static function register(\PDO $pdo, array $options = []): void
+    {
+        $lifetime = $options['lifetime'] ?? 3600;
+
+        // 1. PHP configuration
+        ini_set('session.gc_maxlifetime', (string) $lifetime);
+        ini_set('session.gc_probability', '1');
+        ini_set('session.gc_divisor', '100');
+
+        // 2. Cookie settings
+        session_set_cookie_params([
+            'lifetime' => $options['cookie_lifetime'] ?? 0,
+            'path' => $options['path'] ?? '/',
+            'domain' => $options['domain'] ?? '', // Pass logic to check for HTTPS if needed
+            'secure' => $options['secure'] ?? false,
+            'httponly' => $options['httponly'] ?? true,
+            'samesite' => $options['samesite'] ?? 'Lax'
+        ]);
+
+        // 3. Register this handler
+        $handler = new self($pdo, $lifetime);
+        session_set_save_handler($handler, true);
+
+        // 4. Start session
+        if (session_status() === PHP_SESSION_NONE) {
+            if (!session_start()) {
+                throw new \RuntimeException("Failed to start session.");
+            }
+        }
+
+        // 5. Force new session ID only for new visits
+        if (!isset($_SESSION['initiated'])) {
+            session_regenerate_id(true);
+            $_SESSION['initiated'] = true;
+        }
+    }
+
+    public function open(string $save_path, string $session_name): bool
+    {
         return true;
     }
 
-    public function close(): bool {
+    public function close(): bool
+    {
         return true;
     }
 
-    public function read(string $session_id): string {
+    public function read(string $session_id): string
+    {
         $stmt = $this->pdo->prepare("SELECT data, lastAccess FROM sessions WHERE sessionId = :sessionId");
         $stmt->execute(['sessionId' => $session_id]);
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-        if (!$result) return '';
+
+        if (!$result) {
+            return '';
+        }
+
         $lastAccess = strtotime($result['lastAccess']);
         if ((time() - $lastAccess) > $this->maxlifetime) {
             $this->destroy($session_id);
             return '';
         }
-        return $result['data'];
+
+        return (string) $result['data'];
     }
 
-    public function write(string $session_id, string $session_data): bool {
+    public function write(string $session_id, string $session_data): bool
+    {
         $stmt = $this->pdo->prepare("REPLACE INTO sessions (sessionId, data, lastAccess) VALUES (:sessionId, :data, NOW())");
         return $stmt->execute([
             'sessionId' => $session_id,
@@ -39,12 +92,14 @@ class SessionHandler implements \SessionHandlerInterface {
         ]);
     }
 
-    public function destroy(string $session_id): bool {
+    public function destroy(string $session_id): bool
+    {
         $stmt = $this->pdo->prepare("DELETE FROM sessions WHERE sessionId = :sessionId");
         return $stmt->execute(['sessionId' => $session_id]);
     }
 
-    public function gc(int $maxlifetime): int|false {
+    public function gc(int $maxlifetime): int|false
+    {
         $cutoff = date('Y-m-d H:i:s', time() - $maxlifetime);
         $stmt = $this->pdo->prepare("DELETE FROM sessions WHERE lastAccess < :cutoff");
         return $stmt->execute(['cutoff' => $cutoff]) ? $stmt->rowCount() : false;
