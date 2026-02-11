@@ -96,7 +96,7 @@ class Clock
      * @param string|DatetimeFormat $format  Format string or DatetimeFormat instance.
      * @return string
      */
-    public function toString(mixed $value, DatetimeFormat $format): string
+    public function toString(mixed $value, string | DatetimeFormat $format): string
     {
         $formatStr = $format instanceof DatetimeFormat ? $format->getValue() : $format;
         if ($value instanceof \DateTime) {

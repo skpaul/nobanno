@@ -1,5 +1,6 @@
 <?php
-    class ImageException extends Exception
+    namespace Nobanno;
+    class ImageException extends \Exception
     {
     }
 
