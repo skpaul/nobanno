@@ -74,6 +74,7 @@ class SessionHandler implements SessionHandlerInterface
             return '';
         }
 
+        // lastAccess is now stored as UTC (via UTC_TIMESTAMP), PHP timezone is also UTC
         $lastAccess = strtotime($result['lastAccess']);
         if ((time() - $lastAccess) > $this->maxlifetime) {
             $this->destroy($session_id);
@@ -85,7 +86,7 @@ class SessionHandler implements SessionHandlerInterface
 
     public function write(string $session_id, string $session_data): bool
     {
-        $stmt = $this->pdo->prepare("REPLACE INTO sessions (sessionId, data, lastAccess) VALUES (:sessionId, :data, NOW())");
+        $stmt = $this->pdo->prepare("REPLACE INTO sessions (sessionId, data, lastAccess) VALUES (:sessionId, :data, UTC_TIMESTAMP())");
         return $stmt->execute([
             'sessionId' => $session_id,
             'data' => $session_data
@@ -100,7 +101,8 @@ class SessionHandler implements SessionHandlerInterface
 
     public function gc(int $maxlifetime): int|false
     {
-        $cutoff = date('Y-m-d H:i:s', time() - $maxlifetime);
+        // Use UTC timestamp to match database NOW() which stores UTC
+        $cutoff = gmdate('Y-m-d H:i:s', time() - $maxlifetime);
         $stmt = $this->pdo->prepare("DELETE FROM sessions WHERE lastAccess < :cutoff");
         return $stmt->execute(['cutoff' => $cutoff]) ? $stmt->rowCount() : false;
     }
