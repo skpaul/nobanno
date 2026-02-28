@@ -66,7 +66,7 @@ class Clock
      * 
      * @param string $value
      * 
-     * @return Datetime
+    * @return \DateTime
      */
     public function toDate(string $value): \DateTime
     {
@@ -80,7 +80,7 @@ class Clock
      * 
      * @param string $value
      * 
-     * @return Datetime
+    * @return \DateTime
      */
     public function toDatetime(string $value): \DateTime
     {

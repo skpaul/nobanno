@@ -1,6 +1,10 @@
 <?php
 
-//LAST MODIFIED: 2020-08-23 07:08 PM.
+namespace Nobanno;
+use DateInterval;
+use DateTime;
+use Exception;
+//LAST MODIFIED: 2026-02-28 07:08 PM.
 
 
 class AgeCalculator{
@@ -135,30 +139,30 @@ class AgeCalculator{
      * @param DateInterval $interval contains years, months and days.
      * @param Int $minimumAge 
      * @param Int $maximumAge 
-     * @param DateTime $ageCalulcateDate
+     * @param \DateTime $ageCalulcateDate
      * 
      * @return true
      * 
-     * @throws Exception if age is not between $minimumAge and $maximumAge.
+     * @throws \Nobanno\ValidationException if age is not between $minimumAge and $maximumAge.
      */
-    public static function validateAge(DateInterval $interval, int $minimumAge, int $maximumAge, DateTime $ageCalulcateDate):bool
+    public static function validateAge(DateInterval $interval, int $minimumAge, int $maximumAge, \DateTime $ageCalulcateDate):bool
     {
         $date = $ageCalulcateDate->format("d-m-Y");
         if($interval->y < $minimumAge){
-            throw new Exception("Age must be equal or greater than $minimumAge years.<br> As of $date, your age is ". $interval->y ." years ". $interval->m ." months ". $interval->d ." days.");
+            throw new \Nobanno\ValidationException("Age must be equal or greater than $minimumAge years.<br> As of $date, your age is ". $interval->y ." years ". $interval->m ." months ". $interval->d ." days.");
         }
 
         if($interval->y > $maximumAge){
-            throw new Exception("Age must be equal or less than $maximumAge years.<br> As of $date, your age is ". $interval->y ." years ". $interval->m ." months ". $interval->d ." days.");
+            throw new \Nobanno\ValidationException("Age must be equal or less than $maximumAge years.<br> As of $date, your age is ". $interval->y ." years ". $interval->m ." months ". $interval->d ." days.");
         }
         else{
             if($interval->y == $maximumAge){
                 if($interval->m > 0){
-                    throw new Exception("Age must be equal or less than $maximumAge years.<br> As of $date, your age is ". $interval->y ." years ". $interval->m ." months ". $interval->d ." days.");
+                    throw new \Nobanno\ValidationException("Age must be equal or less than $maximumAge years.<br> As of $date, your age is ". $interval->y ." years ". $interval->m ." months ". $interval->d ." days.");
                 }
                 else{
                     if($interval->d > 0){
-                        throw new Exception("Age must be equal or less than $maximumAge years.<br> As of $date, your age is ". $interval->y ." years ". $interval->m ." months ". $interval->d ." days.");
+                        throw new \Nobanno\ValidationException("Age must be equal or less than $maximumAge years.<br> As of $date, your age is ". $interval->y ." years ". $interval->m ." months ". $interval->d ." days.");
                     }
                 }
             }
